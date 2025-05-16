@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Local overrides
+application-*.properties
+!application.properties
+!application-prod.properties
