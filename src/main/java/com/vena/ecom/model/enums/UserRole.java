@@ -1,7 +1,7 @@
 package com.vena.ecom.model.enums;
 
 public enum UserRole {
-    CUSTOMAR,
+    CUSTOMER,
     VENDOR,
     ADMIN
 }
