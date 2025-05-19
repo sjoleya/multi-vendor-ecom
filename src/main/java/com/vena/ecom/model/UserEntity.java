@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-    @Table(name = "User",uniqueConstraints =  @UniqueConstraint(columnNames = "email"))
+    @Table(name = "Users")
     public class UserEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
