@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
-public class UserEntity extends Auditable {
+public class User extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
@@ -80,10 +80,10 @@ public class UserEntity extends Auditable {
         this.phoneNumber = phoneNumber;
     }
 
-    public UserEntity() {
+    public User() {
     }
 
-    public UserEntity(String userId, String firstName, String lastName, String email, String passwordHash,
+    public User(String userId, String firstName, String lastName, String email, String passwordHash,
             UserRole role,
             String phoneNumber) {
         this.userId = userId;
