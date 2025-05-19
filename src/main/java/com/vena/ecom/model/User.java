@@ -3,12 +3,13 @@ package com.vena.ecom.model;
 import com.vena.ecom.model.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="users")
-public class UserEntity {
+public class User {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +35,10 @@ public class UserEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-        public UserEntity() {
+        public User() {
         }
 
-    public UserEntity(int userId, String firstName, String lastName, String email, Role role, String phoneNumber, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(int userId, String firstName, String lastName, String email, Role role, String phoneNumber, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
