@@ -6,8 +6,8 @@ import jakarta.persistence.*;
 @Table(name = "addresses")
 public class Address {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String AddressID;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String addressId;
 
     @OneToMany
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
@@ -22,8 +22,8 @@ public class Address {
     public Address() {
     }
 
-    public Address(String addressID, User user, String street, String city, String state, String zipCode, String country, AddressType addressType) {
-        AddressID = addressID;
+    public Address(String addressId, User user, String street, String city, String state, String zipCode, String country, AddressType addressType) {
+        this.addressId = addressId;
         this.user = user;
         this.street = street;
         this.city = city;
@@ -33,12 +33,12 @@ public class Address {
         this.addressType = addressType;
     }
 
-    public String getAddressID() {
-        return AddressID;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setAddressID(String addressID) {
-        AddressID = addressID;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 
     public User getUser() {
