@@ -1,3 +1,5 @@
+# Multi-Vendor E-Commerce Platform
+
 ### Problem Statement:
 
 Single-vendor e-commerce sites are limited in scale and flexibility. To support multiple sellers and wider product variety, businesses require a multi-vendor architecture that includes vendor onboarding, global product catalog, vendor-specific product listings, and distributed order processing.
