@@ -9,48 +9,29 @@ import java.time.LocalDateTime;
 
 public class ProductCategory extends Auditable {
 @Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long categoryId;
+@GeneratedValue(strategy = GenerationType.UUID)
+private String categoryId;
 
 private String name;
 private String description;
 
-private LocalDateTime createdAt;
-private LocalDateTime updatedAt;
-
-@PrePersist
-    protected void onCreate(){
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-}
-
-@PrePersist
-    protected void onUpdate(){
-    this.updatedAt = LocalDateTime.now();
-}
-
 //Constructors
-
-
     public ProductCategory() {
     }
 
-    public ProductCategory(Long categoryId, String name, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ProductCategory(String categoryId, String name, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.categoryId = categoryId;
         this.name = name;
         this.description = description;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+
     }
 
     //Getter and Setters
-
-
-    public Long getCategoryId() {
+    public String getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -70,35 +51,6 @@ private LocalDateTime updatedAt;
         this.description = description;
     }
 
-    @Override
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 
-    @Override
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 
-    @Override
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    @Override
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-    //to String()
-
-    @Override
-    public String toString() {
-        return "ProductCategory{" +
-                "categoryId=" + categoryId +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
 }
