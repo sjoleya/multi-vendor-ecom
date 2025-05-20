@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Repository
-public interface ProductCatalogRepositiory extends JpaRepository<ProductCatalog,String> {
+public interface productCatalogRepository extends JpaRepository<ProductCatalog,String> {
 
 }
