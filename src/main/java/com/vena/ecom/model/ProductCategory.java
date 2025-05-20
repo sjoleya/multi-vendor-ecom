@@ -3,30 +3,24 @@ package com.vena.ecom.model;
 import com.vena.ecom.model.audit.Auditable;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
-
 @Entity
-
 public class ProductCategory extends Auditable {
-@Id
-@GeneratedValue(strategy = GenerationType.UUID)
-private String categoryId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String categoryId;
 
-private String name;
-private String description;
+    private String name;
+    private String description;
 
-//Constructors
     public ProductCategory() {
     }
 
-    public ProductCategory(String categoryId, String name, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ProductCategory(String categoryId, String name, String description) {
         this.categoryId = categoryId;
         this.name = name;
         this.description = description;
-
     }
 
-    //Getter and Setters
     public String getCategoryId() {
         return categoryId;
     }
@@ -50,7 +44,5 @@ private String description;
     public void setDescription(String description) {
         this.description = description;
     }
-
-
 
 }
