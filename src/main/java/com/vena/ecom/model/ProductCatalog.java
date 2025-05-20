@@ -10,17 +10,19 @@ public class ProductCatalog extends Auditable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String catalogId;
     private String name;
+    private String brand;
     private String description;
     private String globalSKU;
-
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
     private ProductCategory categoryId;
 
-    public ProductCatalog(String catalogId, String name, String description, String globalSKU,
+
+    public ProductCatalog(String catalogId, String name, String brand, String description, String globalSKU,
             ProductCategory categoryId) {
         this.catalogId = catalogId;
         this.name = name;
+        this.brand = brand;
         this.description = description;
         this.globalSKU = globalSKU;
         this.categoryId = categoryId;
@@ -62,7 +64,15 @@ public class ProductCatalog extends Auditable {
         return categoryId;
     }
 
-    public void setCatagoryId(ProductCategory categoryId) {
+    public void setCategoryId(ProductCategory categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 }

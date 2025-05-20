@@ -47,9 +47,10 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         ProductCatalog pc;
         pc = optionalProductCatalog.get();
         pc.setName(productCatalog.getName());
+        pc.setBrand(productCatalog.getBrand());
         pc.setDescription(productCatalog.getDescription());
         pc.setGlobalSKU(productCatalog.getGlobalSKU());
-        pc.setCatagoryId(productCatalog.getCategoryId());
+        pc.setCategoryId(productCatalog.getCategoryId());
         productCatalogRepository.save(pc);
         return pc;
 
