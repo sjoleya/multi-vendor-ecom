@@ -39,14 +39,14 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
-    public ProductCategory updateCategory(Long categoryId, ProductCategory categoryDetails) {
+    public ProductCategory updateCategory(String categoryId, ProductCategory categoryDetails) {
         ProductCategory existing = categoryRepository.findById(categoryId)
                 .orElseThrow(()-> new RuntimeException("Category not found with ID:" +categoryId));
         return categoryRepository.save(existing);
     }
 
     @Override
-    public void deleteCategory(Long categoryId) {
+    public void deleteCategory(String categoryId) {
         if(!categoryRepository.existsById(categoryId)){
             throw new RuntimeException("Category not found with ID:" + categoryId);
         }

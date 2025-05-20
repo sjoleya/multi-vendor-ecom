@@ -25,12 +25,12 @@ public class ProductCategoryController {
     }
 
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<ProductCategory> updateCategory(@PathVariable Long categoryId, @RequestBody ProductCategory categoryDetails) {
+    public ResponseEntity<ProductCategory> updateCategory(@PathVariable String categoryId, @RequestBody ProductCategory categoryDetails) {
         return ResponseEntity.ok(productCategoryService.updateCategory(categoryId, categoryDetails));
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable String categoryId) {
         productCategoryService.deleteCategory(categoryId);
         return ResponseEntity.ok().build();
     }

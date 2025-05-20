@@ -11,10 +11,10 @@ public interface  ProductCategoryService{
 
         ProductCategory createCategory(ProductCategory category);
 
-        ProductCategory updateCategory(Long categoryId, ProductCategory categoryDetails);
+        ProductCategory updateCategory(String categoryId, ProductCategory categoryDetails);
 
 
 
-    void deleteCategory(Long categoryId);
+    void deleteCategory(String categoryId);
 }
 
