@@ -1,4 +1,4 @@
-package com.vena.ecom.Repo;
+package com.vena.ecom.repo;
 
 import com.vena.ecom.model.ProductCategory;
 import org.springframework.data.jpa.repository.JpaRepository;

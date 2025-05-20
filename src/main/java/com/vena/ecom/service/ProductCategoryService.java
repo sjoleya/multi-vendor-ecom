@@ -1,20 +1,16 @@
 package com.vena.ecom.service;
 
-
 import com.vena.ecom.model.ProductCategory;
 
 import java.util.List;
 
-public interface  ProductCategoryService{
+public interface ProductCategoryService {
 
-        List<ProductCategory> getAllCategories();
+    List<ProductCategory> getAllCategories();
 
-        ProductCategory createCategory(ProductCategory category);
+    ProductCategory createCategory(ProductCategory category);
 
-        ProductCategory updateCategory(String categoryId, ProductCategory categoryDetails);
-
-
+    ProductCategory updateCategory(String categoryId, ProductCategory categoryDetails);
 
     void deleteCategory(String categoryId);
 }
-
