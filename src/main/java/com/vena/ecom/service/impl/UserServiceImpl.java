@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.model.User;
 import com.vena.ecom.repo.AddressRepository;

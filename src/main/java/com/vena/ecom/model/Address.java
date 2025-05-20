@@ -9,7 +9,7 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String addressId;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private User user;
 

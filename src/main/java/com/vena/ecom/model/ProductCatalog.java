@@ -14,10 +14,11 @@ public class ProductCatalog extends Auditable {
     private String globalSKU;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId",referencedColumnName = "categoryId")
+    @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
     private ProductCategory categoryId;
 
-    public ProductCatalog(String catalogId, String name, String description, String globalSKU, ProductCategory categoryId) {
+    public ProductCatalog(String catalogId, String name, String description, String globalSKU,
+            ProductCategory categoryId) {
         this.catalogId = catalogId;
         this.name = name;
         this.description = description;
