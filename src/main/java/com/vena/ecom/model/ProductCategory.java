@@ -11,7 +11,6 @@ public class ProductCategory extends Auditable {
 @Id
 @GeneratedValue(strategy = GenerationType.UUID)
 private String categoryId;
-
 private String name;
 private String description;
 
