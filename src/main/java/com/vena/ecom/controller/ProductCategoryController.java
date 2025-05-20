@@ -15,7 +15,7 @@ public class ProductCategoryController {
     private ProductCategoryService productCategoryService;
 
     @GetMapping("/categories")
-    public ResponseEntity<List<ProductCategory>> getAllCategories(){
+    public ResponseEntity<List<ProductCategory>> getAllCategories() {
         return ResponseEntity.ok(productCategoryService.getAllCategories());
     }
 
@@ -25,7 +25,8 @@ public class ProductCategoryController {
     }
 
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<ProductCategory> updateCategory(@PathVariable String categoryId, @RequestBody ProductCategory categoryDetails) {
+    public ResponseEntity<ProductCategory> updateCategory(@PathVariable String categoryId,
+            @RequestBody ProductCategory categoryDetails) {
         return ResponseEntity.ok(productCategoryService.updateCategory(categoryId, categoryDetails));
     }
 
