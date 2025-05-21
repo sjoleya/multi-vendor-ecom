@@ -15,13 +15,13 @@ public class VendorProduct extends Auditable {
     private String vendorProductId;
 
     @ManyToOne
-    @JoinColumn(name = "catalog_Id",referencedColumnName = "catalogId")
+    @JoinColumn(name = "catalog_Id", referencedColumnName = "catalogId")
     private ProductCatalog catalogPrductId;
 
     @ManyToOne
-    @JoinColumn(name = "vendor_Id",referencedColumnName = "vendorId")
+    @JoinColumn(name = "vendor_Id", referencedColumnName = "vendorId")
     private VendorProfile vendorId;
-    private String sku;
+    private String SKU;
     private BigDecimal price;
     private Integer stockQuantity;
 
@@ -31,17 +31,19 @@ public class VendorProduct extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus;
-    private  Boolean isActive;
-    private  BigDecimal avgrageRating;
+    private Boolean isActive;
+    private BigDecimal avgrageRating;
 
     public VendorProduct() {
     }
 
-    public VendorProduct(ProductCatalog catalogPrductId, String vendorProductId, String vendorId, String sku, BigDecimal price, Integer stockQuantity, Address shippingAddress, ApprovalStatus approvalStatus, Boolean isActive, BigDecimal avgrageRating) {
+    public VendorProduct(ProductCatalog catalogPrductId, String vendorProductId, VendorProfile vendorId, String sku,
+            BigDecimal price, Integer stockQuantity, Address shippingAddress, ApprovalStatus approvalStatus,
+            Boolean isActive, BigDecimal avgrageRating) {
         this.catalogPrductId = catalogPrductId;
         this.vendorProductId = vendorProductId;
         this.vendorId = vendorId;
-        this.sku = sku;
+        this.SKU = sku;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.shippingAddress = shippingAddress;
@@ -66,20 +68,20 @@ public class VendorProduct extends Auditable {
         this.catalogPrductId = catalogPrductId;
     }
 
-    public String getVendorId() {
+    public VendorProfile getVendorId() {
         return vendorId;
     }
 
-    public void setVendorId(String vendorId) {
+    public void setVendorId(VendorProfile vendorId) {
         this.vendorId = vendorId;
     }
 
     public String getSku() {
-        return sku;
+        return SKU;
     }
 
     public void setSku(String sku) {
-        this.sku = sku;
+        this.SKU = sku;
     }
 
     public BigDecimal getPrice() {

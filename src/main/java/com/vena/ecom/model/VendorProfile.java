@@ -22,7 +22,7 @@ public class VendorProfile extends Auditable {
     private String contactNumber;
 
     @Enumerated(EnumType.STRING)
-    private ApprovalStatus vendorProfileApprovalStatus = ApprovalStatus.PENDING;
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
 
     public VendorProfile() {
@@ -31,14 +31,14 @@ public class VendorProfile extends Auditable {
 
     public VendorProfile(String vendorId, User user, String storeName,
                          String storeDescription, String businessAddress, String contactNumber,
-                         ApprovalStatus vendorProfileApprovalStatus) {
+                         ApprovalStatus approvalStatus) {
         this.vendorId = vendorId;
         this.user = user;
         this.storeName = storeName;
         this.storeDescription = storeDescription;
         this.businessAddress = businessAddress;
         this.contactNumber = contactNumber;
-        this.vendorProfileApprovalStatus = vendorProfileApprovalStatus;
+        this.approvalStatus = approvalStatus;
     }
 
     public String getVendorId() {
@@ -90,11 +90,11 @@ public class VendorProfile extends Auditable {
     }
 
     public ApprovalStatus getApprovalStatus() {
-        return vendorProfileApprovalStatus;
+        return approvalStatus;
     }
 
-    public void setApprovalStatus(ApprovalStatus vendorProfileApprovalStatus) {
-        this.vendorProfileApprovalStatus = vendorProfileApprovalStatus;
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
     }
 
 }

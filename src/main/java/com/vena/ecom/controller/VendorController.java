@@ -62,7 +62,7 @@ public class VendorController {
     }
 
     @DeleteMapping("/products/{productId}")
-    public ResponseEntity<Void> deleteVendorProduct(@PathVariable Long productId) {
+    public ResponseEntity<Void> deleteVendorProduct(@PathVariable String productId) {
         vendorService.deleteVendorProduct(productId);
         return ResponseEntity.ok().build();
     }
