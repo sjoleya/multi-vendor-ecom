@@ -20,7 +20,7 @@ public class VendorProduct extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "vendor_Id",referencedColumnName = "vendorId")
-    private String vendorId;
+    private VendorProfile vendorId;
     private String sku;
     private BigDecimal price;
     private Integer stockQuantity;
