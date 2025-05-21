@@ -5,7 +5,6 @@ import com.vena.ecom.model.enums.ApprovalStatus;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
 @Entity
 @Table(name = "vendor_product")

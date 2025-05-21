@@ -7,13 +7,12 @@ public interface ShoppingCartService {
 
     ShoppingCart getCartByCustomerId(String customerId);
 
-    CartItem addCartItem(String cartItem , String  vendorProductId, Integer quantity);
+    CartItem addCartItem(String cartItem, String vendorProductId, Integer quantity);
 
-    CartItem updateCartItemQuantity(String cartItemId , Integer quantity);
+    CartItem updateCartItemQuantity(String cartItemId, Integer quantity);
 
     void removeCartItem(String cartItemId);
 
     void clearCart(String customerId);
-
 
 }

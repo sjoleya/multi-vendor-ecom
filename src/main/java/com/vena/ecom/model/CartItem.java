@@ -27,7 +27,7 @@ public class CartItem extends Auditable {
         CartItemId = cartItemId;
         this.cart = cart;
         this.vendorProduct = vendorProduct;
-        quantity = quantity;
+        this.quantity = quantity;
     }
 
     public String getCartItemId() {
