@@ -3,13 +3,14 @@ package com.vena.ecom.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.vena.ecom.model.audit.Auditable;
 import com.vena.ecom.model.enums.PaymentStatus;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "payments")
-public class Payment {
+public class Payment extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String paymentId;

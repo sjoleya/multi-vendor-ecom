@@ -10,6 +10,7 @@ import com.vena.ecom.model.enums.OrderStatus;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "orders")
 public class Order extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,7 +35,7 @@ public class Order extends Auditable {
     private Address billingAddress;
 
     @OneToMany(mappedBy = "order")
-    private List<Order> orderItems;
+    private List<OrderItem> orderItems;
 
     @OneToOne(mappedBy = "order")
     private Payment payment;
@@ -43,7 +44,7 @@ public class Order extends Auditable {
     }
 
     public Order(String orderId, User customer, LocalDateTime orderDate, BigDecimal totalAmount,
-            OrderStatus overallOrderStatus, Address shippingAddress, Address billingAddress, List<Order> orderItems,
+            OrderStatus overallOrderStatus, Address shippingAddress, Address billingAddress, List<OrderItem> orderItems,
             Payment payment) {
         this.orderId = orderId;
         this.customer = customer;
@@ -112,11 +113,11 @@ public class Order extends Auditable {
         this.billingAddress = billingAddress;
     }
 
-    public List<Order> getOrderItems() {
+    public List<OrderItem> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<Order> orderItems) {
+    public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
 

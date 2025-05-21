@@ -2,6 +2,7 @@ package com.vena.ecom.model;
 
 import java.math.BigDecimal;
 
+import com.vena.ecom.model.audit.Auditable;
 import com.vena.ecom.model.enums.ItemStatus;
 
 import jakarta.persistence.Entity;
@@ -12,9 +13,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
-public class OrderItem {
+@Table(name = "order_items")
+public class OrderItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String orderItemId;
