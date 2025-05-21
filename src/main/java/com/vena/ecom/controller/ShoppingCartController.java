@@ -15,8 +15,8 @@ public class ShoppingCartController {
     private ShoppingCartService shoppingCartService;
 
     @GetMapping
-    public ResponseEntity<ShoppingCart> viewCart(){
-        String customerId ="1";
+    public ResponseEntity<ShoppingCart> viewCart(@RequestParam String customerId){
+
         return ResponseEntity.ok(shoppingCartService.getCartByCustomerId(customerId));
     }
     @PostMapping("/items")
@@ -36,8 +36,8 @@ public class ShoppingCartController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> clearCart() {
-        String customerId = "1"; // Placeholder
+    public ResponseEntity<Void> clearCart(@RequestParam String customerId) {
+
         shoppingCartService.clearCart(customerId);
         return ResponseEntity.ok().build();
     }

@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class CartItem extends Auditable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String CartItemId;
 
     @ManyToOne
@@ -18,7 +18,7 @@ public class CartItem extends Auditable {
     @JoinColumn(name = "vendorProductId", referencedColumnName = "vendorProductId")
     private VendorProduct vendorProduct;
 
-    private Integer Quantity;
+    private Integer quantity;
 
     public CartItem() {
     }
@@ -27,7 +27,7 @@ public class CartItem extends Auditable {
         CartItemId = cartItemId;
         this.cart = cart;
         this.vendorProduct = vendorProduct;
-        Quantity = quantity;
+        quantity = quantity;
     }
 
     public String getCartItemId() {
@@ -55,11 +55,11 @@ public class CartItem extends Auditable {
     }
 
     public Integer getQuantity() {
-        return Quantity;
+        return quantity;
     }
 
     public void setQuantity(Integer quantity) {
-        Quantity = quantity;
+        quantity = quantity;
     }
 
     public void setProduct(VendorProduct product) {
