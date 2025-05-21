@@ -1,5 +1,6 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.OrderItem;
 import com.vena.ecom.model.VendorProduct;
 import com.vena.ecom.model.VendorProfile;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VendorServiceImpl implements VendorService {
@@ -46,7 +46,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorProduct addVendorProduct(String vendorId, VendorProduct product) {
         VendorProfile vendor = getVendorProfile(vendorId);
-//        product.setVendorProduct(vendor);
+        product.setVendorId(vendor);
         return vendorProductRepository.save(product);
     }
 
@@ -71,7 +71,6 @@ public class VendorServiceImpl implements VendorService {
 
         return vendorProductRepository.save(existingProduct);
 
-
     }
 
     @Override
@@ -87,7 +86,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public OrderItem getVendorOrderItemDetails(String orderItemId) {
         return orderItemRepository.findById(orderItemId)
-                .orElseThrow(() -> new RuntimeException("OrderItem not found with id: " + orderItemId));
+                .orElseThrow(() -> new ResourceNotFoundException("OrderItem not found with id: " + orderItemId));
     }
 
     @Override

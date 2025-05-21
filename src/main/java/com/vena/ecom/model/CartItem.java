@@ -59,7 +59,7 @@ public class CartItem extends Auditable {
     }
 
     public void setQuantity(Integer quantity) {
-        quantity = quantity;
+        this.quantity = quantity;
     }
 
     public void setProduct(VendorProduct product) {
