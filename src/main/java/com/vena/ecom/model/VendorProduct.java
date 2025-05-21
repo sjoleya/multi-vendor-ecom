@@ -16,7 +16,7 @@ public class VendorProduct extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "catalog_Id", referencedColumnName = "catalogId")
-    private ProductCatalog catalogPrductId;
+    private ProductCatalog catalogProductId;
 
     @ManyToOne
     @JoinColumn(name = "vendor_Id", referencedColumnName = "vendorId")
@@ -32,15 +32,15 @@ public class VendorProduct extends Auditable {
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus;
     private Boolean isActive;
-    private BigDecimal avgrageRating;
+    private BigDecimal averageRating;
 
     public VendorProduct() {
     }
 
-    public VendorProduct(ProductCatalog catalogPrductId, String vendorProductId, VendorProfile vendorId, String sku,
+    public VendorProduct(ProductCatalog catalogProductId, String vendorProductId, VendorProfile vendorId, String sku,
             BigDecimal price, Integer stockQuantity, Address shippingAddress, ApprovalStatus approvalStatus,
-            Boolean isActive, BigDecimal avgrageRating) {
-        this.catalogPrductId = catalogPrductId;
+            Boolean isActive, BigDecimal averageRating) {
+        this.catalogProductId = catalogProductId;
         this.vendorProductId = vendorProductId;
         this.vendorId = vendorId;
         this.SKU = sku;
@@ -49,7 +49,7 @@ public class VendorProduct extends Auditable {
         this.shippingAddress = shippingAddress;
         this.approvalStatus = approvalStatus;
         this.isActive = isActive;
-        this.avgrageRating = avgrageRating;
+        this.averageRating = averageRating;
     }
 
     public String getVendorProductId() {
@@ -60,12 +60,12 @@ public class VendorProduct extends Auditable {
         this.vendorProductId = vendorProductId;
     }
 
-    public ProductCatalog getCatalogPrductId() {
-        return catalogPrductId;
+    public ProductCatalog getCatalogProductId() {
+        return catalogProductId;
     }
 
-    public void setCatalogPrductId(ProductCatalog catalogPrductId) {
-        this.catalogPrductId = catalogPrductId;
+    public void setCatalogProductId(ProductCatalog catalogProductId) {
+        this.catalogProductId = catalogProductId;
     }
 
     public VendorProfile getVendorId() {
@@ -124,11 +124,11 @@ public class VendorProduct extends Auditable {
         isActive = active;
     }
 
-    public BigDecimal getAvgrageRating() {
-        return avgrageRating;
+    public BigDecimal getAverageRating() {
+        return averageRating;
     }
 
-    public void setAvgrageRating(BigDecimal avgrageRating) {
-        this.avgrageRating = avgrageRating;
+    public void setAverageRating(BigDecimal averageRating) {
+        this.averageRating = averageRating;
     }
 }

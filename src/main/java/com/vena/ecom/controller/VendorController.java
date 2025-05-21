@@ -48,14 +48,14 @@ public class VendorController {
     }
 
     @GetMapping("/products/{productId}")
-    public ResponseEntity<VendorProduct> getVendorProductById(@PathVariable Long productId) {
+    public ResponseEntity<VendorProduct> getVendorProductById(@PathVariable String productId) {
         VendorProduct product = vendorService.getVendorProductById(productId);
         return ResponseEntity.ok(product);
     }
 
     @PutMapping("/products/{productId}")
     public ResponseEntity<VendorProduct> updateVendorProduct(
-            @PathVariable Long productId,
+            @PathVariable String productId,
             @RequestBody VendorProduct updatedProduct) {
         VendorProduct product = vendorService.updateVendorProduct(productId, updatedProduct);
         return ResponseEntity.ok(product);
@@ -74,14 +74,14 @@ public class VendorController {
     }
 
     @GetMapping("/orders/items/{orderItemId}")
-    public ResponseEntity<OrderItem> getVendorOrderItemDetails(@PathVariable Long orderItemId) {
+    public ResponseEntity<OrderItem> getVendorOrderItemDetails(@PathVariable String orderItemId) {
         OrderItem orderItem = vendorService.getVendorOrderItemDetails(orderItemId);
         return ResponseEntity.ok(orderItem);
     }
 
     @PutMapping("/orders/items/{orderItemId}/status")
     public ResponseEntity<OrderItem> updateOrderItemStatus(
-            @PathVariable Long orderItemId,
+            @PathVariable String orderItemId,
             @RequestParam("status") ItemStatus status) {
         OrderItem updatedItem = vendorService.updateOrderItemStatus(orderItemId, status);
         return ResponseEntity.ok(updatedItem);

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review , String> {
 
-    List<Review>findByCustomerCustomerId(String customerId);
+    List<Review>findByCustomerId(String customerId);
     List<Review>findByVendorProductId(String vendorProductId);
     List<Review>findByApprovalStatus(ApprovalStatus status);
     List<Review>findByOrderId(String orderId);

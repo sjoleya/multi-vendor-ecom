@@ -46,7 +46,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorProduct addVendorProduct(String vendorId, VendorProduct product) {
         VendorProfile vendor = getVendorProfile(vendorId);
-        product.setVendorProfile(vendor);
+//        product.setVendorProduct(vendor);
         return vendorProductRepository.save(product);
     }
 
@@ -64,11 +64,8 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorProduct updateVendorProduct(String productId, VendorProduct updatedProduct) {
         VendorProduct existingProduct = getVendorProductById(productId);
-        existingProduct.setProductName(updatedProduct.getProductName());
         existingProduct.setPrice(updatedProduct.getPrice());
-        existingProduct.setDescription(updatedProduct.getDescription());
-        existingProduct.setStock(updatedProduct.getStock());
-        existingProduct.setCategory(updatedProduct.getCategory());
+        existingProduct.setStockQuantity(updatedProduct.getStockQuantity());
         return vendorProductRepository.save(existingProduct);
     }
 

@@ -18,7 +18,7 @@ public class VendorProfile extends Auditable {
     private User user;
     private String storeName;
     private String storeDescription;
-    private String businessAddress;
+    private Address businessAddress;
     private String contactNumber;
 
     @Enumerated(EnumType.STRING)
@@ -30,7 +30,7 @@ public class VendorProfile extends Auditable {
 
 
     public VendorProfile(String vendorId, User user, String storeName,
-                         String storeDescription, String businessAddress, String contactNumber,
+                         String storeDescription, Address businessAddress, String contactNumber,
                          ApprovalStatus approvalStatus) {
         this.vendorId = vendorId;
         this.user = user;
@@ -73,11 +73,11 @@ public class VendorProfile extends Auditable {
         this.storeDescription = storeDescription;
     }
 
-    public String getBusinessAddress() {
+    public Address getBusinessAddress() {
         return businessAddress;
     }
 
-    public void setBusinessAddress(String businessAddress) {
+    public void setBusinessAddress(Address businessAddress) {
         this.businessAddress = businessAddress;
     }
 
