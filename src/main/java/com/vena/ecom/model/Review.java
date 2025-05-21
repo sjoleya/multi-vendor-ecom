@@ -3,7 +3,7 @@ package com.vena.ecom.model;
 
 import com.vena.ecom.model.audit.Auditable;
 import jakarta.persistence.*;
-import org.hibernate.query.Order;
+import com.vena.ecom.model.Order;
 
 @Entity
 @Table(name = "review")
@@ -23,6 +23,10 @@ public class Review  extends Auditable {
     @JoinColumn(name = "orderId",referencedColumnName = "orderId")
     private Order order;
 
+    @ManyToOne
+    @JoinColumn(name = "orderItemId", referencedColumnName = "orderItemId")
+    private OrderItem orderItem;
+
     private int rating;
     private  String comment;
 
@@ -30,11 +34,12 @@ public class Review  extends Auditable {
     public Review() {
     }
 
-    public Review(String reviewId, VendorProduct vendorProduct, User customer, Order order, int rating, String comment) {
+    public Review(String reviewId, VendorProduct vendorProduct, User customer, Order order, OrderItem orderItem, int rating, String comment) {
         this.reviewId = reviewId;
         this.vendorProduct = vendorProduct;
         this.customer = customer;
         this.order = order;
+        this.orderItem = orderItem;
         this.rating = rating;
         this.comment = comment;
     }
@@ -69,6 +74,14 @@ public class Review  extends Auditable {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public OrderItem getOrderItem() {
+        return orderItem;
+    }
+
+    public void setOrderItem(OrderItem orderItem) {
+        this.orderItem = orderItem;
     }
 
     public int getRating() {
