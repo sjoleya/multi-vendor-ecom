@@ -66,7 +66,12 @@ public class VendorServiceImpl implements VendorService {
         VendorProduct existingProduct = getVendorProductById(productId);
         existingProduct.setPrice(updatedProduct.getPrice());
         existingProduct.setStockQuantity(updatedProduct.getStockQuantity());
+        existingProduct.setSku(updatedProduct.getSku());
+        existingProduct.setShippingAddress(updatedProduct.getShippingAddress());
+
         return vendorProductRepository.save(existingProduct);
+
+
     }
 
     @Override
