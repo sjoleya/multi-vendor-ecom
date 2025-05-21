@@ -13,6 +13,7 @@ public class ProductCatalog extends Auditable {
     private String brand;
     private String description;
     private String globalSKU;
+
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
     private ProductCategory categoryId;
