@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface VendorProductRepository extends JpaRepository<VendorProduct, String> {
     Optional<VendorProduct> findBySKU(String sku);
 
-   List<VendorProduct> findByVendorProfileVendorId(String vendorId);
+    List<VendorProduct> findByVendorProfileVendorId(String vendorId);
 }

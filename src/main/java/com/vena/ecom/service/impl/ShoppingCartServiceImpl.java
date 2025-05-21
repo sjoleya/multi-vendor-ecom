@@ -8,6 +8,7 @@ import com.vena.ecom.repo.ShoppingCartRepository;
 import com.vena.ecom.model.CartItem;
 import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.repo.UserRepository;
+import com.vena.ecom.repo.VendorProductRepository;
 import com.vena.ecom.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,7 +77,3 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCartRepository.save(cart); // CascadeType.ALL ensures related items are deleted
     }
 }
-
-
-
-
