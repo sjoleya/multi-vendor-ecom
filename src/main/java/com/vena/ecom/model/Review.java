@@ -2,7 +2,6 @@ package com.vena.ecom.model;
 
 import com.vena.ecom.model.audit.Auditable;
 import jakarta.persistence.*;
-import com.vena.ecom.model.Order;
 
 @Entity
 @Table(name = "review")

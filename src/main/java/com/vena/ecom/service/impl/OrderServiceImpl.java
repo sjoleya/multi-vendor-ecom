@@ -1,18 +1,16 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.CartItem;
 import com.vena.ecom.model.Order;
 import com.vena.ecom.model.OrderItem;
-import com.vena.ecom.model.ProductCatalog;
 import com.vena.ecom.model.Review;
 import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.model.enums.OrderStatus;
 import com.vena.ecom.repo.CartItemRepository;
 import com.vena.ecom.repo.OrderItemRepository;
 import com.vena.ecom.repo.OrderRepository;
-import com.vena.ecom.repo.ProductCatalogRepository;
 import com.vena.ecom.repo.ReviewRepository;
 import com.vena.ecom.repo.ShoppingCartRepository;
 import com.vena.ecom.repo.UserRepository;
@@ -42,9 +40,6 @@ public class OrderServiceImpl implements OrderService {
     private CartItemRepository cartItemRepository;
 
     @Autowired
-    private ProductCatalogRepository productCatalogRepository;
-
-    @Autowired
     private ShoppingCartService shoppingCartService;
 
     @Autowired
@@ -53,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order checkout(String customerId) {
         ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer_UserId(customerId)
-                .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Shopping cart not found"));
 
         User user = userRepository.findById(customerId).get();
 
@@ -93,16 +88,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getOrderDetails(String orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        return orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
     }
 
     @Override
     public Review submitProductReview(String orderId, String orderItemId, String customerId, Review review) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
-                .orElseThrow(() -> new RuntimeException("Order item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order item not found"));
         if (!order.getCustomer().getUserId().equals(customerId)) {
-            throw new RuntimeException("Customer mismatch");
+            throw new ResourceNotFoundException("Customer mismatch");
         }
 
         review.setOrder(order);
