@@ -1,5 +1,6 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.repo.ProductCategoryRepository;
 import com.vena.ecom.model.ProductCategory;
 import com.vena.ecom.service.ProductCategoryService;
@@ -35,14 +36,16 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Override
     public ProductCategory updateCategory(String categoryId, ProductCategory categoryDetails) {
         ProductCategory existing = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with ID:" + categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID:" + categoryId));
+        existing.setDescription(categoryDetails.getDescription());
+        existing.setName(categoryDetails.getName());
         return categoryRepository.save(existing);
     }
 
     @Override
     public void deleteCategory(String categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
-            throw new RuntimeException("Category not found with ID:" + categoryId);
+            throw new ResourceNotFoundException("Category not found with ID:" + categoryId);
         }
         categoryRepository.deleteById(categoryId);
     }

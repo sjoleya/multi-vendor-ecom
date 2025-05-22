@@ -11,10 +11,6 @@ public class CartItem extends Auditable {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id", referencedColumnName = "id")
-    private ShoppingCart cart;
-
-    @ManyToOne
     @JoinColumn(name = "vendor_product_id", referencedColumnName = "id")
     private VendorProduct vendorProduct;
 
@@ -23,9 +19,8 @@ public class CartItem extends Auditable {
     public CartItem() {
     }
 
-    public CartItem(String id, ShoppingCart cart, VendorProduct vendorProduct, Integer quantity) {
+    public CartItem(String id, VendorProduct vendorProduct, Integer quantity) {
         this.id = id;
-        this.cart = cart;
         this.vendorProduct = vendorProduct;
         this.quantity = quantity;
     }
@@ -36,14 +31,6 @@ public class CartItem extends Auditable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public ShoppingCart getCart() {
-        return cart;
-    }
-
-    public void setCart(ShoppingCart cart) {
-        this.cart = cart;
     }
 
     public VendorProduct getVendorProduct() {

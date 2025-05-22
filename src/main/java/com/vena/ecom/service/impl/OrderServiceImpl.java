@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(com.vena.ecom.model.enums.OrderStatus.PENDING_PAYMENT);
         order.setShippingAddress(address);
 
-        List<CartItem> cartItems = cartItemRepository.findByCart_Id(shoppingCart.getId());
+        List<CartItem> cartItems = shoppingCart.getCartItems();
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (CartItem cartItem : cartItems) {
@@ -79,6 +79,7 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setPriceAtPurchase(vendorProduct.getPrice());
             orderItem.setSubtotal(orderItem.getPriceAtPurchase().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
             orderItem.setItemStatus(com.vena.ecom.model.enums.ItemStatus.PENDING);
+            orderItemRepository.save(orderItem);
 
             totalAmount = totalAmount.add(orderItem.getSubtotal());
         }

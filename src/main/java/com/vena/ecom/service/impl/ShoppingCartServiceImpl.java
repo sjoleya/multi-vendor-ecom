@@ -42,26 +42,25 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public CartItem addCartItem(String customerId, String vendorProductId, Integer quantity) {
+    public CartItem addCartItem(String customerId, com.vena.ecom.dto.AddCartItemRequest request) {
         ShoppingCart cart = getCartByCustomerId(customerId);
 
-        VendorProduct product = vendorProductRepository.findById(vendorProductId)
+        VendorProduct product = vendorProductRepository.findById(request.getVendorProductId())
                 .orElseThrow(() -> new RuntimeException("Vendor product not found"));
 
-        CartItem cartItem = new CartItem();
-        cartItem.setCart(cart);
-        cartItem.setVendorProduct(product);
-        cartItem.setQuantity(quantity);
+        CartItem cartItem = new CartItem(null, product, request.getQuantity());
+        cart.getCartItems().add(cartItem);
+        shoppingCartRepository.save(cart);
 
         return cartItemRepository.save(cartItem);
     }
 
     @Override
-    public CartItem updateCartItemQuantity(String cartItemId, Integer quantity) {
+    public CartItem updateCartItemQuantity(String cartItemId, com.vena.ecom.dto.UpdateCartItemRequest request) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
 
-        cartItem.setQuantity(quantity);
+        cartItem.setQuantity(request.getQuantity());
         return cartItemRepository.save(cartItem);
     }
 

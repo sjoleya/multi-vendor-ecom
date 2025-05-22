@@ -17,7 +17,7 @@ public class ShoppingCart extends Auditable {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private User customer;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 
     public ShoppingCart() {

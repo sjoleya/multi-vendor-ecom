@@ -10,16 +10,24 @@ import java.util.List;
 public interface VendorService {
 
      VendorProfile getVendorProfile(String vendorId);
-     VendorProfile updateVendorProfile(String vendorId, VendorProfile
-     vendorProfile);
 
-     VendorProduct addVendorProduct(String vendorId, VendorProduct product);
+     VendorProfile getVendorProfileByUserId(String vendorId);
+
+     VendorProfile updateVendorProfile(String vendorId, com.vena.ecom.dto.UpdateVendorProfileRequest vendorProfile);
+
+     VendorProduct addVendorProduct(String vendorId, com.vena.ecom.dto.AddVendorProductRequest product);
+
      List<VendorProduct> getVendorProducts(String vendorId);
+
      VendorProduct getVendorProductById(String productId);
-     VendorProduct updateVendorProduct(String productId , VendorProduct vendorProduct);
-     void deleteVendorProduct (String productId);
+
+     VendorProduct updateVendorProduct(String productId, com.vena.ecom.dto.UpdateVendorProductRequest vendorProduct);
+
+     void deleteVendorProduct(String productId);
 
      List<OrderItem> getVendorOrderItems(String vendorId);
+
      OrderItem getVendorOrderItemDetails(String orderItemId);
-     OrderItem updateOrderItemStatus (String orderItemId, ItemStatus status);
+
+     OrderItem updateOrderItemStatus(String orderItemId, ItemStatus status);
 }

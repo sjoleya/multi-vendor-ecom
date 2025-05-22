@@ -29,6 +29,9 @@ public class VendorProduct extends Auditable {
     private Boolean isActive;
     private BigDecimal averageRating;
 
+    private String name;
+    private String description;
+
     public VendorProduct() {
     }
 
@@ -70,12 +73,28 @@ public class VendorProduct extends Auditable {
         this.vendorId = vendorId;
     }
 
-    public String getSku() {
+    public String getSKU() {
         return SKU;
     }
 
-    public void setSku(String sku) {
-        this.SKU = sku;
+    public void setSKU(String SKU) {
+        this.SKU = SKU;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public BigDecimal getPrice() {

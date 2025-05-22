@@ -1,5 +1,6 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.UpdateVendorProductRequest;
 import com.vena.ecom.model.OrderItem;
 import com.vena.ecom.model.VendorProduct;
 import com.vena.ecom.model.VendorProfile;
@@ -11,39 +12,44 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/vendor")
 public class VendorController {
 
     @Autowired
-    private  VendorService vendorService;
+    private VendorService vendorService;
 
     @GetMapping("/profile")
-    public ResponseEntity<VendorProfile> getVendorProfile(@RequestBody String vendorId){
-        VendorProfile profile = vendorService.getVendorProfile(vendorId);
+    public ResponseEntity<VendorProfile> getVendorProfileById(@RequestParam String vendorProfileId) {
+        VendorProfile profile = vendorService.getVendorProfile(vendorProfileId);
+        return ResponseEntity.ok(profile);
+    }
+
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<VendorProfile> getVendorProfileByUserId(@PathVariable String userId) {
+        VendorProfile profile = vendorService.getVendorProfileByUserId(userId);
         return ResponseEntity.ok(profile);
     }
 
     @PutMapping("/profile")
     public ResponseEntity<VendorProfile> updateVendorProfile(
-            @RequestParam("vendorId") String vendorId,
-            @RequestBody VendorProfile updatedProfile) {
-        VendorProfile profile = vendorService.updateVendorProfile(vendorId, updatedProfile);
+            @RequestParam("vendorId") String vendorProfileId,
+            @RequestBody com.vena.ecom.dto.UpdateVendorProfileRequest updatedProfile) {
+        VendorProfile profile = vendorService.updateVendorProfile(vendorProfileId, updatedProfile);
         return ResponseEntity.ok(profile);
     }
 
     @PostMapping("/product")
     public ResponseEntity<VendorProduct> addVendorProduct(
-            @RequestParam("vendorId") String vendorId,
-            @RequestBody VendorProduct product) {
-        VendorProduct savedProduct = vendorService.addVendorProduct(vendorId, product);
+            @RequestParam("vendorProfileId") String vendorProfileId,
+            @RequestBody com.vena.ecom.dto.AddVendorProductRequest product) {
+        VendorProduct savedProduct = vendorService.addVendorProduct(vendorProfileId, product);
         return ResponseEntity.ok(savedProduct);
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<VendorProduct>> getVendorProducts(@RequestParam String vendorId) {
-        List<VendorProduct> products = vendorService.getVendorProducts(vendorId);
+    public ResponseEntity<List<VendorProduct>> getVendorProducts(@RequestParam String vendorProfileId) {
+        List<VendorProduct> products = vendorService.getVendorProducts(vendorProfileId);
         return ResponseEntity.ok(products);
     }
 
@@ -56,8 +62,8 @@ public class VendorController {
     @PutMapping("/products/{productId}")
     public ResponseEntity<VendorProduct> updateVendorProduct(
             @PathVariable String productId,
-            @RequestBody VendorProduct updatedProduct) {
-        VendorProduct product = vendorService.updateVendorProduct(productId, updatedProduct);
+            @RequestBody UpdateVendorProductRequest vendorProductRequest) {
+        VendorProduct product = vendorService.updateVendorProduct(productId, vendorProductRequest);
         return ResponseEntity.ok(product);
     }
 
@@ -68,8 +74,8 @@ public class VendorController {
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<List<OrderItem>> getVendorOrderItems(@RequestParam("vendorId") String vendorId) {
-        List<OrderItem> orderItems = vendorService.getVendorOrderItems(vendorId);
+    public ResponseEntity<List<OrderItem>> getVendorOrderItems(@RequestParam String vendorProfileId) {
+        List<OrderItem> orderItems = vendorService.getVendorOrderItems(vendorProfileId);
         return ResponseEntity.ok(orderItems);
     }
 
@@ -88,4 +94,3 @@ public class VendorController {
     }
 
 }
-
