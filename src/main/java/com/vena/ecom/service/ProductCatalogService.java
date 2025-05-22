@@ -7,8 +7,12 @@ import java.util.List;
 
 public interface ProductCatalogService {
     List<ProductCatalog> getAllProductsCatalogs();
+
     ProductCatalog getproductCatalogById(String id);
+
     ProductCatalog createCatalogProduct(AddProductCatalogRequest addProductCatalogRequest);
-    ProductCatalog updateProductCatalogById(String id, ProductCatalog productCatalog);
+
+    ProductCatalog updateProductCatalogById(String id, AddProductCatalogRequest addProductCatalogRequest);
+
     void deleteProductCatalog(String id);
 }

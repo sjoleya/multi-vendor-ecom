@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/admin/catalog")
 public class ProductCatalogController {
@@ -35,8 +36,9 @@ public class ProductCatalogController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProductCatalog(@PathVariable String id, @RequestBody ProductCatalog productCatalog) {
-        ProductCatalog updatedCatalog = productCatalogService.updateProductCatalogById(id, productCatalog);
+    public ResponseEntity<?> updateProductCatalog(@PathVariable String id,
+            @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+        ProductCatalog updatedCatalog = productCatalogService.updateProductCatalogById(id, addProductCatalogRequest);
         return ResponseEntity.ok(updatedCatalog);
     }
 

@@ -49,22 +49,21 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
     }
 
     @Override
-    public ProductCatalog updateProductCatalogById(String id, ProductCatalog productCatalog) {
+    public ProductCatalog updateProductCatalogById(String id, AddProductCatalogRequest addProductCatalogRequest) {
 
         Optional<ProductCatalog> optionalProductCatalog = productCatalogRepository.findById(id);
         if (!optionalProductCatalog.isPresent()) {
             throw new ResourceNotFoundException("Product with id: " + id + "not found");
         }
-        ProductCatalog pc;
-        pc = optionalProductCatalog.get();
-        pc.setName(productCatalog.getName());
-        pc.setBrand(productCatalog.getBrand());
-        pc.setDescription(productCatalog.getDescription());
-        pc.setGlobalSKU(productCatalog.getGlobalSKU());
-        pc.setCategory(productCatalog.getCategory());
-        productCatalogRepository.save(pc);
-        return pc;
-
+        ProductCatalog productCatalog = optionalProductCatalog.get();
+        ProductCategory category = productCategoryRepository.findById(addProductCatalogRequest.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+        productCatalog.setName(addProductCatalogRequest.getName());
+        productCatalog.setDescription(addProductCatalogRequest.getDescription());
+        productCatalog.setGlobalSKU(addProductCatalogRequest.getGlobalSKU());
+        productCatalog.setCategory(category);
+        productCatalog.setBrand(addProductCatalogRequest.getBrand());
+        return productCatalogRepository.save(productCatalog);
     }
 
     @Override
