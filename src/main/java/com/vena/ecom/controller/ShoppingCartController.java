@@ -20,8 +20,8 @@ public class ShoppingCartController {
         return ResponseEntity.ok(shoppingCartService.getCartByCustomerId(customerId));
     }
     @PostMapping("/items")
-    public ResponseEntity<CartItem> addCartItem(@RequestParam String vendorProductId, @RequestParam Integer quantity){
-        String customerId = "1";
+    public ResponseEntity<CartItem> addCartItem(@RequestParam String vendorProductId,@RequestParam String customerId, @RequestParam Integer quantity){
+
         return ResponseEntity.ok(shoppingCartService.addCartItem(customerId ,vendorProductId , quantity));
     }
 
