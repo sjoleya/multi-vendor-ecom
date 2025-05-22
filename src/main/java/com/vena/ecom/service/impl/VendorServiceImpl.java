@@ -1,14 +1,17 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.dto.UpdateVendorProductRequest;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.OrderItem;
 import com.vena.ecom.model.VendorProduct;
 import com.vena.ecom.model.VendorProfile;
+import com.vena.ecom.model.enums.ApprovalStatus;
 import com.vena.ecom.model.enums.ItemStatus;
 import com.vena.ecom.repo.OrderItemRepository;
 import com.vena.ecom.repo.VendorProductRepository;
 import com.vena.ecom.repo.VendorProfileRepository;
 import com.vena.ecom.service.VendorService;
+import com.vena.ecom.repo.ProductCatalogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,35 +21,59 @@ import java.util.List;
 public class VendorServiceImpl implements VendorService {
 
     @Autowired
-    private VendorProfileRepository vendorProfileRepository;
+    private ProductCatalogRepository productCatalogRepository;
 
     @Autowired
     private VendorProductRepository vendorProductRepository;
 
     @Autowired
+    private VendorProfileRepository vendorProfileRepository;
+
+    @Autowired
     private OrderItemRepository orderItemRepository;
 
     @Override
-    public VendorProfile getVendorProfile(String vendorId) {
-        return vendorProfileRepository.findById(vendorId)
-                .orElseThrow(() -> new RuntimeException("VendorProfile not found with id: " + vendorId));
+    public VendorProfile getVendorProfile(String vendorProfileId) {
+        return vendorProfileRepository.findById(vendorProfileId)
+                .orElseThrow(() -> new RuntimeException("VendorProfile not found with id: " + vendorProfileId));
+    }
+
+    public VendorProfile getVendorProfileByUserId(String userId) {
+        return vendorProfileRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("VendorProfile not found with id: " + userId));
     }
 
     @Override
-    public VendorProfile updateVendorProfile(String vendorId, VendorProfile updatedProfile) {
-        VendorProfile existingProfile = getVendorProfile(vendorId);
-        existingProfile.setStoreName(updatedProfile.getStoreName());
-        existingProfile.setStoreDescription(updatedProfile.getStoreDescription());
-        existingProfile.setContactNumber(updatedProfile.getContactNumber());
-        existingProfile.setApprovalStatus(updatedProfile.getApprovalStatus());
+    public VendorProfile updateVendorProfile(String vendorProfileId,
+            com.vena.ecom.dto.UpdateVendorProfileRequest updatedProfile) {
+        VendorProfile existingProfile = getVendorProfile(vendorProfileId);
+        if (updatedProfile.getStoreName() != null) {
+            existingProfile.setStoreName(updatedProfile.getStoreName());
+        }
+        if (updatedProfile.getStoreDescription() != null) {
+            existingProfile.setStoreDescription(updatedProfile.getStoreDescription());
+        }
+        if (updatedProfile.getContactNumber() != null) {
+            existingProfile.setContactNumber(updatedProfile.getContactNumber());
+        }
         return vendorProfileRepository.save(existingProfile);
     }
 
     @Override
-    public VendorProduct addVendorProduct(String vendorId, VendorProduct product) {
+    public VendorProduct addVendorProduct(String vendorId, com.vena.ecom.dto.AddVendorProductRequest product) {
         VendorProfile vendor = getVendorProfile(vendorId);
-        product.setVendorId(vendor);
-        return vendorProductRepository.save(product);
+        VendorProduct vendorProduct = new VendorProduct();
+        vendorProduct.setVendorId(vendor);
+        vendorProduct.setCatalogProductId(productCatalogRepository.findById(product.getCatalogProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product Catalog not found")));
+        vendorProduct.setSKU(product.getSku());
+        vendorProduct.setPrice(product.getPrice());
+        vendorProduct.setName(product.getName());
+        vendorProduct.setDescription(product.getDescription());
+        vendorProduct.setStockQuantity(product.getStockQuantity());
+        vendorProduct.setApprovalStatus(ApprovalStatus.PENDING);
+        vendorProduct.setActive(false);
+        return vendorProductRepository.save(vendorProduct);
     }
 
     @Override
@@ -61,11 +88,23 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public VendorProduct updateVendorProduct(String productId, VendorProduct updatedProduct) {
+    public VendorProduct updateVendorProduct(String productId, UpdateVendorProductRequest updatedProduct) {
         VendorProduct existingProduct = getVendorProductById(productId);
-        existingProduct.setPrice(updatedProduct.getPrice());
-        existingProduct.setStockQuantity(updatedProduct.getStockQuantity());
-        existingProduct.setSku(updatedProduct.getSku());
+        if (updatedProduct.getPrice() != null) {
+            existingProduct.setPrice(updatedProduct.getPrice());
+        }
+        if (updatedProduct.getQuantity() != null) {
+            existingProduct.setStockQuantity(updatedProduct.getQuantity());
+        }
+        if (updatedProduct.getName() != null) {
+            existingProduct.setName(updatedProduct.getName());
+        }
+        if (updatedProduct.getDescription() != null) {
+            existingProduct.setDescription(updatedProduct.getDescription());
+        }
+        if (updatedProduct.getIsActive() != null) {
+            existingProduct.setActive(updatedProduct.getIsActive());
+        }
 
         return vendorProductRepository.save(existingProduct);
 

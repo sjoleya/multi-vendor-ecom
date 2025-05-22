@@ -7,9 +7,9 @@ public interface ShoppingCartService {
 
     ShoppingCart getCartByCustomerId(String customerId);
 
-    CartItem addCartItem(String cartItem, String vendorProductId, Integer quantity);
+    CartItem addCartItem(String customerId, com.vena.ecom.dto.AddCartItemRequest request);
 
-    CartItem updateCartItemQuantity(String cartItemId, Integer quantity);
+    CartItem updateCartItemQuantity(String cartItemId, com.vena.ecom.dto.UpdateCartItemRequest request);
 
     void removeCartItem(String cartItemId);
 
