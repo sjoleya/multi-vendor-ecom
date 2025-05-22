@@ -8,22 +8,22 @@ import jakarta.persistence.*;
 public class Review extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String reviewId;
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "vendorProductId", referencedColumnName = "vendorProductId")
+    @JoinColumn(name = "vendor_product_id", referencedColumnName = "id")
     private VendorProduct vendorProduct;
 
     @ManyToOne
-    @JoinColumn(name = "customerId", referencedColumnName = "userId")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private User customer;
 
     @ManyToOne
-    @JoinColumn(name = "orderId", referencedColumnName = "orderId")
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "orderItemId", referencedColumnName = "orderItemId")
+    @JoinColumn(name = "order_item_id", referencedColumnName = "id")
     private OrderItem orderItem;
 
     private int rating;
@@ -32,9 +32,9 @@ public class Review extends Auditable {
     public Review() {
     }
 
-    public Review(String reviewId, VendorProduct vendorProduct, User customer, Order order, OrderItem orderItem,
+    public Review(String id, VendorProduct vendorProduct, User customer, Order order, OrderItem orderItem,
             int rating, String comment) {
-        this.reviewId = reviewId;
+        this.id = id;
         this.vendorProduct = vendorProduct;
         this.customer = customer;
         this.order = order;
@@ -43,12 +43,12 @@ public class Review extends Auditable {
         this.comment = comment;
     }
 
-    public String getReviewId() {
-        return reviewId;
+    public String getId() {
+        return id;
     }
 
-    public void setReviewId(String reviewId) {
-        this.reviewId = reviewId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public VendorProduct getVendorProduct() {

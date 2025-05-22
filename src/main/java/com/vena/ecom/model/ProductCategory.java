@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class ProductCategory extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String categoryId;
+    private String id;
 
     private String name;
     private String description;
@@ -15,18 +15,18 @@ public class ProductCategory extends Auditable {
     public ProductCategory() {
     }
 
-    public ProductCategory(String categoryId, String name, String description) {
-        this.categoryId = categoryId;
+    public ProductCategory(String id, String name, String description) {
+        this.id = id;
         this.name = name;
         this.description = description;
     }
 
-    public String getCategoryId() {
-        return categoryId;
+    public String getId() {
+        return id;
     }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -1,5 +1,6 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.AddProductCatalogRequest;
 import com.vena.ecom.model.ProductCatalog;
 import com.vena.ecom.service.impl.ProductCatalogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/admin/catalog")
 public class ProductCatalogController {
@@ -28,14 +30,15 @@ public class ProductCatalogController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProductCatalog(@RequestBody ProductCatalog productCatalog) {
-        ProductCatalog createdCatalog = productCatalogService.createCatalogProduct(productCatalog);
+    public ResponseEntity<?> createProductCatalog(@RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+        ProductCatalog createdCatalog = productCatalogService.createCatalogProduct(addProductCatalogRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCatalog);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProductCatalog(@PathVariable String id, @RequestBody ProductCatalog productCatalog) {
-        ProductCatalog updatedCatalog = productCatalogService.updateProductCatalogById(id, productCatalog);
+    public ResponseEntity<?> updateProductCatalog(@PathVariable String id,
+            @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+        ProductCatalog updatedCatalog = productCatalogService.updateProductCatalogById(id, addProductCatalogRequest);
         return ResponseEntity.ok(updatedCatalog);
     }
 

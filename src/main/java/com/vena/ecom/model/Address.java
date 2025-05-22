@@ -1,17 +1,13 @@
 package com.vena.ecom.model;
 
-import com.vena.ecom.model.enums.AddressType;
 import jakarta.persistence.*;
+
 @Entity
 @Table(name = "addresses")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String addressId;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User user;
+    private String id;
 
     private String street;
     private String city;
@@ -19,36 +15,29 @@ public class Address {
     private String zipCode;
     private String country;
 
-    @Enumerated(EnumType.STRING)
-    private AddressType addressType;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Address() {
     }
 
-    public Address(String addressId, User user, String street, String city, String state, String zipCode, String country, AddressType addressType) {
-        this.addressId = addressId;
-        this.user = user;
+    public Address(String id, String street, String city, String state, String zipCode, String country, User user) {
+        this.id = id;
         this.street = street;
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
         this.country = country;
-        this.addressType = addressType;
-    }
-
-    public String getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(String addressId) {
-        this.addressId = addressId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getStreet() {
@@ -91,11 +80,11 @@ public class Address {
         this.country = country;
     }
 
-    public AddressType getAddressType() {
-        return addressType;
+    public User getUser() {
+        return user;
     }
 
-    public void setAddressType(AddressType addressType) {
-        this.addressType = addressType;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

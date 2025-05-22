@@ -14,25 +14,21 @@ import jakarta.persistence.*;
 public class Order extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String orderId;
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "customerId", referencedColumnName = "userId")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private User customer;
 
     private LocalDateTime orderDate;
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus overallOrderStatus;
+    private OrderStatus orderStatus;
 
     @ManyToOne
-    @JoinColumn(name = "shippingAddressId", referencedColumnName = "addressId")
+    @JoinColumn(name = "shipping_address_id", referencedColumnName = "id")
     private Address shippingAddress;
-
-    @ManyToOne
-    @JoinColumn(name = "billingAddress", referencedColumnName = "addressId")
-    private Address billingAddress;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
@@ -43,26 +39,25 @@ public class Order extends Auditable {
     public Order() {
     }
 
-    public Order(String orderId, User customer, LocalDateTime orderDate, BigDecimal totalAmount,
-            OrderStatus overallOrderStatus, Address shippingAddress, Address billingAddress, List<OrderItem> orderItems,
-            Payment payment) {
-        this.orderId = orderId;
+    public Order(String id, User customer, LocalDateTime orderDate, BigDecimal totalAmount,
+                 OrderStatus overallOrderStatus, Address shippingAddress, List<OrderItem> orderItems,
+                 Payment payment) {
+        this.id = id;
         this.customer = customer;
         this.orderDate = orderDate;
         this.totalAmount = totalAmount;
-        this.overallOrderStatus = overallOrderStatus;
+        this.orderStatus = overallOrderStatus;
         this.shippingAddress = shippingAddress;
-        this.billingAddress = billingAddress;
         this.orderItems = orderItems;
         this.payment = payment;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getId() {
+        return id;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public User getCustomer() {
@@ -89,12 +84,12 @@ public class Order extends Auditable {
         this.totalAmount = totalAmount;
     }
 
-    public OrderStatus getOverallOrderStatus() {
-        return overallOrderStatus;
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
     }
 
-    public void setOverallOrderStatus(OrderStatus overallOrderStatus) {
-        this.overallOrderStatus = overallOrderStatus;
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
     public Address getShippingAddress() {
@@ -103,14 +98,6 @@ public class Order extends Auditable {
 
     public void setShippingAddress(Address shippingAddress) {
         this.shippingAddress = shippingAddress;
-    }
-
-    public Address getBillingAddress() {
-        return billingAddress;
-    }
-
-    public void setBillingAddress(Address billingAddress) {
-        this.billingAddress = billingAddress;
     }
 
     public List<OrderItem> getOrderItems() {

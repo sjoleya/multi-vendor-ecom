@@ -38,8 +38,8 @@ GET /users/me – Get current user profile
 PUT /users/me – Update current user profile
 GET /users/me/addresses – List user addresses
 POST /users/me/addresses – Add user address
-PUT /users/me/addresses/{addressId} – Update address
-DELETE /users/me/addresses/{addressId} – Delete address
+PUT /users/me/addresses/{id} – Update address
+DELETE /users/me/addresses/{id} – Delete address
 ```
 
 ---
@@ -59,8 +59,8 @@ DELETE /admin/catalog-products/{id} – Delete catalog product
 ```
 GET /categories – List all product categories
 POST /admin/categories – Create category
-PUT /admin/categories/{categoryId} – Edit category
-DELETE /admin/categories/{categoryId} – Delete category
+PUT /admin/categories/{id} – Edit category
+DELETE /admin/categories/{id} – Delete category
 ```
 
 ---
@@ -88,8 +88,8 @@ DELETE /vendor/products/{productId} – Delete vendor product
 
 ```
 GET /vendor/orders – List vendor order items
-GET /vendor/orders/items/{orderItemId} – Get order item details
-PUT /vendor/orders/items/{orderItemId}/status – Update order item status
+GET /vendor/orders/items/{id} – Get order item details
+PUT /vendor/orders/items/{id}/status – Update order item status
 ```
 
 ---
@@ -101,8 +101,8 @@ PUT /vendor/orders/items/{orderItemId}/status – Update order item status
 ```
 GET /customer/cart – View cart
 POST /customer/cart/items – Add item to cart
-PUT /customer/cart/items/{cartItemId} – Update cart item quantity
-DELETE /customer/cart/items/{cartItemId} – Remove cart item
+PUT /customer/cart/items/{id} – Update cart item quantity
+DELETE /customer/cart/items/{id} – Remove cart item
 DELETE /customer/cart – Clear cart
 ```
 
@@ -111,8 +111,8 @@ DELETE /customer/cart – Clear cart
 ```
 POST /customer/orders/checkout – Checkout and create order
 GET /customer/orders – View order history
-GET /customer/orders/{orderId} – View order details
-POST /customer/orders/{orderId}/items/{orderItemId}/review – Submit product review
+GET /customer/orders/{id} – View order details
+POST /customer/orders/{id}/items/{id}/review – Submit product review
 ```
 
 ---
@@ -123,8 +123,8 @@ POST /customer/orders/{orderId}/items/{orderItemId}/review – Submit product re
 
 ```
 GET /admin/users – List all users
-GET /admin/users/{userId} – Get user details
-PUT /admin/users/{userId}/role – Update user role
+GET /admin/users/{id} – Get user details
+PUT /admin/users/{id}/role – Update user role
 ```
 
 - **Vendor Applications**
@@ -139,17 +139,17 @@ PUT /admin/vendor-applications/{applicationId}/reject – Reject application
 
 ```
 GET /admin/vendor-products/pending-approval – List vendor product offers pending approval
-PUT /admin/vendor-products/{vendorProductId}/approve –Approve vendor product
-PUT /admin/vendor-products/{vendorProductId}/reject – Reject vendor product
+PUT /admin/vendor-products/{id}/approve –Approve vendor product
+PUT /admin/vendor-products/{id}/reject – Reject vendor product
 ```
 
 - **Orders & Reviews**
 
 ```
 GET /admin/orders – List all orders
-GET /admin/orders/{orderId} – Get order details
-PUT /admin/orders/{orderId}/status – Update order status
-DELETE /admin/reviews/{reviewId} – Delete review
+GET /admin/orders/{id} – Get order details
+PUT /admin/orders/{id}/status – Update order status
+DELETE /admin/reviews/{id} – Delete review
 ```
 
 ---

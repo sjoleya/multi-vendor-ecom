@@ -37,7 +37,6 @@ public class VendorServiceImpl implements VendorService {
         VendorProfile existingProfile = getVendorProfile(vendorId);
         existingProfile.setStoreName(updatedProfile.getStoreName());
         existingProfile.setStoreDescription(updatedProfile.getStoreDescription());
-        existingProfile.setBusinessAddress(updatedProfile.getBusinessAddress());
         existingProfile.setContactNumber(updatedProfile.getContactNumber());
         existingProfile.setApprovalStatus(updatedProfile.getApprovalStatus());
         return vendorProfileRepository.save(existingProfile);
@@ -52,7 +51,7 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public List<VendorProduct> getVendorProducts(String vendorId) {
-        return vendorProductRepository.findByVendorProfileVendorId(vendorId);
+        return vendorProductRepository.findByVendorId_Id(vendorId);
     }
 
     @Override
@@ -67,7 +66,6 @@ public class VendorServiceImpl implements VendorService {
         existingProduct.setPrice(updatedProduct.getPrice());
         existingProduct.setStockQuantity(updatedProduct.getStockQuantity());
         existingProduct.setSku(updatedProduct.getSku());
-        existingProduct.setShippingAddress(updatedProduct.getShippingAddress());
 
         return vendorProductRepository.save(existingProduct);
 
@@ -80,7 +78,7 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public List<OrderItem> getVendorOrderItems(String vendorId) {
-        return orderItemRepository.findByVendorProduct_VendorProfile_VendorId(vendorId);
+        return orderItemRepository.findByVendorProduct_VendorId_Id(vendorId);
     }
 
     @Override

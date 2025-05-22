@@ -11,10 +11,10 @@ public class ShoppingCart extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String cartId;
+    private String id;
 
     @OneToOne
-    @JoinColumn(name = "customerId", referencedColumnName = "userId")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private User customer;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -23,19 +23,19 @@ public class ShoppingCart extends Auditable {
     public ShoppingCart() {
     }
 
-    public ShoppingCart(String cartId) {
-        this.cartId = cartId;
+    public ShoppingCart(String id, User customer, List<CartItem> cartItems) {
+        this.id = id;
+        this.customer = customer;
+        this.cartItems = cartItems;
     }
 
-
-    public String getCartId() {
-        return cartId;
+    public String getId() {
+        return id;
     }
 
-    public void setCartId(String cartId) {
-        this.cartId = cartId;
+    public void setId(String id) {
+        this.id = id;
     }
-
 
     public List<CartItem> getCartItems() {
         return cartItems;
@@ -44,7 +44,6 @@ public class ShoppingCart extends Auditable {
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
     }
-
 
     public User getCustomer() {
         return customer;

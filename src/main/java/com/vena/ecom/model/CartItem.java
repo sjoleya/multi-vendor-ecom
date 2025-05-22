@@ -8,14 +8,14 @@ public class CartItem extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String CartItemId;
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "cartId", referencedColumnName = "cartId")
+    @JoinColumn(name = "cart_id", referencedColumnName = "id")
     private ShoppingCart cart;
 
     @ManyToOne
-    @JoinColumn(name = "vendorProductId", referencedColumnName = "vendorProductId")
+    @JoinColumn(name = "vendor_product_id", referencedColumnName = "id")
     private VendorProduct vendorProduct;
 
     private Integer quantity;
@@ -23,19 +23,19 @@ public class CartItem extends Auditable {
     public CartItem() {
     }
 
-    public CartItem(String cartItemId, ShoppingCart cart, VendorProduct vendorProduct, Integer quantity) {
-        CartItemId = cartItemId;
+    public CartItem(String id, ShoppingCart cart, VendorProduct vendorProduct, Integer quantity) {
+        this.id = id;
         this.cart = cart;
         this.vendorProduct = vendorProduct;
         this.quantity = quantity;
     }
 
-    public String getCartItemId() {
-        return CartItemId;
+    public String getId() {
+        return id;
     }
 
-    public void setCartItemId(String cartItemId) {
-        CartItemId = cartItemId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public ShoppingCart getCart() {
@@ -60,8 +60,5 @@ public class CartItem extends Auditable {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public void setProduct(VendorProduct product) {
     }
 }

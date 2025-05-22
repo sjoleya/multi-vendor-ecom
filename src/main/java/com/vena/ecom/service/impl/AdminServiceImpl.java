@@ -3,6 +3,7 @@ package com.vena.ecom.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.Order;
@@ -19,6 +20,7 @@ import com.vena.ecom.repo.VendorProductRepository;
 import com.vena.ecom.repo.VendorProfileRepository;
 import com.vena.ecom.service.AdminService;
 
+@Service
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
@@ -116,7 +118,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Order updateOrderStatus(String orderId, OrderStatus status) {
         Order order = getOrderDetails(orderId);
-        order.setOverallOrderStatus(status);
+        order.setOrderStatus(status);
         return orderRepository.save(order);
     }
 

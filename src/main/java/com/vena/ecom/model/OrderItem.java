@@ -20,14 +20,14 @@ import jakarta.persistence.Table;
 public class OrderItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String orderItemId;
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "orderId", referencedColumnName = "orderId")
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "vendor_product_id", referencedColumnName = "id")
     private VendorProduct vendorProduct;
 
     private Integer quantity;
@@ -40,9 +40,9 @@ public class OrderItem extends Auditable {
     public OrderItem() {
     }
 
-    public OrderItem(String orderItemId, Order order, VendorProduct vendorProduct, Integer quantity,
+    public OrderItem(String id, Order order, VendorProduct vendorProduct, Integer quantity,
             BigDecimal priceAtPurchase, BigDecimal subtotal, ItemStatus itemStatus) {
-        this.orderItemId = orderItemId;
+        this.id = id;
         this.order = order;
         this.vendorProduct = vendorProduct;
         this.quantity = quantity;
@@ -51,12 +51,12 @@ public class OrderItem extends Auditable {
         this.itemStatus = itemStatus;
     }
 
-    public String getOrderItemId() {
-        return orderItemId;
+    public String getId() {
+        return id;
     }
 
-    public void setOrderItemId(String orderItemId) {
-        this.orderItemId = orderItemId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Order getOrder() {

@@ -2,8 +2,8 @@ package com.vena.ecom.service;
 
 import java.util.List;
 
-import com.vena.ecom.model.Address;
 import com.vena.ecom.model.User;
+import com.vena.ecom.model.Address;
 
 public interface UserService {
     User getCurrentUser();
