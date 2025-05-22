@@ -1,15 +1,9 @@
 package com.vena.ecom.repo;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.vena.ecom.model.Address;
-import com.vena.ecom.model.enums.AddressType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
 public interface AddressRepository extends JpaRepository<Address, String> {
-    Optional<Address> findByUserEmailAndAddressType(String email, AddressType addressType);
-
-    List<Address> findByUserUserId(String userId);
+    List<Address> findByUser_Id(String userId);
 }

@@ -1,5 +1,6 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.AddProductCatalogRequest;
 import com.vena.ecom.model.ProductCatalog;
 import com.vena.ecom.service.impl.ProductCatalogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,8 @@ public class ProductCatalogController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProductCatalog(@RequestBody ProductCatalog productCatalog) {
-        ProductCatalog createdCatalog = productCatalogService.createCatalogProduct(productCatalog);
+    public ResponseEntity<?> createProductCatalog(@RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+        ProductCatalog createdCatalog = productCatalogService.createCatalogProduct(addProductCatalogRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCatalog);
     }
 

@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, String> {
 
-    Optional<ShoppingCart> findByCustomerEmail(String email);
+    Optional<ShoppingCart> findByCustomer_Email(String email);
 
-    Optional<ShoppingCart> findByCustomer_UserId(String customerId);
+    Optional<ShoppingCart> findByCustomer_Id(String customerId);
 }

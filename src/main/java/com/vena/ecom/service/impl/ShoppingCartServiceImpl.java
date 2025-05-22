@@ -30,7 +30,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCart getCartByCustomerId(String customerId) {
-        return shoppingCartRepository.findByCustomer_UserId(customerId)
+        return shoppingCartRepository.findByCustomer_Id(customerId)
                 .orElseGet(() -> {
                     User customer = userRepository.findById(customerId)
                             .orElseThrow(() -> new RuntimeException("User not found"));
@@ -50,7 +50,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         CartItem cartItem = new CartItem();
         cartItem.setCart(cart);
-        cartItem.setProduct(product);
+        cartItem.setVendorProduct(product);
         cartItem.setQuantity(quantity);
 
         return cartItemRepository.save(cartItem);

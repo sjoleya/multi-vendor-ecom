@@ -1,6 +1,5 @@
 package com.vena.ecom.model;
 
-
 import com.vena.ecom.model.audit.Auditable;
 import com.vena.ecom.model.enums.ApprovalStatus;
 import jakarta.persistence.*;
@@ -11,42 +10,39 @@ public class VendorProfile extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String vendorId;
+    private String id;
 
     @OneToOne
-    @JoinColumn(name = "userId" , referencedColumnName = "userId")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     private String storeName;
     private String storeDescription;
-    private Address businessAddress;
+
     private String contactNumber;
 
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
-
     public VendorProfile() {
     }
 
-
-    public VendorProfile(String vendorId, User user, String storeName,
-                         String storeDescription, Address businessAddress, String contactNumber,
-                         ApprovalStatus approvalStatus) {
-        this.vendorId = vendorId;
+    public VendorProfile(String id, User user, String storeName,
+            String storeDescription, String contactNumber,
+            ApprovalStatus approvalStatus) {
+        this.id = id;
         this.user = user;
         this.storeName = storeName;
         this.storeDescription = storeDescription;
-        this.businessAddress = businessAddress;
         this.contactNumber = contactNumber;
         this.approvalStatus = approvalStatus;
     }
 
-    public String getVendorId() {
-        return vendorId;
+    public String getId() {
+        return id;
     }
 
-    public void setVendorId(String vendorId) {
-        this.vendorId = vendorId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public User getUser() {
@@ -73,14 +69,6 @@ public class VendorProfile extends Auditable {
         this.storeDescription = storeDescription;
     }
 
-    public Address getBusinessAddress() {
-        return businessAddress;
-    }
-
-    public void setBusinessAddress(Address businessAddress) {
-        this.businessAddress = businessAddress;
-    }
-
     public String getContactNumber() {
         return contactNumber;
     }
@@ -98,4 +86,3 @@ public class VendorProfile extends Auditable {
     }
 
 }
-

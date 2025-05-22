@@ -3,19 +3,24 @@ package com.vena.ecom.model;
 import com.vena.ecom.model.audit.Auditable;
 import com.vena.ecom.model.enums.UserRole;
 import jakarta.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
 public class User extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String userId;
+    private String id;
 
     private String firstName;
     private String lastName;
 
     @Column(unique = true)
     private String email;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "user_addresses", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
+    private List<Address> addressList;
 
     private String passwordHash;
 
@@ -24,12 +29,12 @@ public class User extends Auditable {
 
     private String phoneNumber;
 
-    public String getUserId() {
-        return userId;
+    public String getId() {
+        return id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -80,13 +85,21 @@ public class User extends Auditable {
         this.phoneNumber = phoneNumber;
     }
 
+    public List<Address> getAddressList() {
+        return addressList;
+    }
+
+    public void setAddressList(List<Address> addressList) {
+        this.addressList = addressList;
+    }
+
     public User() {
     }
 
-    public User(String userId, String firstName, String lastName, String email, String passwordHash,
+    public User(String id, String firstName, String lastName, String email, String passwordHash,
             UserRole role,
             String phoneNumber) {
-        this.userId = userId;
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

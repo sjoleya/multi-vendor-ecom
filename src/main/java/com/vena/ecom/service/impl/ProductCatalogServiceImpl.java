@@ -1,8 +1,11 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.dto.AddProductCatalogRequest;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.ProductCatalog;
+import com.vena.ecom.model.ProductCategory;
 import com.vena.ecom.repo.ProductCatalogRepository;
+import com.vena.ecom.repo.ProductCategoryRepository;
 import com.vena.ecom.service.ProductCatalogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,9 @@ import java.util.Optional;
 public class ProductCatalogServiceImpl implements ProductCatalogService {
     @Autowired
     private ProductCatalogRepository productCatalogRepository;
+
+    @Autowired
+    private ProductCategoryRepository productCategoryRepository;
 
     @Override
     public List<ProductCatalog> getAllProductsCatalogs() {
@@ -30,10 +36,15 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
     }
 
     @Override
-    public ProductCatalog createCatalogProduct(ProductCatalog productCatalog) {
-        if (productCatalogRepository.existsById(productCatalog.getCatalogId())) {
-            throw new IllegalArgumentException("product already exists");
-        }
+    public ProductCatalog createCatalogProduct(AddProductCatalogRequest addProductCatalogRequest) {
+        ProductCatalog productCatalog = new ProductCatalog();
+        ProductCategory category = productCategoryRepository.findById(addProductCatalogRequest.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+        productCatalog.setName(addProductCatalogRequest.getName());
+        productCatalog.setDescription(addProductCatalogRequest.getDescription());
+        productCatalog.setGlobalSKU(addProductCatalogRequest.getGlobalSKU());
+        productCatalog.setCategory(category);
+        productCatalog.setBrand(addProductCatalogRequest.getBrand());
         return productCatalogRepository.save(productCatalog);
     }
 
@@ -50,7 +61,7 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         pc.setBrand(productCatalog.getBrand());
         pc.setDescription(productCatalog.getDescription());
         pc.setGlobalSKU(productCatalog.getGlobalSKU());
-        pc.setCategoryId(productCatalog.getCategoryId());
+        pc.setCategory(productCatalog.getCategory());
         productCatalogRepository.save(pc);
         return pc;
 

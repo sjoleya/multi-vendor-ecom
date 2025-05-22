@@ -1,5 +1,6 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.CheckoutRequest;
 import com.vena.ecom.model.Order;
 import com.vena.ecom.model.Review;
 import com.vena.ecom.service.OrderService;
@@ -16,8 +17,8 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> checkout(@RequestParam String customerId) {
-        Order order = orderService.checkout(customerId);
+    public ResponseEntity<Order> checkout(@RequestBody CheckoutRequest checkoutRequest) {
+        Order order = orderService.checkout(checkoutRequest.getCustomerId(), checkoutRequest.getAddressId());
         return ResponseEntity.ok(order);
     }
 

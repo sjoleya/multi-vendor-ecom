@@ -11,22 +11,18 @@ import java.math.BigDecimal;
 public class VendorProduct extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String vendorProductId;
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "catalog_Id", referencedColumnName = "catalogId")
+    @JoinColumn(name = "catalog_id", referencedColumnName = "id")
     private ProductCatalog catalogProductId;
 
     @ManyToOne
-    @JoinColumn(name = "vendor_Id", referencedColumnName = "vendorId")
+    @JoinColumn(name = "vendor_id", referencedColumnName = "id")
     private VendorProfile vendorId;
     private String SKU;
     private BigDecimal price;
     private Integer stockQuantity;
-
-    @ManyToOne
-    @JoinColumn(name = "shippingAddressId", referencedColumnName = "addressId")
-    private Address shippingAddress;
 
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus;
@@ -36,27 +32,26 @@ public class VendorProduct extends Auditable {
     public VendorProduct() {
     }
 
-    public VendorProduct(ProductCatalog catalogProductId, String vendorProductId, VendorProfile vendorId, String sku,
-            BigDecimal price, Integer stockQuantity, Address shippingAddress, ApprovalStatus approvalStatus,
+    public VendorProduct(ProductCatalog catalogProductId, String id, VendorProfile vendorId, String sku,
+            BigDecimal price, Integer stockQuantity, ApprovalStatus approvalStatus,
             Boolean isActive, BigDecimal averageRating) {
         this.catalogProductId = catalogProductId;
-        this.vendorProductId = vendorProductId;
+        this.id = id;
         this.vendorId = vendorId;
         this.SKU = sku;
         this.price = price;
         this.stockQuantity = stockQuantity;
-        this.shippingAddress = shippingAddress;
         this.approvalStatus = approvalStatus;
         this.isActive = isActive;
         this.averageRating = averageRating;
     }
 
-    public String getVendorProductId() {
-        return vendorProductId;
+    public String getId() {
+        return id;
     }
 
-    public void setVendorProductId(String vendorProductId) {
-        this.vendorProductId = vendorProductId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public ProductCatalog getCatalogProductId() {
@@ -97,14 +92,6 @@ public class VendorProduct extends Auditable {
 
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
-    }
-
-    public Address getShippingAddress() {
-        return shippingAddress;
-    }
-
-    public void setShippingAddress(Address shippingAddress) {
-        this.shippingAddress = shippingAddress;
     }
 
     public ApprovalStatus getApprovalStatus() {

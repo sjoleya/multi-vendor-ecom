@@ -6,7 +6,7 @@ import com.vena.ecom.model.Review;
 import java.util.List;
 
 public interface OrderService {
-    Order checkout(String customerId);
+    Order checkout(String customerId, String addressId);
 
     List<Order> getOrderHistory(String customerId);
 

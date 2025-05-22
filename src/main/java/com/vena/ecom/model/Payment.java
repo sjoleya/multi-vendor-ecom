@@ -13,10 +13,10 @@ import jakarta.persistence.*;
 public class Payment extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String paymentId;
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "orderId", referencedColumnName = "orderId")
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
     private LocalDateTime paymentDate;
@@ -30,9 +30,9 @@ public class Payment extends Auditable {
     public Payment() {
     }
 
-    public Payment(String paymentId, Order order, LocalDateTime paymentDate, BigDecimal amount, String paymentMethod,
+    public Payment(String id, Order order, LocalDateTime paymentDate, BigDecimal amount, String paymentMethod,
             String transactionId, PaymentStatus status) {
-        this.paymentId = paymentId;
+        this.id = id;
         this.order = order;
         this.paymentDate = paymentDate;
         this.amount = amount;
@@ -41,12 +41,12 @@ public class Payment extends Auditable {
         this.status = status;
     }
 
-    public String getPaymentId() {
-        return paymentId;
+    public String getId() {
+        return id;
     }
 
-    public void setPaymentId(String paymentId) {
-        this.paymentId = paymentId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Order getOrder() {
