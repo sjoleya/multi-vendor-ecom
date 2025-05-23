@@ -71,7 +71,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorProductResponse addVendorProduct(String vendorId, AddVendorProductRequest product) {
         VendorProfile vendor = vendorProfileRepository.findById(vendorId)
-                .orElseThrow(() -> new RuntimeException("VendorProfile not found with id: " + vendorId));
+                .orElseThrow(() -> new ResourceNotFoundException("VendorProfile not found with id: " + vendorId));
         VendorProduct vendorProduct = new VendorProduct();
         vendorProduct.setVendorId(vendor);
         vendorProduct.setCatalogProductId(productCatalogRepository.findById(product.getCatalogProductId())
@@ -96,14 +96,14 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorProductResponse getVendorProductById(String productId) {
         VendorProduct product = vendorProductRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("VendorProduct not found with id: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("VendorProduct not found with id: " + productId));
         return toVendorProductResponse(product);
     }
 
     @Override
     public VendorProductResponse updateVendorProduct(String productId, UpdateVendorProductRequest updatedProduct) {
         VendorProduct existingProduct = vendorProductRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("VendorProduct not found with id: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("VendorProduct not found with id: " + productId));
         if (updatedProduct.getPrice() != null) {
             existingProduct.setPrice(updatedProduct.getPrice());
         }

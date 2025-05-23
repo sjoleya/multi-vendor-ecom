@@ -14,7 +14,6 @@ import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.repo.CartItemRepository;
 import com.vena.ecom.repo.OrderItemRepository;
 import com.vena.ecom.repo.OrderRepository;
 import com.vena.ecom.repo.ReviewRepository;
@@ -47,9 +46,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
-
-    @Autowired
-    private CartItemRepository cartItemRepository;
 
     @Autowired
     private ShoppingCartService shoppingCartService;
