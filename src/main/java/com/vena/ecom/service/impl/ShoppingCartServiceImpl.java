@@ -1,5 +1,7 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.dto.request.AddCartItemRequest;
+import com.vena.ecom.dto.request.UpdateCartItemRequest;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.VendorProduct;
 import com.vena.ecom.repo.CartItemRepository;
@@ -12,6 +14,9 @@ import com.vena.ecom.repo.VendorProductRepository;
 import com.vena.ecom.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.vena.ecom.dto.response.ShoppingCartResponse;
+import com.vena.ecom.dto.response.CartItemResponse;
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -29,39 +34,38 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private UserRepository userRepository;
 
     @Override
-    public ShoppingCart getCartByCustomerId(String customerId) {
-        return shoppingCartRepository.findByCustomer_Id(customerId)
+    public ShoppingCartResponse getCartByCustomerId(String customerId) {
+        ShoppingCart cart = shoppingCartRepository.findByCustomer_Id(customerId)
                 .orElseGet(() -> {
                     User customer = userRepository.findById(customerId)
                             .orElseThrow(() -> new RuntimeException("User not found"));
-
-                    ShoppingCart cart = new ShoppingCart();
-                    cart.setCustomer(customer);
-                    return shoppingCartRepository.save(cart);
+                    ShoppingCart newCart = new ShoppingCart();
+                    newCart.setCustomer(customer);
+                    return shoppingCartRepository.save(newCart);
                 });
+        return toShoppingCartResponse(cart);
     }
 
     @Override
-    public CartItem addCartItem(String customerId, com.vena.ecom.dto.AddCartItemRequest request) {
-        ShoppingCart cart = getCartByCustomerId(customerId);
-
+    public CartItemResponse addCartItem(String customerId, AddCartItemRequest request) {
+        ShoppingCart cart = shoppingCartRepository.findByCustomer_Id(customerId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
         VendorProduct product = vendorProductRepository.findById(request.getVendorProductId())
                 .orElseThrow(() -> new RuntimeException("Vendor product not found"));
-
         CartItem cartItem = new CartItem(null, product, request.getQuantity());
         cart.getCartItems().add(cartItem);
         shoppingCartRepository.save(cart);
-
-        return cartItemRepository.save(cartItem);
+        cartItemRepository.save(cartItem);
+        return toCartItemResponse(cartItem);
     }
 
     @Override
-    public CartItem updateCartItemQuantity(String cartItemId, com.vena.ecom.dto.UpdateCartItemRequest request) {
+    public CartItemResponse updateCartItemQuantity(String cartItemId, UpdateCartItemRequest request) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
-
         cartItem.setQuantity(request.getQuantity());
-        return cartItemRepository.save(cartItem);
+        cartItemRepository.save(cartItem);
+        return toCartItemResponse(cartItem);
     }
 
     @Override
@@ -71,8 +75,29 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void clearCart(String customerId) {
-        ShoppingCart cart = getCartByCustomerId(customerId);
+        ShoppingCart cart = shoppingCartRepository.findByCustomer_Id(customerId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
         cart.getCartItems().clear();
         shoppingCartRepository.save(cart); // CascadeType.ALL ensures related items are deleted
+    }
+
+    private ShoppingCartResponse toShoppingCartResponse(ShoppingCart cart) {
+        ShoppingCartResponse dto = new ShoppingCartResponse();
+        dto.customerId = cart.getCustomer().getId();
+        dto.items = cart.getCartItems().stream().map(this::toCartItemResponse).toList();
+        dto.totalAmount = cart.getCartItems().stream()
+                .mapToDouble(item -> item.getVendorProduct().getPrice().doubleValue() * item.getQuantity()).sum();
+        return dto;
+    }
+
+    private CartItemResponse toCartItemResponse(CartItem item) {
+        CartItemResponse dto = new CartItemResponse();
+        dto.id = item.getId();
+        dto.productId = item.getVendorProduct().getId();
+        dto.productName = item.getVendorProduct().getName();
+        dto.quantity = item.getQuantity();
+        dto.price = item.getVendorProduct().getPrice().doubleValue();
+        dto.totalPrice = dto.price * dto.quantity;
+        return dto;
     }
 }

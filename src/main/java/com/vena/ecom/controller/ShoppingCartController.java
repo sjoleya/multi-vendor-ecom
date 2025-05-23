@@ -1,11 +1,14 @@
 package com.vena.ecom.controller;
 
-import com.vena.ecom.model.CartItem;
-import com.vena.ecom.model.ShoppingCart;
+import com.vena.ecom.dto.request.AddCartItemRequest;
+import com.vena.ecom.dto.request.UpdateCartItemRequest;
 import com.vena.ecom.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.vena.ecom.dto.response.ShoppingCartResponse;
+import com.vena.ecom.dto.response.CartItemResponse;
 
 @RestController
 @RequestMapping("/customer/cart")
@@ -15,22 +18,23 @@ public class ShoppingCartController {
     private ShoppingCartService shoppingCartService;
 
     @GetMapping
-    public ResponseEntity<ShoppingCart> viewCart(@RequestParam String customerId) {
-
-        return ResponseEntity.ok(shoppingCartService.getCartByCustomerId(customerId));
+    public ResponseEntity<ShoppingCartResponse> viewCart(@RequestParam String customerId) {
+        ShoppingCartResponse response = shoppingCartService.getCartByCustomerId(customerId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/items")
-    public ResponseEntity<CartItem> addCartItem(@RequestParam String customerId,
-            @RequestBody com.vena.ecom.dto.AddCartItemRequest request) {
-
-        return ResponseEntity.ok(shoppingCartService.addCartItem(customerId, request));
+    public ResponseEntity<CartItemResponse> addCartItem(@RequestParam String customerId,
+            @RequestBody AddCartItemRequest request) {
+        CartItemResponse response = shoppingCartService.addCartItem(customerId, request);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/items/{cartItemId}")
-    public ResponseEntity<CartItem> updateCartItemQuantity(@PathVariable String cartItemId,
-            @RequestBody com.vena.ecom.dto.UpdateCartItemRequest request) {
-        return ResponseEntity.ok(shoppingCartService.updateCartItemQuantity(cartItemId, request));
+    public ResponseEntity<CartItemResponse> updateCartItemQuantity(@PathVariable String cartItemId,
+            @RequestBody UpdateCartItemRequest request) {
+        CartItemResponse response = shoppingCartService.updateCartItemQuantity(cartItemId, request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/items/{cartItemId}")

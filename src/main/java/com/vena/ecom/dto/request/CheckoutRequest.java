@@ -1,4 +1,4 @@
-package com.vena.ecom.dto;
+package com.vena.ecom.dto.request;
 
 public class CheckoutRequest {
     private String customerId;

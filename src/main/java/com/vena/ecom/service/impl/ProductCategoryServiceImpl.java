@@ -1,5 +1,6 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.dto.response.ProductCategoryResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.repo.ProductCategoryRepository;
 import com.vena.ecom.model.ProductCategory;
@@ -17,29 +18,37 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private ProductCategoryRepository categoryRepository;
 
     @Override
-    public List<ProductCategory> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<ProductCategoryResponse> getAllCategories() {
+        return categoryRepository.findAll().stream().map(this::toProductCategoryResponse).toList();
     }
 
     @Override
-    public ProductCategory createCategory(ProductCategory category) {
+    public ProductCategoryResponse createCategory(ProductCategory category) {
 
         Optional<ProductCategory> existing = categoryRepository.findByName(category.getName());
         if (existing.isPresent()) {
             throw new IllegalArgumentException("Category with this name already exists.");
         }
-
-        return categoryRepository.save(category);
-
+        ProductCategory saved = categoryRepository.save(category);
+        return toProductCategoryResponse(saved);
     }
 
     @Override
-    public ProductCategory updateCategory(String categoryId, ProductCategory categoryDetails) {
+    public ProductCategoryResponse updateCategory(String categoryId, ProductCategory categoryDetails) {
         ProductCategory existing = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID:" + categoryId));
         existing.setDescription(categoryDetails.getDescription());
         existing.setName(categoryDetails.getName());
-        return categoryRepository.save(existing);
+        ProductCategory saved = categoryRepository.save(existing);
+        return toProductCategoryResponse(saved);
+    }
+
+    private ProductCategoryResponse toProductCategoryResponse(ProductCategory category) {
+        ProductCategoryResponse dto = new ProductCategoryResponse();
+        dto.id = category.getId();
+        dto.name = category.getName();
+        dto.description = category.getDescription();
+        return dto;
     }
 
     @Override

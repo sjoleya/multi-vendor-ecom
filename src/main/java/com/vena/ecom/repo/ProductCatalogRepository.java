@@ -12,4 +12,6 @@ public interface ProductCatalogRepository extends JpaRepository<ProductCatalog, 
     List<ProductCatalog> findByCategory_Id(String categoryId);
 
     java.util.Optional<ProductCatalog> findByName(String name);
+
+    java.util.Optional<ProductCatalog> findByGlobalSKU(String globalSKU);
 }

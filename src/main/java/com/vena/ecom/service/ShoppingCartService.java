@@ -1,15 +1,17 @@
 package com.vena.ecom.service;
 
-import com.vena.ecom.model.CartItem;
-import com.vena.ecom.model.ShoppingCart;
+import com.vena.ecom.dto.request.AddCartItemRequest;
+import com.vena.ecom.dto.response.CartItemResponse;
+import com.vena.ecom.dto.response.ShoppingCartResponse;
+import com.vena.ecom.dto.request.UpdateCartItemRequest;
 
 public interface ShoppingCartService {
 
-    ShoppingCart getCartByCustomerId(String customerId);
+    ShoppingCartResponse getCartByCustomerId(String customerId);
 
-    CartItem addCartItem(String customerId, com.vena.ecom.dto.AddCartItemRequest request);
+    CartItemResponse addCartItem(String customerId, AddCartItemRequest request);
 
-    CartItem updateCartItemQuantity(String cartItemId, com.vena.ecom.dto.UpdateCartItemRequest request);
+    CartItemResponse updateCartItemQuantity(String cartItemId, UpdateCartItemRequest request);
 
     void removeCartItem(String cartItemId);
 

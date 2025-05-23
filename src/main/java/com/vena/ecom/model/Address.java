@@ -1,5 +1,7 @@
 package com.vena.ecom.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vena.ecom.model.enums.AddressType;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,20 +17,26 @@ public class Address {
     private String zipCode;
     private String country;
 
+    @Enumerated(EnumType.STRING)
+    private AddressType addressType;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     public Address() {
     }
 
-    public Address(String id, String street, String city, String state, String zipCode, String country, User user) {
+    public Address(String id, String street, String city, String state, String zipCode, String country,
+            AddressType addressType, User user) {
         this.id = id;
         this.street = street;
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
         this.country = country;
+        this.addressType = addressType;
         this.user = user;
     }
 
@@ -86,5 +94,13 @@ public class Address {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public AddressType getAddressType() {
+        return addressType;
+    }
+
+    public void setAddressType(AddressType addressType) {
+        this.addressType = addressType;
     }
 }

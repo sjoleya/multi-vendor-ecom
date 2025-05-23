@@ -1,4 +1,4 @@
-package com.vena.ecom.dto;
+package com.vena.ecom.dto.request;
 
 public class AddCartItemRequest {
     private String vendorProductId;
