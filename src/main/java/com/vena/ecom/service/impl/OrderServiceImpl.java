@@ -1,5 +1,8 @@
 package com.vena.ecom.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vena.ecom.dto.response.OrderResponse;
 import com.vena.ecom.dto.response.OrderItemResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
@@ -35,6 +38,9 @@ import java.util.List;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     @Autowired
     private OrderRepository orderRepository;
 
@@ -61,12 +67,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse checkout(String customerId, String addressId) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer_Id(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Shopping cart not found"));
+        logger.info("Checking out for customer ID: {} and address ID: {}", customerId, addressId);
+        ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer_Id(customerId).map(sc -> {
+            logger.info("Shopping cart found for customer ID: {}", customerId);
+            return sc;
+        }).orElseThrow(() -> {
+            logger.warn("Shopping cart not found for customer ID: {}", customerId);
+            return new ResourceNotFoundException("Shopping cart not found");
+        });
 
         User user = userRepository.findById(customerId).get();
-        Address address = userAddressRepository.findById(addressId)
-                .orElseThrow(() -> new ResourceNotFoundException("Address with id: " + addressId + "not found!"));
+        Address address = userAddressRepository.findById(addressId).map(a -> {
+            logger.info("Address found with id: {}", addressId);
+            return a;
+        }).orElseThrow(() -> {
+            logger.warn("Address not found with id: {}", addressId);
+            return new ResourceNotFoundException("Address with id: " + addressId + "not found!");
+        });
         Order order = new Order();
         order.setCustomer(user);
         order.setOrderDate(LocalDateTime.now());
@@ -94,29 +111,61 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         shoppingCartService.clearCart(customerId);
-        return toOrderResponse(savedOrder);
+        logger.info("Order created with ID: {}", savedOrder.getId());
+        try {
+            return toOrderResponse(savedOrder);
+        } catch (Exception e) {
+            logger.error("Error while converting order to response for order id: {}", savedOrder.getId(), e);
+            throw e;
+        }
     }
 
     @Override
     public List<OrderResponse> getOrderHistory(String customerId) {
+        logger.info("Fetching order history for customer ID: {}", customerId);
         return orderRepository.findByCustomer_Id(customerId)
                 .stream().map(this::toOrderResponse).toList();
     }
 
     @Override
     public OrderResponse getOrderDetails(String orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        return toOrderResponse(order);
+        logger.info("Fetching order details for order ID: {}", orderId);
+        Order order = orderRepository.findById(orderId).map(o -> {
+            logger.info("Order found with id: {}", orderId);
+            return o;
+        }).orElseThrow(() -> {
+            logger.warn("Order not found with id: {}", orderId);
+            return new ResourceNotFoundException("Order not found");
+        });
+        try {
+            return toOrderResponse(order);
+        } catch (Exception e) {
+            logger.error("Error while converting order to response for order id: {}", orderId, e);
+            throw e;
+        }
     }
 
     @Override
     public ReviewResponse submitProductReview(String orderId, String orderItemId, String customerId, Review review) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        OrderItem orderItem = orderItemRepository.findById(orderItemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order item not found"));
+        logger.info("Submitting product review for order ID: {}, order item ID: {}, customer ID: {}", orderId,
+                orderItemId, customerId);
+        Order order = orderRepository.findById(orderId).map(o -> {
+            logger.info("Order found with id: {}", orderId);
+            return o;
+        }).orElseThrow(() -> {
+            logger.warn("Order not found with id: {}", orderId);
+            return new ResourceNotFoundException("Order not found");
+        });
+        OrderItem orderItem = orderItemRepository.findById(orderItemId).map(oi -> {
+            logger.info("Order item found with id: {}", orderItemId);
+            return oi;
+        }).orElseThrow(() -> {
+            logger.warn("Order item not found with id: {}", orderItemId);
+            return new ResourceNotFoundException("Order item not found");
+        });
         if (!order.getCustomer().getId().equals(customerId)) {
+            logger.warn("Customer ID {} does not match order's customer ID {}", customerId,
+                    order.getCustomer().getId());
             throw new ResourceNotFoundException("Customer mismatch");
         }
 
@@ -124,7 +173,12 @@ public class OrderServiceImpl implements OrderService {
         review.setOrderItem(orderItem);
         review.setCustomer(order.getCustomer());
         Review savedReview = reviewRepository.save(review);
-        return toReviewResponse(savedReview);
+        try {
+            return toReviewResponse(savedReview);
+        } catch (Exception e) {
+            logger.error("Error while converting review to response for review id: {}", savedReview.getId(), e);
+            throw e;
+        }
     }
 
     private OrderResponse toOrderResponse(Order order) {
@@ -168,11 +222,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderPaymentResponse submitOrderPayment(OrderPaymentRequest paymentRequest) {
-        Order order = orderRepository.findById(paymentRequest.getOrderId())
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Order not found with id: " + paymentRequest.getOrderId()));
+        logger.info("Submitting order payment for order ID: {}", paymentRequest.getOrderId());
+        Order order = orderRepository.findById(paymentRequest.getOrderId()).map(o -> {
+            logger.info("Order found with id: {}", paymentRequest.getOrderId());
+            return o;
+        }).orElseThrow(
+                () -> {
+                    logger.warn("Order not found with id: {}", paymentRequest.getOrderId());
+                    return new ResourceNotFoundException("Order not found with id: " + paymentRequest.getOrderId());
+                });
 
         if (order.getOrderStatus() != com.vena.ecom.model.enums.OrderStatus.PENDING_PAYMENT) {
+            logger.warn("Order {} is not in PENDING_PAYMENT status", paymentRequest.getOrderId());
             throw new IllegalStateException("Order is not in PENDING_PAYMENT status.");
         }
 
@@ -187,10 +248,13 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(com.vena.ecom.model.enums.OrderStatus.PROCESSING);
 
         paymentRepository.save(payment);
-        orderRepository.save(order);
-
-        return new OrderPaymentResponse(order.getId(), PaymentStatus.SUCCEEDED, paymentRequest.getTransactionId(),
-                "Payment Successful", LocalDateTime.now());
+        try {
+            orderRepository.save(order);
+            return new OrderPaymentResponse(order.getId(), PaymentStatus.SUCCEEDED, paymentRequest.getTransactionId(),
+                    "Payment Successful", LocalDateTime.now());
+        } catch (Exception e) {
+            logger.error("Error while creating order payment response for order id: {}", order.getId(), e);
+            throw e;
+        }
     }
-
 }
