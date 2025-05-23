@@ -87,7 +87,7 @@ public class DataSeeder implements CommandLineRunner {
             User user1 = new User();
             user1.setFirstName("John");
             user1.setLastName("Doe");
-            user1.setEmail("john.doe@example.com");
+            user1.setEmail("customer@example.com");
             user1.setPasswordHash("password");
             user1.setRole(UserRole.CUSTOMER);
             user1.setPhoneNumber("123-456-7890");
@@ -96,7 +96,7 @@ public class DataSeeder implements CommandLineRunner {
             User user2 = new User();
             user2.setFirstName("Jane");
             user2.setLastName("Smith");
-            user2.setEmail("jane.smith@example.com");
+            user2.setEmail("vendor@example.com");
             user2.setPasswordHash("password");
             user2.setRole(UserRole.VENDOR);
             user2.setPhoneNumber("987-654-3210");
