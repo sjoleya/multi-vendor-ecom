@@ -1,16 +1,24 @@
 package com.vena.ecom.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class AddProductCatalogRequest {
+    @NotBlank(message = "Product name is required")
     private String name;
+    @NotBlank(message = "Brand is required")
     private String brand;
+    @NotBlank(message = "Description is required")
     private String description;
+    @NotBlank(message = "Global SKU is required")
     private String globalSKU;
+    @NotBlank(message = "Category ID is required")
     private String categoryId;
 
     public AddProductCatalogRequest() {
     }
 
-    public AddProductCatalogRequest(String name, String brand, String description, String globalSKU, String categoryId) {
+    public AddProductCatalogRequest(String name, String brand, String description, String globalSKU,
+            String categoryId) {
         this.name = name;
         this.brand = brand;
         this.description = description;

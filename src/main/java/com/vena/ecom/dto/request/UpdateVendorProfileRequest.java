@@ -1,7 +1,11 @@
 package com.vena.ecom.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class UpdateVendorProfileRequest {
+    @NotBlank(message = "Store name is required")
     private String storeName;
+    @NotBlank(message = "Store description is required")
     private String storeDescription;
     private String contactNumber;
 

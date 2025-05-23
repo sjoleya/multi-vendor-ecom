@@ -1,7 +1,7 @@
 package com.vena.ecom.dto.response;
 
 public class AddressResponse {
-    public String id;
+    public String addressId;
     public String street;
     public String city;
     public String state;

@@ -59,7 +59,7 @@ public class UserController {
 
     private UserResponse toUserResponse(User user) {
         UserResponse dto = new UserResponse();
-        dto.id = user.getId();
+        dto.userId = user.getId();
         dto.name = user.getFirstName() + " " + user.getLastName();
         dto.email = user.getEmail();
         dto.role = user.getRole() != null ? user.getRole().name() : null;
@@ -71,7 +71,7 @@ public class UserController {
 
     private AddressResponse toAddressResponse(Address address) {
         AddressResponse dto = new AddressResponse();
-        dto.id = address.getId();
+        dto.addressId = address.getId();
         dto.street = address.getStreet();
         dto.city = address.getCity();
         dto.state = address.getState();

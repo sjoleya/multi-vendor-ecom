@@ -72,7 +72,7 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
 
     private ProductCatalogResponse toProductCatalogResponse(ProductCatalog productCatalog) {
         ProductCatalogResponse dto = new ProductCatalogResponse();
-        dto.id = productCatalog.getId();
+        dto.productId = productCatalog.getId();
         dto.name = productCatalog.getName();
         dto.description = productCatalog.getDescription();
         dto.categoryId = productCatalog.getCategory() != null ? productCatalog.getCategory().getId() : null;

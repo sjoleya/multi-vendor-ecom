@@ -92,7 +92,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private CartItemResponse toCartItemResponse(CartItem item) {
         CartItemResponse dto = new CartItemResponse();
-        dto.id = item.getId();
+        dto.cartItemId = item.getId();
         dto.productId = item.getVendorProduct().getId();
         dto.productName = item.getVendorProduct().getName();
         dto.quantity = item.getQuantity();

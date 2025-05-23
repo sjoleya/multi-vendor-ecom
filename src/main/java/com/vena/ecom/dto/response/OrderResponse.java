@@ -1,7 +1,7 @@
 package com.vena.ecom.dto.response;
 
 public class OrderResponse {
-    public String id;
+    public String orderId;
     public String customerId;
     public java.util.List<OrderItemResponse> items;
     public double totalAmount;
