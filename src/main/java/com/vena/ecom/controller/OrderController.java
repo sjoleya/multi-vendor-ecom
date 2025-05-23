@@ -1,12 +1,15 @@
 package com.vena.ecom.controller;
 
 import com.vena.ecom.dto.request.CheckoutRequest;
+import com.vena.ecom.dto.request.OrderPaymentRequest;
+import com.vena.ecom.dto.response.OrderPaymentResponse;
 import com.vena.ecom.dto.response.OrderResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
 import com.vena.ecom.model.Review;
 import com.vena.ecom.service.OrderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -41,5 +44,10 @@ public class OrderController {
             @PathVariable String customerId, @RequestBody Review review) {
         ReviewResponse submittedReview = orderService.submitProductReview(orderId, orderItemId, customerId, review);
         return ResponseEntity.ok(submittedReview);
+    }
+
+    @PutMapping("/payment")
+    public ResponseEntity<OrderPaymentResponse> submitOrderPayment(@RequestBody OrderPaymentRequest paymentRequest) {
+        return new ResponseEntity<>(orderService.submitOrderPayment(paymentRequest), HttpStatus.CREATED);
     }
 }

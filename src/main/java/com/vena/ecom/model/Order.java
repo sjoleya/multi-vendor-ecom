@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vena.ecom.model.audit.Auditable;
 import com.vena.ecom.model.enums.OrderStatus;
 
@@ -34,14 +35,15 @@ public class Order extends Auditable {
     private List<OrderItem> orderItems;
 
     @OneToOne(mappedBy = "order")
+    @JsonManagedReference
     private Payment payment;
 
     public Order() {
     }
 
     public Order(String id, User customer, LocalDateTime orderDate, BigDecimal totalAmount,
-                 OrderStatus overallOrderStatus, Address shippingAddress, List<OrderItem> orderItems,
-                 Payment payment) {
+            OrderStatus overallOrderStatus, Address shippingAddress, List<OrderItem> orderItems,
+            Payment payment) {
         this.id = id;
         this.customer = customer;
         this.orderDate = orderDate;

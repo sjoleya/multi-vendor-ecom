@@ -1,5 +1,7 @@
 package com.vena.ecom.service;
 
+import com.vena.ecom.dto.request.OrderPaymentRequest;
+import com.vena.ecom.dto.response.OrderPaymentResponse;
 import com.vena.ecom.dto.response.OrderResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
 import com.vena.ecom.model.Review;
@@ -15,4 +17,5 @@ public interface OrderService {
 
     ReviewResponse submitProductReview(String orderId, String orderItemId, String customerId, Review review);
 
+    OrderPaymentResponse submitOrderPayment(OrderPaymentRequest paymentRequest);
 }
