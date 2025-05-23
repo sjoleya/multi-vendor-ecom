@@ -14,7 +14,6 @@ import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.repo.CartItemRepository;
 import com.vena.ecom.repo.OrderItemRepository;
 import com.vena.ecom.repo.OrderRepository;
 import com.vena.ecom.repo.ReviewRepository;
@@ -47,9 +46,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
-
-    @Autowired
-    private CartItemRepository cartItemRepository;
 
     @Autowired
     private ShoppingCartService shoppingCartService;
@@ -133,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderResponse toOrderResponse(Order order) {
         OrderResponse dto = new OrderResponse();
-        dto.id = order.getId();
+        dto.orderId = order.getId();
         dto.customerId = order.getCustomer().getId();
         dto.items = order.getOrderItems() != null
                 ? order.getOrderItems().stream().map(this::toOrderItemResponse).toList()
@@ -147,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderItemResponse toOrderItemResponse(OrderItem item) {
         OrderItemResponse dto = new OrderItemResponse();
-        dto.id = item.getId();
+        dto.orderItemId = item.getId();
         dto.productId = item.getVendorProduct() != null ? item.getVendorProduct().getId() : null;
         dto.productName = item.getVendorProduct() != null ? item.getVendorProduct().getName() : null;
         dto.quantity = item.getQuantity() != null ? item.getQuantity() : 0;
@@ -161,7 +157,7 @@ public class OrderServiceImpl implements OrderService {
 
     private ReviewResponse toReviewResponse(Review review) {
         ReviewResponse dto = new ReviewResponse();
-        dto.id = review.getId();
+        dto.reviewId = review.getId();
         dto.orderItemId = review.getOrderItem() != null ? review.getOrderItem().getId() : null;
         dto.customerId = review.getCustomer() != null ? review.getCustomer().getId() : null;
         dto.rating = review.getRating();

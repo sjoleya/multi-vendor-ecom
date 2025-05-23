@@ -152,7 +152,7 @@ public class VendorServiceImpl implements VendorService {
 
     private VendorProfileResponse toVendorProfileResponse(VendorProfile profile) {
         VendorProfileResponse dto = new VendorProfileResponse();
-        dto.id = profile.getId();
+        dto.vendorProfileId = profile.getId();
         dto.userId = profile.getUser() != null ? profile.getUser().getId() : null;
         dto.storeName = profile.getStoreName();
         dto.status = profile.getApprovalStatus() != null ? profile.getApprovalStatus().name() : null;
@@ -161,7 +161,7 @@ public class VendorServiceImpl implements VendorService {
 
     private VendorProductResponse toVendorProductResponse(VendorProduct product) {
         VendorProductResponse dto = new VendorProductResponse();
-        dto.id = product.getId();
+        dto.vendorProductId = product.getId();
         dto.vendorId = product.getVendorId() != null ? product.getVendorId().getId() : null;
         dto.catalogProductId = product.getCatalogProductId() != null ? product.getCatalogProductId().getId() : null;
         dto.price = product.getPrice() != null ? product.getPrice().doubleValue() : 0.0;
@@ -172,7 +172,7 @@ public class VendorServiceImpl implements VendorService {
 
     private OrderItemResponse toOrderItemResponse(OrderItem item) {
         OrderItemResponse dto = new OrderItemResponse();
-        dto.id = item.getId();
+        dto.orderItemId = item.getId();
         dto.productId = item.getVendorProduct() != null ? item.getVendorProduct().getId() : null;
         dto.productName = item.getVendorProduct() != null ? item.getVendorProduct().getName() : null;
         dto.quantity = item.getQuantity() != null ? item.getQuantity() : 0;

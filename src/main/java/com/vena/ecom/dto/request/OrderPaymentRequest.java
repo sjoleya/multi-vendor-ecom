@@ -1,11 +1,19 @@
 package com.vena.ecom.dto.request;
 
 import com.vena.ecom.model.enums.PaymentMethod;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class OrderPaymentRequest {
+    @NotBlank(message = "Order ID is required")
     public String orderId;
+    @NotNull(message = "Payment method is required")
     public PaymentMethod paymentMethod;
+    @NotNull(message = "Amount is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be greater than 0")
     public Double amount;
+    @NotBlank(message = "Transaction ID is required")
     public String transactionId;
 
     public OrderPaymentRequest(String orderId, PaymentMethod paymentMethod, Double amount, String transactionId) {

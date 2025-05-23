@@ -45,7 +45,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     private ProductCategoryResponse toProductCategoryResponse(ProductCategory category) {
         ProductCategoryResponse dto = new ProductCategoryResponse();
-        dto.id = category.getId();
+        dto.categoryId = category.getId();
         dto.name = category.getName();
         dto.description = category.getDescription();
         return dto;
