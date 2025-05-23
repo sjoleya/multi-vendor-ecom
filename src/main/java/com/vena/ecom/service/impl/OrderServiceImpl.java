@@ -3,6 +3,8 @@ package com.vena.ecom.service.impl;
 import com.vena.ecom.dto.response.OrderResponse;
 import com.vena.ecom.dto.response.OrderItemResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
+import com.vena.ecom.dto.request.OrderPaymentRequest;
+import com.vena.ecom.dto.response.OrderPaymentResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.CartItem;
 import com.vena.ecom.model.Order;
@@ -12,11 +14,15 @@ import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.model.VendorProduct;
+import com.vena.ecom.repo.CartItemRepository;
 import com.vena.ecom.repo.OrderItemRepository;
 import com.vena.ecom.repo.OrderRepository;
 import com.vena.ecom.repo.ReviewRepository;
 import com.vena.ecom.repo.ShoppingCartRepository;
+import com.vena.ecom.model.Payment;
+import com.vena.ecom.model.enums.PaymentStatus;
 import com.vena.ecom.repo.AddressRepository;
+import com.vena.ecom.repo.PaymentRepository;
 import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.service.OrderService;
 import com.vena.ecom.service.ShoppingCartService;
@@ -43,6 +49,9 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @Autowired
     private ShoppingCartService shoppingCartService;
 
     @Autowired
@@ -50,6 +59,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private AddressRepository userAddressRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Override
     public OrderResponse checkout(String customerId, String addressId) {
@@ -78,13 +90,13 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setPriceAtPurchase(vendorProduct.getPrice());
             orderItem.setSubtotal(orderItem.getPriceAtPurchase().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
             orderItem.setItemStatus(com.vena.ecom.model.enums.ItemStatus.PENDING);
-            orderItemRepository.save(orderItem);
 
             totalAmount = totalAmount.add(orderItem.getSubtotal());
         }
 
         order.setTotalAmount(totalAmount);
         Order savedOrder = orderRepository.save(order);
+
         shoppingCartService.clearCart(customerId);
         return toOrderResponse(savedOrder);
     }
@@ -111,6 +123,7 @@ public class OrderServiceImpl implements OrderService {
         if (!order.getCustomer().getId().equals(customerId)) {
             throw new ResourceNotFoundException("Customer mismatch");
         }
+
         review.setOrder(order);
         review.setOrderItem(orderItem);
         review.setCustomer(order.getCustomer());
@@ -155,6 +168,33 @@ public class OrderServiceImpl implements OrderService {
         dto.comment = review.getComment();
         dto.createdAt = review.getCreatedAt() != null ? review.getCreatedAt().toString() : null;
         return dto;
+    }
+
+    @Override
+    public OrderPaymentResponse submitOrderPayment(OrderPaymentRequest paymentRequest) {
+        Order order = orderRepository.findById(paymentRequest.getOrderId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Order not found with id: " + paymentRequest.getOrderId()));
+
+        if (order.getOrderStatus() != com.vena.ecom.model.enums.OrderStatus.PENDING_PAYMENT) {
+            throw new IllegalStateException("Order is not in PENDING_PAYMENT status.");
+        }
+
+        Payment payment = new Payment();
+        payment.setOrder(order);
+        payment.setPaymentMethod(paymentRequest.getPaymentMethod());
+        payment.setAmount(order.getTotalAmount());
+        payment.setTransactionId(paymentRequest.getTransactionId());
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setPaymentStatus(PaymentStatus.SUCCEEDED);
+
+        order.setOrderStatus(com.vena.ecom.model.enums.OrderStatus.PROCESSING);
+
+        paymentRepository.save(payment);
+        orderRepository.save(order);
+
+        return new OrderPaymentResponse(order.getId(), PaymentStatus.SUCCEEDED, paymentRequest.getTransactionId(),
+                "Payment Successful", LocalDateTime.now());
     }
 
 }
