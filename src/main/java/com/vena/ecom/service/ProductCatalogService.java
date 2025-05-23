@@ -1,18 +1,18 @@
 package com.vena.ecom.service;
 
-import com.vena.ecom.dto.AddProductCatalogRequest;
-import com.vena.ecom.model.ProductCatalog;
+import com.vena.ecom.dto.request.AddProductCatalogRequest;
+import com.vena.ecom.dto.response.ProductCatalogResponse;
 
 import java.util.List;
 
 public interface ProductCatalogService {
-    List<ProductCatalog> getAllProductsCatalogs();
+    List<ProductCatalogResponse> getAllProductsCatalogs();
 
-    ProductCatalog getproductCatalogById(String id);
+    ProductCatalogResponse getproductCatalogById(String id);
 
-    ProductCatalog createCatalogProduct(AddProductCatalogRequest addProductCatalogRequest);
+    ProductCatalogResponse createCatalogProduct(AddProductCatalogRequest addProductCatalogRequest);
 
-    ProductCatalog updateProductCatalogById(String id, AddProductCatalogRequest addProductCatalogRequest);
+    ProductCatalogResponse updateProductCatalogById(String id, AddProductCatalogRequest addProductCatalogRequest);
 
     void deleteProductCatalog(String id);
 }

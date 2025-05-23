@@ -24,8 +24,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getCurrentUser() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCurrentUser'");
+        return userRepository.findByEmail("john.doe@example.com")
+                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("User not found with ID: " + userId);
         }
         User user = optionalUser.get();
-        address.setUser(user);
+//        address.setUser(user);
         Address savedAddress = userAddressRepository.save(address);
         user.getAddressList().add(savedAddress);
         userRepository.save(user);

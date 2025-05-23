@@ -1,17 +1,18 @@
 package com.vena.ecom.service;
 
-import com.vena.ecom.model.Order;
+import com.vena.ecom.dto.response.OrderResponse;
+import com.vena.ecom.dto.response.ReviewResponse;
 import com.vena.ecom.model.Review;
 
 import java.util.List;
 
 public interface OrderService {
-    Order checkout(String customerId, String addressId);
+    OrderResponse checkout(String customerId, String addressId);
 
-    List<Order> getOrderHistory(String customerId);
+    List<OrderResponse> getOrderHistory(String customerId);
 
-    Order getOrderDetails(String orderId);
+    OrderResponse getOrderDetails(String orderId);
 
-    Review submitProductReview(String orderId, String orderItemId, String customerId, Review review);
+    ReviewResponse submitProductReview(String orderId, String orderItemId, String customerId, Review review);
 
 }

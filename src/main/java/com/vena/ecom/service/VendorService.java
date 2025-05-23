@@ -1,33 +1,38 @@
 package com.vena.ecom.service;
 
-import com.vena.ecom.model.OrderItem;
-import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.model.VendorProfile;
+import com.vena.ecom.dto.response.OrderItemResponse;
+import com.vena.ecom.dto.response.VendorProductResponse;
+import com.vena.ecom.dto.response.VendorProfileResponse;
+import com.vena.ecom.dto.request.AddVendorProductRequest;
+import com.vena.ecom.dto.request.UpdateVendorProductRequest;
+import com.vena.ecom.dto.request.UpdateVendorProfileRequest;
 import com.vena.ecom.model.enums.ItemStatus;
 
 import java.util.List;
 
 public interface VendorService {
 
-     VendorProfile getVendorProfile(String vendorId);
+     VendorProfileResponse getVendorProfile(String vendorId);
 
-     VendorProfile getVendorProfileByUserId(String vendorId);
+     VendorProfileResponse getVendorProfileByUserId(String vendorId);
 
-     VendorProfile updateVendorProfile(String vendorId, com.vena.ecom.dto.UpdateVendorProfileRequest vendorProfile);
+     VendorProfileResponse updateVendorProfile(String vendorId,
+               UpdateVendorProfileRequest vendorProfile);
 
-     VendorProduct addVendorProduct(String vendorId, com.vena.ecom.dto.AddVendorProductRequest product);
+     VendorProductResponse addVendorProduct(String vendorId, AddVendorProductRequest product);
 
-     List<VendorProduct> getVendorProducts(String vendorId);
+     List<VendorProductResponse> getVendorProducts(String vendorId);
 
-     VendorProduct getVendorProductById(String productId);
+     VendorProductResponse getVendorProductById(String productId);
 
-     VendorProduct updateVendorProduct(String productId, com.vena.ecom.dto.UpdateVendorProductRequest vendorProduct);
+     VendorProductResponse updateVendorProduct(String productId,
+               UpdateVendorProductRequest vendorProduct);
 
      void deleteVendorProduct(String productId);
 
-     List<OrderItem> getVendorOrderItems(String vendorId);
+     List<OrderItemResponse> getVendorOrderItems(String vendorId);
 
-     OrderItem getVendorOrderItemDetails(String orderItemId);
+     OrderItemResponse getVendorOrderItemDetails(String orderItemId);
 
-     OrderItem updateOrderItemStatus(String orderItemId, ItemStatus status);
+     OrderItemResponse updateOrderItemStatus(String orderItemId, ItemStatus status);
 }

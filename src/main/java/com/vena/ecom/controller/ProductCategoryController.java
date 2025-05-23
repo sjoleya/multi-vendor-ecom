@@ -1,5 +1,6 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.response.ProductCategoryResponse;
 import com.vena.ecom.model.ProductCategory;
 import com.vena.ecom.service.ProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +16,17 @@ public class ProductCategoryController {
     private ProductCategoryService productCategoryService;
 
     @GetMapping("/categories")
-    public ResponseEntity<List<ProductCategory>> getAllCategories() {
+    public ResponseEntity<List<ProductCategoryResponse>> getAllCategories() {
         return ResponseEntity.ok(productCategoryService.getAllCategories());
     }
 
     @PostMapping("/admin/categories")
-    public ResponseEntity<ProductCategory> createCategory(@RequestBody ProductCategory category) {
+    public ResponseEntity<ProductCategoryResponse> createCategory(@RequestBody ProductCategory category) {
         return ResponseEntity.ok(productCategoryService.createCategory(category));
     }
 
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<ProductCategory> updateCategory(@PathVariable String categoryId,
+    public ResponseEntity<ProductCategoryResponse> updateCategory(@PathVariable String categoryId,
             @RequestBody ProductCategory categoryDetails) {
         return ResponseEntity.ok(productCategoryService.updateCategory(categoryId, categoryDetails));
     }

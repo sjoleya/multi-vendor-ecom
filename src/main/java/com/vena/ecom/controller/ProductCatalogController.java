@@ -1,7 +1,7 @@
 package com.vena.ecom.controller;
 
-import com.vena.ecom.dto.AddProductCatalogRequest;
-import com.vena.ecom.model.ProductCatalog;
+import com.vena.ecom.dto.request.AddProductCatalogRequest;
+import com.vena.ecom.dto.response.ProductCatalogResponse;
 import com.vena.ecom.service.impl.ProductCatalogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,27 +18,29 @@ public class ProductCatalogController {
     private ProductCatalogServiceImpl productCatalogService;
 
     @GetMapping
-    public ResponseEntity<?> getAllProductCatalogs() {
-        List<ProductCatalog> productCatalogList = productCatalogService.getAllProductsCatalogs();
+    public ResponseEntity<List<ProductCatalogResponse>> getAllProductCatalogs() {
+        List<ProductCatalogResponse> productCatalogList = productCatalogService.getAllProductsCatalogs();
         return new ResponseEntity<>(productCatalogList, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProductCatalogById(@PathVariable String id) {
-        ProductCatalog productCatalog = productCatalogService.getproductCatalogById(id);
+    public ResponseEntity<ProductCatalogResponse> getProductCatalogById(@PathVariable String id) {
+        ProductCatalogResponse productCatalog = productCatalogService.getproductCatalogById(id);
         return ResponseEntity.ok(productCatalog);
     }
 
     @PostMapping
-    public ResponseEntity<?> createProductCatalog(@RequestBody AddProductCatalogRequest addProductCatalogRequest) {
-        ProductCatalog createdCatalog = productCatalogService.createCatalogProduct(addProductCatalogRequest);
+    public ResponseEntity<ProductCatalogResponse> createProductCatalog(
+            @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+        ProductCatalogResponse createdCatalog = productCatalogService.createCatalogProduct(addProductCatalogRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCatalog);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProductCatalog(@PathVariable String id,
+    public ResponseEntity<ProductCatalogResponse> updateProductCatalog(@PathVariable String id,
             @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
-        ProductCatalog updatedCatalog = productCatalogService.updateProductCatalogById(id, addProductCatalogRequest);
+        ProductCatalogResponse updatedCatalog = productCatalogService.updateProductCatalogById(id,
+                addProductCatalogRequest);
         return ResponseEntity.ok(updatedCatalog);
     }
 

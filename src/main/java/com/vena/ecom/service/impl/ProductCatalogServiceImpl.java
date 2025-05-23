@@ -1,6 +1,7 @@
 package com.vena.ecom.service.impl;
 
-import com.vena.ecom.dto.AddProductCatalogRequest;
+import com.vena.ecom.dto.request.AddProductCatalogRequest;
+import com.vena.ecom.dto.response.ProductCatalogResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.ProductCatalog;
 import com.vena.ecom.model.ProductCategory;
@@ -22,21 +23,21 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
     private ProductCategoryRepository productCategoryRepository;
 
     @Override
-    public List<ProductCatalog> getAllProductsCatalogs() {
-        return productCatalogRepository.findAll();
+    public List<ProductCatalogResponse> getAllProductsCatalogs() {
+        return productCatalogRepository.findAll().stream().map(this::toProductCatalogResponse).toList();
     }
 
     @Override
-    public ProductCatalog getproductCatalogById(String id) {
+    public ProductCatalogResponse getproductCatalogById(String id) {
         Optional<ProductCatalog> productCatalog = productCatalogRepository.findById(id);
         if (!productCatalog.isPresent()) {
             throw new ResourceNotFoundException("product does not exists in catalog with these id : " + id);
         }
-        return productCatalog.get();
+        return toProductCatalogResponse(productCatalog.get());
     }
 
     @Override
-    public ProductCatalog createCatalogProduct(AddProductCatalogRequest addProductCatalogRequest) {
+    public ProductCatalogResponse createCatalogProduct(AddProductCatalogRequest addProductCatalogRequest) {
         ProductCatalog productCatalog = new ProductCatalog();
         ProductCategory category = productCategoryRepository.findById(addProductCatalogRequest.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
@@ -45,11 +46,13 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         productCatalog.setGlobalSKU(addProductCatalogRequest.getGlobalSKU());
         productCatalog.setCategory(category);
         productCatalog.setBrand(addProductCatalogRequest.getBrand());
-        return productCatalogRepository.save(productCatalog);
+        ProductCatalog saved = productCatalogRepository.save(productCatalog);
+        return toProductCatalogResponse(saved);
     }
 
     @Override
-    public ProductCatalog updateProductCatalogById(String id, AddProductCatalogRequest addProductCatalogRequest) {
+    public ProductCatalogResponse updateProductCatalogById(String id,
+            AddProductCatalogRequest addProductCatalogRequest) {
 
         Optional<ProductCatalog> optionalProductCatalog = productCatalogRepository.findById(id);
         if (!optionalProductCatalog.isPresent()) {
@@ -63,7 +66,19 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         productCatalog.setGlobalSKU(addProductCatalogRequest.getGlobalSKU());
         productCatalog.setCategory(category);
         productCatalog.setBrand(addProductCatalogRequest.getBrand());
-        return productCatalogRepository.save(productCatalog);
+        ProductCatalog saved = productCatalogRepository.save(productCatalog);
+        return toProductCatalogResponse(saved);
+    }
+
+    private ProductCatalogResponse toProductCatalogResponse(ProductCatalog productCatalog) {
+        ProductCatalogResponse dto = new ProductCatalogResponse();
+        dto.id = productCatalog.getId();
+        dto.name = productCatalog.getName();
+        dto.description = productCatalog.getDescription();
+        dto.categoryId = productCatalog.getCategory() != null ? productCatalog.getCategory().getId() : null;
+        dto.price = 0.0; // No price in ProductCatalog, set as needed
+        dto.status = null; // No status in ProductCatalog, set as needed
+        return dto;
     }
 
     @Override

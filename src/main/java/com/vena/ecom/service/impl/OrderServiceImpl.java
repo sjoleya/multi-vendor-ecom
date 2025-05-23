@@ -1,5 +1,8 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.dto.response.OrderResponse;
+import com.vena.ecom.dto.response.OrderItemResponse;
+import com.vena.ecom.dto.response.ReviewResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.CartItem;
 import com.vena.ecom.model.Order;
@@ -9,7 +12,6 @@ import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.repo.CartItemRepository;
 import com.vena.ecom.repo.OrderItemRepository;
 import com.vena.ecom.repo.OrderRepository;
 import com.vena.ecom.repo.ReviewRepository;
@@ -41,9 +43,6 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    private CartItemRepository cartItemRepository;
-
-    @Autowired
     private ShoppingCartService shoppingCartService;
 
     @Autowired
@@ -53,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
     private AddressRepository userAddressRepository;
 
     @Override
-    public Order checkout(String customerId, String addressId) {
+    public OrderResponse checkout(String customerId, String addressId) {
         ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer_Id(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shopping cart not found"));
 
@@ -86,23 +85,25 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTotalAmount(totalAmount);
         Order savedOrder = orderRepository.save(order);
-
         shoppingCartService.clearCart(customerId);
-        return savedOrder;
+        return toOrderResponse(savedOrder);
     }
 
     @Override
-    public List<Order> getOrderHistory(String customerId) {
-        return orderRepository.findByCustomer_Id(customerId);
+    public List<OrderResponse> getOrderHistory(String customerId) {
+        return orderRepository.findByCustomer_Id(customerId)
+                .stream().map(this::toOrderResponse).toList();
     }
 
     @Override
-    public Order getOrderDetails(String orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+    public OrderResponse getOrderDetails(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        return toOrderResponse(order);
     }
 
     @Override
-    public Review submitProductReview(String orderId, String orderItemId, String customerId, Review review) {
+    public ReviewResponse submitProductReview(String orderId, String orderItemId, String customerId, Review review) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
@@ -110,11 +111,50 @@ public class OrderServiceImpl implements OrderService {
         if (!order.getCustomer().getId().equals(customerId)) {
             throw new ResourceNotFoundException("Customer mismatch");
         }
-
         review.setOrder(order);
         review.setOrderItem(orderItem);
         review.setCustomer(order.getCustomer());
-        return reviewRepository.save(review);
+        Review savedReview = reviewRepository.save(review);
+        return toReviewResponse(savedReview);
+    }
+
+    private OrderResponse toOrderResponse(Order order) {
+        OrderResponse dto = new OrderResponse();
+        dto.id = order.getId();
+        dto.customerId = order.getCustomer().getId();
+        dto.items = order.getOrderItems() != null
+                ? order.getOrderItems().stream().map(this::toOrderItemResponse).toList()
+                : java.util.Collections.emptyList();
+        dto.totalAmount = order.getTotalAmount() != null ? order.getTotalAmount().doubleValue() : 0.0;
+        dto.status = order.getOrderStatus() != null ? order.getOrderStatus().name() : null;
+        dto.createdAt = order.getOrderDate() != null ? order.getOrderDate().toString() : null;
+        dto.addressId = order.getShippingAddress() != null ? order.getShippingAddress().getId() : null;
+        return dto;
+    }
+
+    private OrderItemResponse toOrderItemResponse(OrderItem item) {
+        OrderItemResponse dto = new OrderItemResponse();
+        dto.id = item.getId();
+        dto.productId = item.getVendorProduct() != null ? item.getVendorProduct().getId() : null;
+        dto.productName = item.getVendorProduct() != null ? item.getVendorProduct().getName() : null;
+        dto.quantity = item.getQuantity() != null ? item.getQuantity() : 0;
+        dto.price = item.getPriceAtPurchase() != null ? item.getPriceAtPurchase().doubleValue() : 0.0;
+        dto.status = item.getItemStatus() != null ? item.getItemStatus().name() : null;
+        dto.vendorId = item.getVendorProduct() != null && item.getVendorProduct().getVendorId() != null
+                ? item.getVendorProduct().getVendorId().getId()
+                : null;
+        return dto;
+    }
+
+    private ReviewResponse toReviewResponse(Review review) {
+        ReviewResponse dto = new ReviewResponse();
+        dto.id = review.getId();
+        dto.orderItemId = review.getOrderItem() != null ? review.getOrderItem().getId() : null;
+        dto.customerId = review.getCustomer() != null ? review.getCustomer().getId() : null;
+        dto.rating = review.getRating();
+        dto.comment = review.getComment();
+        dto.createdAt = review.getCreatedAt() != null ? review.getCreatedAt().toString() : null;
+        return dto;
     }
 
 }

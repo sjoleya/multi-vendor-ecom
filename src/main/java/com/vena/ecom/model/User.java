@@ -2,6 +2,7 @@ package com.vena.ecom.model;
 
 import com.vena.ecom.model.audit.Auditable;
 import com.vena.ecom.model.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -18,8 +19,8 @@ public class User extends Auditable {
     @Column(unique = true)
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "user_addresses", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    @JsonManagedReference
     private List<Address> addressList;
 
     private String passwordHash;
