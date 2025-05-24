@@ -78,4 +78,16 @@ public class ProductCatalog extends Auditable {
     public void setBrand(String brand) {
         this.brand = brand;
     }
+
+    @Override
+    public String toString() {
+        return "ProductCatalog{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", brand='" + brand + '\'' +
+                ", description='" + description + '\'' +
+                ", globalSKU='" + globalSKU + '\'' +
+                ", category=" + category +
+                '}';
+    }
 }
