@@ -45,4 +45,12 @@ public class ProductCategory extends Auditable {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return "ProductCategory{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

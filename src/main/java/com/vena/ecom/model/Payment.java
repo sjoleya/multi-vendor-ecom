@@ -101,4 +101,17 @@ public class Payment extends Auditable {
     public void setPaymentStatus(PaymentStatus status) {
         this.paymentStatus = status;
     }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "id='" + id + '\'' +
+                ", order=" + order +
+                ", paymentDate=" + paymentDate +
+                ", amount=" + amount +
+                ", paymentMethod=" + paymentMethod +
+                ", transactionId='" + transactionId + '\'' +
+                ", paymentStatus=" + paymentStatus +
+                '}';
+    }
 }

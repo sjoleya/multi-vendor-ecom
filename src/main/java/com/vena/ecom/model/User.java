@@ -108,4 +108,16 @@ public class User extends Auditable {
         this.role = role;
         this.phoneNumber = phoneNumber;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
 }

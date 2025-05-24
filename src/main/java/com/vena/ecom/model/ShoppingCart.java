@@ -52,4 +52,13 @@ public class ShoppingCart extends Auditable {
     public void setCustomer(User customer) {
         this.customer = customer;
     }
+
+    @Override
+    public String toString() {
+        return "ShoppingCart{" +
+                "id='" + id + '\'' +
+                ", customer=" + customer +
+                ", cartItems=" + cartItems +
+                '}';
+    }
 }
