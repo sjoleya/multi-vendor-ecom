@@ -57,7 +57,7 @@ public class VendorServiceImpl implements VendorService {
         VendorProfile profile = vendorProfileRepository.findByUser_Id(userId)
                 .orElseThrow(() -> {
                     logger.error("VendorProfile not found with User ID: {}", userId);
-                    return new RuntimeException("VendorProfile not found with id: " + userId);
+                    return new ResourceNotFoundException("VendorProfile not found with id: " + userId);
                 });
         return toVendorProfileResponse(profile);
     }
@@ -69,7 +69,7 @@ public class VendorServiceImpl implements VendorService {
         VendorProfile existingProfile = vendorProfileRepository.findById(vendorProfileId)
                 .orElseThrow(() ->  {
                     logger.error("VendorProfile not found with ID: {}", vendorProfileId);
-                    return new RuntimeException("VendorProfile not found with id: " + vendorProfileId);
+                    return new ResourceNotFoundException("VendorProfile not found with id: " + vendorProfileId);
                 });
 
         logger.debug("Existing VendorProfile before update: {}", existingProfile);
