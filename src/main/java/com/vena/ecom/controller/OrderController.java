@@ -28,7 +28,8 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponse> checkout(@RequestBody CheckoutRequest checkoutRequest) {
-        logger.info("Checkout request received for customer ID: {} and address ID: {}", checkoutRequest.getCustomerId(),
+        logger.info("POST /customers/orders - Checkout request received for customer ID: {} and address ID: {}",
+                checkoutRequest.getCustomerId(),
                 checkoutRequest.getAddressId());
         OrderResponse order = orderService.checkout(checkoutRequest.getCustomerId(), checkoutRequest.getAddressId());
         logger.info("Order created with ID: {}", order.orderId);
@@ -37,7 +38,7 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getOrderHistory(@RequestParam String customerId) {
-        logger.info("Fetching order history for customer ID: {}", customerId);
+        logger.info("GET /customers/orders - Fetching order history for customer ID: {}", customerId);
         List<OrderResponse> orders = orderService.getOrderHistory(customerId);
         logger.info("Found {} orders for customer ID: {}", orders.size(), customerId);
         return ResponseEntity.ok(orders);
@@ -45,7 +46,7 @@ public class OrderController {
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderDetails(@PathVariable String orderId) {
-        logger.info("Fetching order details for order ID: {}", orderId);
+        logger.info("GET /customers/orders/{} - Fetching order details", orderId);
         OrderResponse order = orderService.getOrderDetails(orderId);
         return ResponseEntity.ok(order);
     }
@@ -54,7 +55,9 @@ public class OrderController {
     public ResponseEntity<ReviewResponse> submitProductReview(@PathVariable String orderId,
             @PathVariable String orderItemId,
             @PathVariable String customerId, @RequestBody Review review) {
-        logger.info("Submitting product review for order ID: {}, order item ID: {}, customer ID: {}", orderId,
+        logger.info(
+                "POST /customers/orders/{}/items/{}/review - Submitting product review for order ID: {}, order item ID: {}, customer ID: {}",
+                orderId,
                 orderItemId, customerId);
         ReviewResponse submittedReview = orderService.submitProductReview(orderId, orderItemId, customerId, review);
         return ResponseEntity.ok(submittedReview);
@@ -62,7 +65,8 @@ public class OrderController {
 
     @PutMapping("/payment")
     public ResponseEntity<OrderPaymentResponse> submitOrderPayment(@RequestBody OrderPaymentRequest paymentRequest) {
-        logger.info("Submitting order payment for order ID: {}", paymentRequest.getOrderId());
+        logger.info("PUT /customers/orders/payment - Submitting order payment for order ID: {}",
+                paymentRequest.getOrderId());
         return new ResponseEntity<>(orderService.submitOrderPayment(paymentRequest), HttpStatus.CREATED);
     }
 }
