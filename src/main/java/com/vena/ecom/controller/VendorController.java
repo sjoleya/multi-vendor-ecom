@@ -27,23 +27,23 @@ public class VendorController {
 
     @GetMapping("/profile")
     public ResponseEntity<VendorProfileResponse> getVendorProfileById(@RequestParam String vendorProfileId) {
-       logger.info("Fetching vendor profile with ID: {}",vendorProfileId);
+       logger.info("GET/vendor/profile - Fetching vendor profile with ID: {}",vendorProfileId);
         VendorProfileResponse profile = vendorService.getVendorProfile(vendorProfileId);
         return ResponseEntity.ok(profile);
     }
 
     @GetMapping("/profile/{userId}")
     public ResponseEntity<VendorProfileResponse> getVendorProfileByUserId(@PathVariable String userId) {
-        logger.info("Fetching vendor profile by user ID: {}" ,userId);
+        logger.info("GET/vendor/profile/{} - Fetching vendor profile" ,userId);
         VendorProfileResponse profile = vendorService.getVendorProfileByUserId(userId);
         return ResponseEntity.ok(profile);
     }
 
     @PutMapping("/profile")
     public ResponseEntity<VendorProfileResponse> updateVendorProfile(
-            @RequestParam("vendorId") String vendorProfileId,
+            @RequestParam("vendorProfileId") String vendorProfileId,
             @RequestBody UpdateVendorProfileRequest updatedProfile) {
-        logger.info("Updating vendor profile with ID: {}", vendorProfileId);
+        logger.info("PUT/vendor/profile - Updating vendor profile with ID: {}", vendorProfileId);
         VendorProfileResponse profile = vendorService.updateVendorProfile(vendorProfileId, updatedProfile);
         return ResponseEntity.ok(profile);
     }
@@ -52,21 +52,21 @@ public class VendorController {
     public ResponseEntity<VendorProductResponse> addVendorProduct(
             @RequestParam("vendorProfileId") String vendorProfileId,
             @RequestBody AddVendorProductRequest product) {
-        logger.info("Adding product for vendor profile ID: {}", vendorProfileId);
+        logger.info("POST/vendor/product - Adding product for vendor profile ID: {}", vendorProfileId);
         VendorProductResponse savedProduct = vendorService.addVendorProduct(vendorProfileId, product);
         return ResponseEntity.ok(savedProduct);
     }
 
     @GetMapping("/products")
     public ResponseEntity<List<VendorProductResponse>> getVendorProducts(@RequestParam String vendorProfileId) {
-        logger.info("Fetching products for vendor profile ID: {}", vendorProfileId);
+        logger.info("GET/vendor/products - Fetching products for vendor profile ID: {}", vendorProfileId);
         List<VendorProductResponse> products = vendorService.getVendorProducts(vendorProfileId);
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/products/{productId}")
     public ResponseEntity<VendorProductResponse> getVendorProductById(@PathVariable String productId) {
-        logger.info("Fetching vendor product with ID: {}", productId);
+        logger.info(" GET/vendor/products/{} - Fetching vendor product", productId);
         VendorProductResponse product = vendorService.getVendorProductById(productId);
         return ResponseEntity.ok(product);
     }
@@ -75,28 +75,28 @@ public class VendorController {
     public ResponseEntity<VendorProductResponse> updateVendorProduct(
             @PathVariable String productId,
             @RequestBody UpdateVendorProductRequest vendorProductRequest) {
-        logger.info("Updating vendor product with ID: {}", productId);
+        logger.info("PUT/vendor/products/{} - Updating vendor product", productId);
         VendorProductResponse product = vendorService.updateVendorProduct(productId, vendorProductRequest);
         return ResponseEntity.ok(product);
     }
 
     @DeleteMapping("/products/{productId}")
     public ResponseEntity<Void> deleteVendorProduct(@PathVariable String productId) {
-        logger.info("Deleting vendor product with ID: {}", productId);
+        logger.info("DELETE/vendor/products/{} - Deleting vendor product", productId);
         vendorService.deleteVendorProduct(productId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/orders")
     public ResponseEntity<List<OrderItemResponse>> getVendorOrderItems(@RequestParam String vendorProfileId) {
-        logger.info("Fetching order items for vendor profile ID: {}", vendorProfileId);
+        logger.info("GET/vendor/orders - Fetching order items for vendor profile ID: {}", vendorProfileId);
         List<OrderItemResponse> orderItems = vendorService.getVendorOrderItems(vendorProfileId);
         return ResponseEntity.ok(orderItems);
     }
 
     @GetMapping("/orders/items/{orderItemId}")
     public ResponseEntity<OrderItemResponse> getVendorOrderItemDetails(@PathVariable String orderItemId) {
-        logger.info("Fetching details for order item ID: {}", orderItemId);
+        logger.info("GET/vendor/orders/items/{} - Fetching details for order item", orderItemId);
         OrderItemResponse orderItem = vendorService.getVendorOrderItemDetails(orderItemId);
         return ResponseEntity.ok(orderItem);
     }
@@ -105,7 +105,7 @@ public class VendorController {
     public ResponseEntity<OrderItemResponse> updateOrderItemStatus(
             @PathVariable String orderItemId,
             @RequestParam("status") ItemStatus status) {
-        logger.info("Updating status of order item ID: {} to {}", orderItemId, status);
+        logger.info("PUT/vendor/orders/items/{}/{} - Updating status of order item ", orderItemId, status);
         OrderItemResponse updatedItem = vendorService.updateOrderItemStatus(orderItemId, status);
         return ResponseEntity.ok(updatedItem);
     }
