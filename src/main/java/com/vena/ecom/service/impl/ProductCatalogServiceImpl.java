@@ -117,8 +117,6 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         dto.name = productCatalog.getName();
         dto.description = productCatalog.getDescription();
         dto.categoryId = productCatalog.getCategory() != null ? productCatalog.getCategory().getId() : null;
-        dto.price = 0.0; // Placeholder
-        dto.status = null; // Placeholder
         return dto;
     }
 }

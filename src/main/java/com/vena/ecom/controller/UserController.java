@@ -24,64 +24,63 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<UserResponse> getCurrentUser() {
-        logger.info("Received request to get current user");
-        User user = userService.getCurrentUser();
-        logger.debug("Current user fetched: {}", user.getEmail());
-        return ResponseEntity.ok(toUserResponse(user));
+        logger.info("Get /users/me -  get current user");
+        UserResponse userResponse = userService.getCurrentUser();
+        return ResponseEntity.ok(userResponse);
     }
 
     @PutMapping
     public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody User userDetails) {
-        logger.info("Request to update current user profile");
-        if (userDetails == null || userDetails.getId() == null) {
+        logger.info("Put /users/me   - Request to update current user profile");
+        if (userDetails == null) {
             logger.warn("User update request received with null or incomplete data");
         }
-        User updated = userService.updateCurrentUser(userDetails);
-        logger.debug("User updated: {}", updated.getEmail());
-        return ResponseEntity.ok(toUserResponse(updated));
+        UserResponse updated = userService.updateCurrentUser(userDetails);
+        logger.info("User updated: {}", updated.getEmail());
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/addresses")
     public ResponseEntity<List<AddressResponse>> getUserAddresses() {
-        logger.info("Fetching address list of current user");
-        User user = userService.getCurrentUser();
-        List<Address> addresses = userService.getUserAddresses(user.getId());
+        logger.info("Get /user/me/addresses - Fetching address list( all user ) of current user");
+        UserResponse user = userService.getCurrentUser();
+        List<AddressResponse> addresses = userService.getUserAddresses(user.getId());
         if (addresses.isEmpty()) {
             logger.warn("User with ID {} has no saved addresses", user.getId());
         } else {
-            logger.debug("User has {} addresses", addresses.size());
+            logger.info("User has {} addresses", addresses.size());
         }
-        List<AddressResponse> response = addresses.stream().map(this::toAddressResponse).collect(Collectors.toList());
-        return ResponseEntity.ok(response);
+
+        return ResponseEntity.ok(addresses);
     }
 
     @PostMapping("/addresses")
     public ResponseEntity<AddressResponse> addUserAddress(@RequestBody Address address) {
-        logger.info("Request to add a new address for current user");
+        logger.info("Post /user/me/addresses - Request to add a new address for current user");
         if (address == null || address.getStreet() == null) {
             logger.warn("Address creation request received with missing street information");
         }
-        User user = userService.getCurrentUser();
-        Address saved = userService.addUserAddress(user.getId(), address);
-        logger.debug("Address saved with ID: {}", saved.getId());
-        return ResponseEntity.ok(toAddressResponse(saved));
+        UserResponse userResponse = userService.getCurrentUser();
+        AddressResponse saved = userService.addUserAddress(userResponse.getId(), address);
+        logger.info("Address saved with ID: {}", saved.getId());
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/addresses/{id}")
     public ResponseEntity<AddressResponse> updateUserAddress(@PathVariable String id,
                                                              @RequestBody Address addressDetails) {
-        logger.info("Updating address with ID: {}", id);
+        logger.info("Put /user/me/addresses/id - Updating address with ID: {}", id);
         if (id == null || id.trim().isEmpty()) {
             logger.warn("Empty ID provided for address update");
         }
-        Address updated = userService.updateUserAddress(id, addressDetails);
-        logger.debug("Address updated for ID: {}", id);
-        return ResponseEntity.ok(toAddressResponse(updated));
+        AddressResponse updated = userService.updateUserAddress(id, addressDetails);
+        logger.info("Address updated for ID: {}", id);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/addresses/{id}")
     public ResponseEntity<Void> deleteUserAddress(@PathVariable String id) {
-        logger.info("Deleting address with ID: {}", id);
+        logger.info("Delete /user/me/addresses/id - Deleting address with ID: {}", id);
         if (id == null || id.trim().isEmpty()) {
             logger.warn("Delete request received with empty address ID");
         }
@@ -90,27 +89,4 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    private UserResponse toUserResponse(User user) {
-        UserResponse dto = new UserResponse();
-        dto.id = user.getId();
-        dto.name = user.getFirstName() + " " + user.getLastName();
-        dto.email = user.getEmail();
-        dto.role = user.getRole() != null ? user.getRole().name() : null;
-        dto.addresses = user.getAddressList() != null
-                ? user.getAddressList().stream().map(this::toAddressResponse).collect(Collectors.toList())
-                : null;
-        return dto;
-    }
-
-    private AddressResponse toAddressResponse(Address address) {
-        AddressResponse dto = new AddressResponse();
-        dto.id = address.getId();
-        dto.street = address.getStreet();
-        dto.city = address.getCity();
-        dto.state = address.getState();
-        dto.zip = address.getZipCode();
-        dto.country = address.getCountry();
-        dto.type = address.getAddressType() != null ? address.getAddressType().name() : null;
-        return dto;
-    }
 }

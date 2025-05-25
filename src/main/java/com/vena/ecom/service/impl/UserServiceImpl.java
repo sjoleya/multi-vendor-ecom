@@ -2,7 +2,10 @@ package com.vena.ecom.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.vena.ecom.dto.response.AddressResponse;
+import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
@@ -27,17 +30,19 @@ public class UserServiceImpl implements UserService {
     private AddressRepository userAddressRepository;
 
     @Override
-    public User getCurrentUser() {
+    public UserResponse getCurrentUser() {
         logger.info("Fetching current user by email");
-        return userRepository.findByEmail("john.doe@example.com")
+        User user = userRepository.findByEmail("john.doe@example.com")
                 .orElseThrow(() -> {
                     logger.warn("User not found with email: john.doe@example.com");
                     return new ResourceNotFoundException("User not found!");
                 });
+
+        return userResponseDto(user);
     }
 
     @Override
-    public User updateCurrentUser(User userDetails) {
+    public UserResponse updateCurrentUser(User userDetails) {
         logger.info("Updating user with ID: {}", userDetails.getId());
         Optional<User> optionalUser = userRepository.findById(userDetails.getId());
         if (!optionalUser.isPresent()) {
@@ -51,18 +56,19 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDetails.getPhoneNumber());
         user.setRole(userDetails.getRole());
         User updatedUser = userRepository.save(user);
-        logger.debug("User updated successfully with ID: {}", updatedUser.getId());
-        return updatedUser;
+        logger.info("User updated successfully with ID: {}", updatedUser.getId());
+        return userResponseDto(updatedUser);
     }
 
     @Override
-    public List<Address> getUserAddresses(String userId) {
+    public List<AddressResponse> getUserAddresses(String userId) {
         logger.info("Fetching addresses for user ID: {}", userId);
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             List<Address> addresses = userAddressRepository.findByUser_Id(userId);
-            logger.debug("Total addresses found: {}", addresses.size());
-            return addresses;
+            logger.info("Total addresses found: {}", addresses.size());
+            List<AddressResponse> response = addresses.stream().map(this::addressResponseDto).collect(Collectors.toList());
+            return response;
         } else {
             logger.warn("User not found with ID: {}", userId);
             throw new ResourceNotFoundException("User not found with ID: " + userId);
@@ -70,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Address addUserAddress(String userId, Address address) {
+    public AddressResponse addUserAddress(String userId, Address address) {
         logger.info("Adding new address for user ID: {}", userId);
         Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
@@ -81,12 +87,12 @@ public class UserServiceImpl implements UserService {
         Address savedAddress = userAddressRepository.save(address);
         user.getAddressList().add(savedAddress);
         userRepository.save(user);
-        logger.debug("Address added successfully with ID: {}", savedAddress.getId());
-        return savedAddress;
+        logger.info("Address added successfully with ID: {}", savedAddress.getId());
+        return addressResponseDto(savedAddress);
     }
 
     @Override
-    public Address updateUserAddress(String addressId, Address addressDetails) {
+    public AddressResponse updateUserAddress(String addressId, Address addressDetails) {
         logger.info("Updating address with ID: {}", addressId);
         Optional<Address> optionalAddress = userAddressRepository.findById(addressId);
         if (optionalAddress.isPresent()) {
@@ -97,8 +103,8 @@ public class UserServiceImpl implements UserService {
             address.setZipCode(addressDetails.getZipCode());
             address.setCountry(addressDetails.getCountry());
             Address updated = userAddressRepository.save(address);
-            logger.debug("Address updated successfully with ID: {}", updated.getId());
-            return updated;
+            logger.info("Address updated successfully with ID: {}", updated.getId());
+            return addressResponseDto(updated);
         } else {
             logger.warn("Address not found with ID: {}", addressId);
             throw new ResourceNotFoundException("Address not found with ID: " + addressId);
@@ -113,6 +119,30 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("Address not found with ID: " + addressId);
         }
         userAddressRepository.deleteById(addressId);
-        logger.debug("Address deleted successfully with ID: {}", addressId);
+        logger.info("Address deleted successfully with ID: {}", addressId);
+    }
+
+    private UserResponse userResponseDto(User user) {
+        UserResponse dto = new UserResponse();
+        dto.id = user.getId();
+        dto.name = user.getFirstName() + " " + user.getLastName();
+        dto.email = user.getEmail();
+        dto.role = user.getRole() != null ? user.getRole().name() : null;
+        dto.addresses = user.getAddressList() != null
+                ? user.getAddressList().stream().map(this::addressResponseDto).collect(Collectors.toList())
+                : null;
+        return dto;
+    }
+
+    private AddressResponse addressResponseDto(Address address) {
+        AddressResponse dto = new AddressResponse();
+        dto.id = address.getId();
+        dto.street = address.getStreet();
+        dto.city = address.getCity();
+        dto.state = address.getState();
+        dto.zip = address.getZipCode();
+        dto.country = address.getCountry();
+        dto.type = address.getAddressType() != null ? address.getAddressType().name() : null;
+        return dto;
     }
 }
