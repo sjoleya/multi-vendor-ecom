@@ -2,15 +2,14 @@ package com.vena.ecom.controller;
 
 import java.util.List;
 
+import com.vena.ecom.dto.request.AddProductCatalogRequest;
+import com.vena.ecom.dto.response.ProductCatalogResponse;
+import com.vena.ecom.dto.response.UserResponse;
+import com.vena.ecom.service.impl.ProductCatalogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.vena.ecom.model.Order;
 import com.vena.ecom.model.User;
@@ -26,14 +25,17 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private ProductCatalogServiceImpl productCatalogService;
+
     // Users Endpoints
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<User> getUserDetails(@PathVariable String userId) {
+    public ResponseEntity<UserResponse> getUserDetails(@PathVariable String userId) {
         return ResponseEntity.ok(adminService.getUserDetails(userId));
     }
 
@@ -95,5 +97,39 @@ public class AdminController {
     public ResponseEntity<Void> deleteReview(@PathVariable String reviewId) {
         adminService.deleteReview(reviewId);
         return ResponseEntity.ok().build();
+    }
+
+    // Product Catalog Endpoints
+    @GetMapping("/catalog")
+    public ResponseEntity<List<ProductCatalogResponse>> getAllProductCatalogs() {
+        List<ProductCatalogResponse> productCatalogList = productCatalogService.getAllProductsCatalogs();
+        return new ResponseEntity<>(productCatalogList, HttpStatus.OK);
+    }
+
+    @GetMapping("/catalog/{id}")
+    public ResponseEntity<ProductCatalogResponse> getProductCatalogById(@PathVariable String id) {
+        ProductCatalogResponse productCatalog = productCatalogService.getproductCatalogById(id);
+        return ResponseEntity.ok(productCatalog);
+    }
+
+    @PostMapping("/catalog")
+    public ResponseEntity<ProductCatalogResponse> createProductCatalog(
+            @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+        ProductCatalogResponse createdCatalog = productCatalogService.createCatalogProduct(addProductCatalogRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCatalog);
+    }
+
+    @PutMapping("/catalog/{id}")
+    public ResponseEntity<ProductCatalogResponse> updateProductCatalog(@PathVariable String id,
+            @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+        ProductCatalogResponse updatedCatalog = productCatalogService.updateProductCatalogById(id,
+                addProductCatalogRequest);
+        return ResponseEntity.ok(updatedCatalog);
+    }
+
+    @DeleteMapping("/catalog/{id}")
+    public ResponseEntity<String> deleteProductCatalog(@PathVariable String id) {
+        productCatalogService.deleteProductCatalog(id);
+        return ResponseEntity.ok("Product catalog deleted successfully.");
     }
 }

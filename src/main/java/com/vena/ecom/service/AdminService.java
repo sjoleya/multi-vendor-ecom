@@ -10,9 +10,9 @@ import com.vena.ecom.model.enums.UserRole;
 import com.vena.ecom.model.enums.OrderStatus;
 
 public interface AdminService {
-    List<User> getAllUsers();
+    List<com.vena.ecom.dto.response.UserResponse> getAllUsers();
 
-    User getUserDetails(String userId);
+    com.vena.ecom.dto.response.UserResponse getUserDetails(String userId);
 
     User updateUserRole(String userId, UserRole role);
 
@@ -35,4 +35,5 @@ public interface AdminService {
     Order updateOrderStatus(String orderId, OrderStatus status);
 
     void deleteReview(String reviewId);
+
 }

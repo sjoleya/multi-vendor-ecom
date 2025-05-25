@@ -43,7 +43,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     newCart.setCustomer(customer);
                     return shoppingCartRepository.save(newCart);
                 });
-        return toShoppingCartResponse(cart);
+        return new ShoppingCartResponse(cart);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cart.getCartItems().add(cartItem);
         shoppingCartRepository.save(cart);
         cartItemRepository.save(cartItem);
-        return toCartItemResponse(cartItem);
+        return new CartItemResponse(cartItem);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
         cartItem.setQuantity(request.getQuantity());
         cartItemRepository.save(cartItem);
-        return toCartItemResponse(cartItem);
+        return new CartItemResponse(cartItem);
     }
 
     @Override
@@ -79,25 +79,5 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
         cart.getCartItems().clear();
         shoppingCartRepository.save(cart); // CascadeType.ALL ensures related items are deleted
-    }
-
-    private ShoppingCartResponse toShoppingCartResponse(ShoppingCart cart) {
-        ShoppingCartResponse dto = new ShoppingCartResponse();
-        dto.customerId = cart.getCustomer().getId();
-        dto.items = cart.getCartItems().stream().map(this::toCartItemResponse).toList();
-        dto.totalAmount = cart.getCartItems().stream()
-                .mapToDouble(item -> item.getVendorProduct().getPrice().doubleValue() * item.getQuantity()).sum();
-        return dto;
-    }
-
-    private CartItemResponse toCartItemResponse(CartItem item) {
-        CartItemResponse dto = new CartItemResponse();
-        dto.cartItemId = item.getId();
-        dto.productId = item.getVendorProduct().getId();
-        dto.productName = item.getVendorProduct().getName();
-        dto.quantity = item.getQuantity();
-        dto.price = item.getVendorProduct().getPrice().doubleValue();
-        dto.totalPrice = dto.price * dto.quantity;
-        return dto;
     }
 }

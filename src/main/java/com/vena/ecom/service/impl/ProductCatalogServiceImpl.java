@@ -24,16 +24,15 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
 
     @Override
     public List<ProductCatalogResponse> getAllProductsCatalogs() {
-        return productCatalogRepository.findAll().stream().map(this::toProductCatalogResponse).toList();
+        return productCatalogRepository.findAll().stream().map(ProductCatalogResponse::new).toList();
     }
 
     @Override
     public ProductCatalogResponse getproductCatalogById(String id) {
-        Optional<ProductCatalog> productCatalog = productCatalogRepository.findById(id);
-        if (!productCatalog.isPresent()) {
-            throw new ResourceNotFoundException("product does not exists in catalog with these id : " + id);
-        }
-        return toProductCatalogResponse(productCatalog.get());
+        ProductCatalog productCatalog = productCatalogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "product does not exists in catalog with these id : " + id));
+        return new ProductCatalogResponse(productCatalog);
     }
 
     @Override
@@ -47,18 +46,15 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         productCatalog.setCategory(category);
         productCatalog.setBrand(addProductCatalogRequest.getBrand());
         ProductCatalog saved = productCatalogRepository.save(productCatalog);
-        return toProductCatalogResponse(saved);
+        return new ProductCatalogResponse(saved);
     }
 
     @Override
     public ProductCatalogResponse updateProductCatalogById(String id,
             AddProductCatalogRequest addProductCatalogRequest) {
 
-        Optional<ProductCatalog> optionalProductCatalog = productCatalogRepository.findById(id);
-        if (!optionalProductCatalog.isPresent()) {
-            throw new ResourceNotFoundException("Product with id: " + id + "not found");
-        }
-        ProductCatalog productCatalog = optionalProductCatalog.get();
+        ProductCatalog productCatalog = productCatalogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id: " + id + "not found"));
         ProductCategory category = productCategoryRepository.findById(addProductCatalogRequest.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
         productCatalog.setName(addProductCatalogRequest.getName());
@@ -67,18 +63,7 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         productCatalog.setCategory(category);
         productCatalog.setBrand(addProductCatalogRequest.getBrand());
         ProductCatalog saved = productCatalogRepository.save(productCatalog);
-        return toProductCatalogResponse(saved);
-    }
-
-    private ProductCatalogResponse toProductCatalogResponse(ProductCatalog productCatalog) {
-        ProductCatalogResponse dto = new ProductCatalogResponse();
-        dto.productId = productCatalog.getId();
-        dto.name = productCatalog.getName();
-        dto.description = productCatalog.getDescription();
-        dto.categoryId = productCatalog.getCategory() != null ? productCatalog.getCategory().getId() : null;
-        dto.price = 0.0; // No price in ProductCatalog, set as needed
-        dto.status = null; // No status in ProductCatalog, set as needed
-        return dto;
+        return new ProductCatalogResponse(saved);
     }
 
     @Override

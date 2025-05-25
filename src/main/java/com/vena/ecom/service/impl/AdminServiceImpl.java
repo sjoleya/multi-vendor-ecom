@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.Order;
 import com.vena.ecom.model.User;
@@ -39,14 +40,17 @@ public class AdminServiceImpl implements AdminService {
     private OrderRepository orderRepository;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserResponse::new)
+                .toList();
     }
 
     @Override
-    public User getUserDetails(String userId) {
-        return userRepository.findById(userId)
+    public UserResponse getUserDetails(String userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id: " + userId + "not found!"));
+        return new UserResponse(user);
     }
 
     @Override

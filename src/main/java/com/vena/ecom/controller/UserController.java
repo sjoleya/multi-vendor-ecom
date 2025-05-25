@@ -4,80 +4,48 @@ import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
+import com.vena.ecom.dto.request.AddAdressRequest;
 import com.vena.ecom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users/me")
+@RequestMapping("/users")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
+    @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser() {
-        User user = userService.getCurrentUser();
-        return ResponseEntity.ok(toUserResponse(user));
+        return ResponseEntity.ok(userService.getCurrentUser());
     }
 
-    @PutMapping
+    @PutMapping("/me")
     public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody User userDetails) {
-        User updated = userService.updateCurrentUser(userDetails);
-        return ResponseEntity.ok(toUserResponse(updated));
+        return ResponseEntity.ok(userService.updateCurrentUser(userDetails));
     }
 
-    @GetMapping("/addresses")
+    @GetMapping("/me/addresses")
     public ResponseEntity<List<AddressResponse>> getUserAddresses() {
-        User user = userService.getCurrentUser();
-        List<Address> addresses = userService.getUserAddresses(user.getId());
-        List<AddressResponse> response = addresses.stream().map(this::toAddressResponse).collect(Collectors.toList());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userService.getUserAddresses());
     }
 
-    @PostMapping("/addresses")
-    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody Address address) {
-        User user = userService.getCurrentUser();
-        Address saved = userService.addUserAddress(user.getId(), address);
-        return ResponseEntity.ok(toAddressResponse(saved));
+    @PostMapping("/me/addresses")
+    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAdressRequest addAdressRequest) {
+        return ResponseEntity.ok(userService.addUserAddress(addAdressRequest));
     }
 
-    @PutMapping("/addresses/{id}")
+    @PutMapping("/me/addresses/{id}")
     public ResponseEntity<AddressResponse> updateUserAddress(@PathVariable String id,
             @RequestBody Address addressDetails) {
-        Address updated = userService.updateUserAddress(id, addressDetails);
-        return ResponseEntity.ok(toAddressResponse(updated));
+        return ResponseEntity.ok(userService.updateUserAddress(id, addressDetails));
     }
 
-    @DeleteMapping("/addresses/{id}")
+    @DeleteMapping("/me/addresses/{id}")
     public ResponseEntity<Void> deleteUserAddress(@PathVariable String id) {
         userService.deleteUserAddress(id);
         return ResponseEntity.ok().build();
-    }
-
-    private UserResponse toUserResponse(User user) {
-        UserResponse dto = new UserResponse();
-        dto.userId = user.getId();
-        dto.name = user.getFirstName() + " " + user.getLastName();
-        dto.email = user.getEmail();
-        dto.role = user.getRole() != null ? user.getRole().name() : null;
-        dto.addresses = user.getAddressList() != null
-                ? user.getAddressList().stream().map(this::toAddressResponse).collect(Collectors.toList())
-                : null;
-        return dto;
-    }
-
-    private AddressResponse toAddressResponse(Address address) {
-        AddressResponse dto = new AddressResponse();
-        dto.addressId = address.getId();
-        dto.street = address.getStreet();
-        dto.city = address.getCity();
-        dto.state = address.getState();
-        dto.zip = address.getZipCode();
-        dto.country = address.getCountry();
-        dto.type = address.getAddressType() != null ? address.getAddressType().name() : null;
-        return dto;
     }
 }

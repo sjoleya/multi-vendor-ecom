@@ -19,7 +19,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     public List<ProductCategoryResponse> getAllCategories() {
-        return categoryRepository.findAll().stream().map(this::toProductCategoryResponse).toList();
+        return categoryRepository.findAll().stream().map(ProductCategoryResponse::new).toList();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
             throw new IllegalArgumentException("Category with this name already exists.");
         }
         ProductCategory saved = categoryRepository.save(category);
-        return toProductCategoryResponse(saved);
+        return new ProductCategoryResponse(saved);
     }
 
     @Override
@@ -40,15 +40,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         existing.setDescription(categoryDetails.getDescription());
         existing.setName(categoryDetails.getName());
         ProductCategory saved = categoryRepository.save(existing);
-        return toProductCategoryResponse(saved);
-    }
-
-    private ProductCategoryResponse toProductCategoryResponse(ProductCategory category) {
-        ProductCategoryResponse dto = new ProductCategoryResponse();
-        dto.categoryId = category.getId();
-        dto.name = category.getName();
-        dto.description = category.getDescription();
-        return dto;
+        return new ProductCategoryResponse(saved);
     }
 
     @Override

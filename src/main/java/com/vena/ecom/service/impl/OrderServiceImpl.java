@@ -1,7 +1,6 @@
 package com.vena.ecom.service.impl;
 
 import com.vena.ecom.dto.response.OrderResponse;
-import com.vena.ecom.dto.response.OrderItemResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
 import com.vena.ecom.dto.request.OrderPaymentRequest;
 import com.vena.ecom.dto.response.OrderPaymentResponse;
@@ -94,20 +93,20 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         shoppingCartService.clearCart(customerId);
-        return toOrderResponse(savedOrder);
+        return new OrderResponse(savedOrder);
     }
 
     @Override
     public List<OrderResponse> getOrderHistory(String customerId) {
         return orderRepository.findByCustomer_Id(customerId)
-                .stream().map(this::toOrderResponse).toList();
+                .stream().map(OrderResponse::new).toList();
     }
 
     @Override
     public OrderResponse getOrderDetails(String orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        return toOrderResponse(order);
+        return new OrderResponse(order);
     }
 
     @Override
@@ -124,46 +123,7 @@ public class OrderServiceImpl implements OrderService {
         review.setOrderItem(orderItem);
         review.setCustomer(order.getCustomer());
         Review savedReview = reviewRepository.save(review);
-        return toReviewResponse(savedReview);
-    }
-
-    private OrderResponse toOrderResponse(Order order) {
-        OrderResponse dto = new OrderResponse();
-        dto.orderId = order.getId();
-        dto.customerId = order.getCustomer().getId();
-        dto.items = order.getOrderItems() != null
-                ? order.getOrderItems().stream().map(this::toOrderItemResponse).toList()
-                : java.util.Collections.emptyList();
-        dto.totalAmount = order.getTotalAmount() != null ? order.getTotalAmount().doubleValue() : 0.0;
-        dto.status = order.getOrderStatus() != null ? order.getOrderStatus().name() : null;
-        dto.createdAt = order.getOrderDate() != null ? order.getOrderDate().toString() : null;
-        dto.addressId = order.getShippingAddress() != null ? order.getShippingAddress().getId() : null;
-        return dto;
-    }
-
-    private OrderItemResponse toOrderItemResponse(OrderItem item) {
-        OrderItemResponse dto = new OrderItemResponse();
-        dto.orderItemId = item.getId();
-        dto.productId = item.getVendorProduct() != null ? item.getVendorProduct().getId() : null;
-        dto.productName = item.getVendorProduct() != null ? item.getVendorProduct().getName() : null;
-        dto.quantity = item.getQuantity() != null ? item.getQuantity() : 0;
-        dto.price = item.getPriceAtPurchase() != null ? item.getPriceAtPurchase().doubleValue() : 0.0;
-        dto.status = item.getItemStatus() != null ? item.getItemStatus().name() : null;
-        dto.vendorId = item.getVendorProduct() != null && item.getVendorProduct().getVendorId() != null
-                ? item.getVendorProduct().getVendorId().getId()
-                : null;
-        return dto;
-    }
-
-    private ReviewResponse toReviewResponse(Review review) {
-        ReviewResponse dto = new ReviewResponse();
-        dto.reviewId = review.getId();
-        dto.orderItemId = review.getOrderItem() != null ? review.getOrderItem().getId() : null;
-        dto.customerId = review.getCustomer() != null ? review.getCustomer().getId() : null;
-        dto.rating = review.getRating();
-        dto.comment = review.getComment();
-        dto.createdAt = review.getCreatedAt() != null ? review.getCreatedAt().toString() : null;
-        return dto;
+        return new ReviewResponse(savedReview);
     }
 
     @Override
@@ -189,8 +149,7 @@ public class OrderServiceImpl implements OrderService {
         paymentRepository.save(payment);
         orderRepository.save(order);
 
-        return new OrderPaymentResponse(order.getId(), PaymentStatus.SUCCEEDED, paymentRequest.getTransactionId(),
-                "Payment Successful", LocalDateTime.now());
+        return new com.vena.ecom.dto.response.OrderPaymentResponse(payment);
     }
 
 }

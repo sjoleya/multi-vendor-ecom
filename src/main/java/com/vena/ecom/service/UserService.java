@@ -3,18 +3,21 @@ package com.vena.ecom.service;
 import java.util.List;
 
 import com.vena.ecom.model.User;
+import com.vena.ecom.dto.response.AddressResponse;
+import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.model.Address;
+import com.vena.ecom.dto.request.AddAdressRequest;
 
 public interface UserService {
-    User getCurrentUser();
+    UserResponse getCurrentUser();
 
-    User updateCurrentUser(User userDetails);
+    UserResponse updateCurrentUser(User userDetails);
 
-    List<Address> getUserAddresses(String userId);
+    List<AddressResponse> getUserAddresses();
 
-    Address addUserAddress(String userId, Address address);
+    AddressResponse addUserAddress(AddAdressRequest addAdressRequest);
 
-    Address updateUserAddress(String addressId, Address addressDetails);
+    AddressResponse updateUserAddress(String addressId, Address addressDetails);
 
     void deleteUserAddress(String addressId);
 }

@@ -41,13 +41,13 @@ public class VendorServiceImpl implements VendorService {
     public VendorProfileResponse getVendorProfile(String vendorProfileId) {
         VendorProfile profile = vendorProfileRepository.findById(vendorProfileId)
                 .orElseThrow(() -> new RuntimeException("VendorProfile not found with id: " + vendorProfileId));
-        return toVendorProfileResponse(profile);
+        return new VendorProfileResponse(profile);
     }
 
     public VendorProfileResponse getVendorProfileByUserId(String userId) {
         VendorProfile profile = vendorProfileRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("VendorProfile not found with id: " + userId));
-        return toVendorProfileResponse(profile);
+        return new VendorProfileResponse(profile);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class VendorServiceImpl implements VendorService {
             existingProfile.setContactNumber(updatedProfile.getContactNumber());
         }
         VendorProfile saved = vendorProfileRepository.save(existingProfile);
-        return toVendorProfileResponse(saved);
+        return new VendorProfileResponse(saved);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class VendorServiceImpl implements VendorService {
                 .orElseThrow(() -> new ResourceNotFoundException("VendorProfile not found with id: " + vendorId));
         VendorProduct vendorProduct = new VendorProduct();
         vendorProduct.setVendorId(vendor);
-        vendorProduct.setCatalogProductId(productCatalogRepository.findById(product.getCatalogProductId())
+        vendorProduct.setProductCatalog(productCatalogRepository.findById(product.getCatalogProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product Catalog not found")));
         vendorProduct.setSKU(product.getSku());
         vendorProduct.setPrice(product.getPrice());
@@ -84,20 +84,20 @@ public class VendorServiceImpl implements VendorService {
         vendorProduct.setApprovalStatus(ApprovalStatus.PENDING);
         vendorProduct.setActive(false);
         VendorProduct saved = vendorProductRepository.save(vendorProduct);
-        return toVendorProductResponse(saved);
+        return new VendorProductResponse(saved);
     }
 
     @Override
     public List<VendorProductResponse> getVendorProducts(String vendorId) {
         return vendorProductRepository.findByVendorId_Id(vendorId)
-                .stream().map(this::toVendorProductResponse).toList();
+                .stream().map(VendorProductResponse::new).toList();
     }
 
     @Override
     public VendorProductResponse getVendorProductById(String productId) {
         VendorProduct product = vendorProductRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("VendorProduct not found with id: " + productId));
-        return toVendorProductResponse(product);
+        return new VendorProductResponse(product);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class VendorServiceImpl implements VendorService {
             existingProduct.setActive(updatedProduct.getIsActive());
         }
         VendorProduct saved = vendorProductRepository.save(existingProduct);
-        return toVendorProductResponse(saved);
+        return new VendorProductResponse(saved);
     }
 
     @Override
@@ -131,14 +131,14 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public List<OrderItemResponse> getVendorOrderItems(String vendorId) {
         return orderItemRepository.findByVendorProduct_VendorId_Id(vendorId)
-                .stream().map(this::toOrderItemResponse).toList();
+                .stream().map(OrderItemResponse::new).toList();
     }
 
     @Override
     public OrderItemResponse getVendorOrderItemDetails(String orderItemId) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("OrderItem not found with id: " + orderItemId));
-        return toOrderItemResponse(orderItem);
+        return new OrderItemResponse(orderItem);
     }
 
     @Override
@@ -147,40 +147,6 @@ public class VendorServiceImpl implements VendorService {
                 .orElseThrow(() -> new ResourceNotFoundException("OrderItem not found with id: " + orderItemId));
         orderItem.setItemStatus(status);
         OrderItem saved = orderItemRepository.save(orderItem);
-        return toOrderItemResponse(saved);
-    }
-
-    private VendorProfileResponse toVendorProfileResponse(VendorProfile profile) {
-        VendorProfileResponse dto = new VendorProfileResponse();
-        dto.vendorProfileId = profile.getId();
-        dto.userId = profile.getUser() != null ? profile.getUser().getId() : null;
-        dto.storeName = profile.getStoreName();
-        dto.status = profile.getApprovalStatus() != null ? profile.getApprovalStatus().name() : null;
-        return dto;
-    }
-
-    private VendorProductResponse toVendorProductResponse(VendorProduct product) {
-        VendorProductResponse dto = new VendorProductResponse();
-        dto.vendorProductId = product.getId();
-        dto.vendorId = product.getVendorId() != null ? product.getVendorId().getId() : null;
-        dto.catalogProductId = product.getCatalogProductId() != null ? product.getCatalogProductId().getId() : null;
-        dto.price = product.getPrice() != null ? product.getPrice().doubleValue() : 0.0;
-        dto.stock = product.getStockQuantity() != null ? product.getStockQuantity() : 0;
-        dto.status = product.getApprovalStatus() != null ? product.getApprovalStatus().name() : null;
-        return dto;
-    }
-
-    private OrderItemResponse toOrderItemResponse(OrderItem item) {
-        OrderItemResponse dto = new OrderItemResponse();
-        dto.orderItemId = item.getId();
-        dto.productId = item.getVendorProduct() != null ? item.getVendorProduct().getId() : null;
-        dto.productName = item.getVendorProduct() != null ? item.getVendorProduct().getName() : null;
-        dto.quantity = item.getQuantity() != null ? item.getQuantity() : 0;
-        dto.price = item.getPriceAtPurchase() != null ? item.getPriceAtPurchase().doubleValue() : 0.0;
-        dto.status = item.getItemStatus() != null ? item.getItemStatus().name() : null;
-        dto.vendorId = item.getVendorProduct() != null && item.getVendorProduct().getVendorId() != null
-                ? item.getVendorProduct().getVendorId().getId()
-                : null;
-        return dto;
+        return new OrderItemResponse(saved);
     }
 }
