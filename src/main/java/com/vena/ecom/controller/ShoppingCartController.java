@@ -25,14 +25,9 @@ public class ShoppingCartController {
     @GetMapping
     public ResponseEntity<ShoppingCartResponse> viewCart(@RequestParam String customerId) {
         logger.info("GET /customer/cart - Viewing cart for customerId: {}", customerId);
-        try {
-            ShoppingCartResponse response = shoppingCartService.getCartByCustomerId(customerId);
-            logger.info("Cart retrieved successfully for customerId: {}", customerId);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Failed to retrieve cart for customerId: {} - {}", customerId, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        ShoppingCartResponse response = shoppingCartService.getCartByCustomerId(customerId);
+        logger.info("Cart retrieved successfully for customerId: {}", customerId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/items")
@@ -40,59 +35,33 @@ public class ShoppingCartController {
                                                         @RequestBody AddCartItemRequest request) {
         logger.info("POST /customer/cart/items - Adding productId: {} to cart for customerId: {}",
                 request.getVendorProductId(), customerId);
-        try {
-            CartItemResponse response = shoppingCartService.addCartItem(customerId, request);
-            logger.info("Item added successfully to cart for customerId: {}", customerId);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid request to add cart item: {}", e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            logger.error("Failed to add item to cart for customerId: {} - {}", customerId, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        CartItemResponse response = shoppingCartService.addCartItem(customerId, request);
+        logger.info("Item added successfully to cart for customerId: {}", customerId);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/items/{cartItemId}")
     public ResponseEntity<CartItemResponse> updateCartItemQuantity(@PathVariable String cartItemId,
                                                                    @RequestBody UpdateCartItemRequest request) {
         logger.info("PUT /customer/cart/items/{} - Updating quantity to {}", cartItemId, request.getQuantity());
-        try {
-            CartItemResponse response = shoppingCartService.updateCartItemQuantity(cartItemId, request);
-            logger.info("Cart item updated successfully for cartItemId: {}", cartItemId);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid update request for cart item: {}", e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            logger.error("Failed to update cart item {} - {}", cartItemId, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        CartItemResponse response = shoppingCartService.updateCartItemQuantity(cartItemId, request);
+        logger.info("Cart item updated successfully for cartItemId: {}", cartItemId);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/items/{cartItemId}")
     public ResponseEntity<Void> removeCartItem(@PathVariable String cartItemId) {
         logger.info("DELETE /customer/cart/items/{} - Removing cart item", cartItemId);
-        try {
-            shoppingCartService.removeCartItem(cartItemId);
-            logger.info("Cart item removed successfully: {}", cartItemId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            logger.error("Failed to remove cart item {} - {}", cartItemId, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        shoppingCartService.removeCartItem(cartItemId);
+        logger.info("Cart item removed successfully: {}", cartItemId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> clearCart(@RequestParam String customerId) {
         logger.info("DELETE /customer/cart - Clearing cart for customerId: {}", customerId);
-        try {
-            shoppingCartService.clearCart(customerId);
-            logger.info("Cart cleared successfully for customerId: {}", customerId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            logger.error("Failed to clear cart for customerId: {} - {}", customerId, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        shoppingCartService.clearCart(customerId);
+        logger.info("Cart cleared successfully for customerId: {}", customerId);
+        return ResponseEntity.ok().build();
     }
 }

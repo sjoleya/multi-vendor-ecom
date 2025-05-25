@@ -2,22 +2,17 @@ package com.vena.ecom.service.impl;
 
 import com.vena.ecom.dto.request.AddCartItemRequest;
 import com.vena.ecom.dto.request.UpdateCartItemRequest;
-import com.vena.ecom.model.User;
-import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.repo.CartItemRepository;
-import com.vena.ecom.repo.ShoppingCartRepository;
-import com.vena.ecom.model.CartItem;
-import com.vena.ecom.model.ShoppingCart;
-import com.vena.ecom.repo.UserRepository;
-import com.vena.ecom.repo.VendorProductRepository;
+import com.vena.ecom.exception.ResourceNotFoundException;
+import com.vena.ecom.model.*;
+import com.vena.ecom.repo.*;
 import com.vena.ecom.service.ShoppingCartService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.vena.ecom.dto.response.ShoppingCartResponse;
 import com.vena.ecom.dto.response.CartItemResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -45,7 +40,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     User customer = userRepository.findById(customerId)
                             .orElseThrow(() -> {
                                 logger.error("User not found with customerId: {}", customerId);
-                                return new RuntimeException("User not found");
+                                return new ResourceNotFoundException("User not found with ID: " + customerId);
                             });
                     ShoppingCart newCart = new ShoppingCart();
                     newCart.setCustomer(customer);
@@ -61,12 +56,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByCustomer_Id(customerId)
                 .orElseThrow(() -> {
                     logger.error("Cart not found for customerId: {}", customerId);
-                    return new RuntimeException("Cart not found");
+                    return new ResourceNotFoundException("Cart not found for customerId: " + customerId);
                 });
+
         VendorProduct product = vendorProductRepository.findById(request.getVendorProductId())
                 .orElseThrow(() -> {
                     logger.error("Vendor product not found with id: {}", request.getVendorProductId());
-                    return new RuntimeException("Vendor product not found");
+                    return new ResourceNotFoundException("Vendor product not found with ID: " + request.getVendorProductId());
                 });
 
         if (request.getQuantity() <= 0) {
@@ -93,7 +89,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> {
                     logger.error("Cart item not found with id: {}", cartItemId);
-                    return new RuntimeException("Cart item not found");
+                    return new ResourceNotFoundException("Cart item not found with ID: " + cartItemId);
                 });
 
         cartItem.setQuantity(request.getQuantity());
@@ -107,7 +103,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         logger.info("Removing cart item with ID: {}", cartItemId);
         if (!cartItemRepository.existsById(cartItemId)) {
             logger.warn("Attempt to remove non-existing cart item with ID: {}", cartItemId);
-            throw new RuntimeException("Cart item not found");
+            throw new ResourceNotFoundException("Cart item not found with ID: " + cartItemId);
         }
         cartItemRepository.deleteById(cartItemId);
         logger.info("Removed cart item with ID: {}", cartItemId);
@@ -119,7 +115,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart cart = shoppingCartRepository.findByCustomer_Id(customerId)
                 .orElseThrow(() -> {
                     logger.error("Cart not found for customerId: {}", customerId);
-                    return new RuntimeException("Cart not found");
+                    return new ResourceNotFoundException("Cart not found for customerId: " + customerId);
                 });
         cart.getCartItems().clear();
         shoppingCartRepository.save(cart);

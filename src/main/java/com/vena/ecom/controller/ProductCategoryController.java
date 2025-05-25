@@ -24,66 +24,33 @@ public class ProductCategoryController {
     @GetMapping("/categories")
     public ResponseEntity<List<ProductCategoryResponse>> getAllCategories() {
         logger.info("GET /categories - Fetching all product categories");
-
-        try {
-            List<ProductCategoryResponse> categories = productCategoryService.getAllCategories();
-            logger.info("Successfully fetched {} categories", categories.size());
-            return ResponseEntity.ok(categories);
-        } catch (Exception e) {
-            logger.error("Failed to fetch categories: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        List<ProductCategoryResponse> categories = productCategoryService.getAllCategories();
+        logger.info("Successfully fetched {} categories", categories.size());
+        return ResponseEntity.ok(categories);
     }
 
     @PostMapping("/admin/categories")
     public ResponseEntity<ProductCategoryResponse> createCategory(@RequestBody ProductCategory category) {
         logger.info("POST /admin/categories - Creating category with name: {}", category.getName());
-
-        try {
-            ProductCategoryResponse createdCategory = productCategoryService.createCategory(category);
-            logger.info("Category created successfully with ID: {}", createdCategory.getId());
-            return ResponseEntity.ok(createdCategory);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid category creation request: {}", e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            logger.error("Failed to create category: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        ProductCategoryResponse createdCategory = productCategoryService.createCategory(category);
+        logger.info("Category created successfully with ID: {}", createdCategory.getId());
+        return ResponseEntity.ok(createdCategory);
     }
 
     @PutMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ProductCategoryResponse> updateCategory(@PathVariable String categoryId,
                                                                   @RequestBody ProductCategory categoryDetails) {
         logger.info("PUT /admin/categories/{} - Updating category", categoryId);
-
-        try {
-            ProductCategoryResponse updatedCategory = productCategoryService.updateCategory(categoryId, categoryDetails);
-            logger.info("Category updated successfully: {}", updatedCategory.getId());
-            return ResponseEntity.ok(updatedCategory);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid update request for category ID {}: {}", categoryId, e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            logger.error("Failed to update category ID {}: {}", categoryId, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        ProductCategoryResponse updatedCategory = productCategoryService.updateCategory(categoryId, categoryDetails);
+        logger.info("Category updated successfully: {}", updatedCategory.getId());
+        return ResponseEntity.ok(updatedCategory);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable String categoryId) {
         logger.info("DELETE /admin/categories/{} - Deleting category", categoryId);
-
-        try {
-            productCategoryService.deleteCategory(categoryId);
-            logger.info("Category deleted successfully: {}", categoryId);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid delete request for category ID {}: {}", categoryId, e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            logger.error("Failed to delete category ID {}: {}", categoryId, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        productCategoryService.deleteCategory(categoryId);
+        logger.info("Category deleted successfully: {}", categoryId);
+        return ResponseEntity.ok().build();
     }
 }
