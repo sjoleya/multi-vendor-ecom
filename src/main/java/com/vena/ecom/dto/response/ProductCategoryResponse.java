@@ -4,8 +4,4 @@ public class ProductCategoryResponse {
     public String categoryId;
     public String name;
     public String description;
-
-    public String getId() {
-        return id;
-    }
 }
