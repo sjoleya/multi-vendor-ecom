@@ -111,12 +111,13 @@ public class OrderItem extends Auditable {
     public String toString() {
         return "OrderItem{" +
                 "id='" + id + '\'' +
-                ", order=" + order +
-                ", vendorProduct=" + vendorProduct +
+                ", orderId='" + (order != null ? order.getId() : "null") + '\'' +
+                ", vendorProduct=" + (vendorProduct != null ? vendorProduct.getName() : "null") +
                 ", quantity=" + quantity +
                 ", priceAtPurchase=" + priceAtPurchase +
                 ", subtotal=" + subtotal +
                 ", itemStatus=" + itemStatus +
                 '}';
     }
+
 }
