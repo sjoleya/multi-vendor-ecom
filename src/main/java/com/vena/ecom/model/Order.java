@@ -117,4 +117,16 @@ public class Order extends Auditable {
     public void setPayment(Payment payment) {
         this.payment = payment;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id='" + id + '\'' +
+                ", customer=" + customer +
+                ", orderDate=" + orderDate +
+                ", totalAmount=" + totalAmount +
+                ", orderStatus=" + orderStatus +
+                ", shippingAddress=" + shippingAddress +
+                '}';
+    }
 }
