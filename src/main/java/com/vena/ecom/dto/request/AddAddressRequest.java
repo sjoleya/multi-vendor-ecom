@@ -1,36 +1,21 @@
-package com.vena.ecom.dto.response;
+package com.vena.ecom.dto.request;
 
-import com.vena.ecom.model.Address;
+import jakarta.validation.constraints.NotBlank;
 
-public class AddressResponse {
-    private String addressId;
+public class AddAddressRequest {
+
+    @NotBlank(message = "Street is required")
     private String street;
+    @NotBlank(message = "City is required")
     private String city;
+    @NotBlank(message = "State is required")
     private String state;
+    @NotBlank(message = "Zipcode is required")
     private String zip;
+    @NotBlank(message = "Country is required")
     private String country;
+    @NotBlank(message = "Type is required")
     private String type;
-
-    public AddressResponse() {
-    }
-
-    public AddressResponse(Address address) {
-        this.addressId = address.getId();
-        this.street = address.getStreet();
-        this.city = address.getCity();
-        this.state = address.getState();
-        this.zip = address.getZipCode();
-        this.country = address.getCountry();
-        this.type = address.getAddressType() != null ? address.getAddressType().toString() : null;
-    }
-
-    public String getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(String addressId) {
-        this.addressId = addressId;
-    }
 
     public String getStreet() {
         return street;

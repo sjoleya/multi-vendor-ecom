@@ -28,7 +28,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         logger.info("ProductCategoryService::getAllCategories - Retrieving all categories");
         List<ProductCategoryResponse> categories = categoryRepository.findAll()
                 .stream()
-                .map(this::toProductCategoryResponse)
+                .map(ProductCategoryResponse::new)
                 .toList();
         logger.info("ProductCategoryService::getAllCategories - Retrieved {} categories", categories.size());
         return categories;
@@ -40,14 +40,16 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
         Optional<ProductCategory> existing = categoryRepository.findByName(category.getName());
         if (existing.isPresent()) {
-            logger.warn("ProductCategoryService::createCategory - Category creation failed: name '{}' already exists", category.getName());
+            logger.warn("ProductCategoryService::createCategory - Category creation failed: name '{}' already exists",
+                    category.getName());
             throw new IllegalArgumentException("Category with this name already exists.");
         }
 
         ProductCategory saved = categoryRepository.save(category);
-        logger.info("ProductCategoryService::createCategory - Category created successfully with ID: {}", saved.getId());
+        logger.info("ProductCategoryService::createCategory - Category created successfully with ID: {}",
+                saved.getId());
 
-        return toProductCategoryResponse(saved);
+        return new ProductCategoryResponse(saved);
     }
 
     @Override
@@ -62,11 +64,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
         existing.setName(categoryDetails.getName());
         existing.setDescription(categoryDetails.getDescription());
-
         ProductCategory updated = categoryRepository.save(existing);
-        logger.info("ProductCategoryService::updateCategory - Category updated successfully with ID: {}", updated.getId());
+        logger.info("ProductCategoryService::updateCategory - Category updated successfully with ID: {}",
+                updated.getId());
 
-        return toProductCategoryResponse(updated);
+        return new ProductCategoryResponse(updated);
     }
 
     @Override
@@ -74,20 +76,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         logger.info("ProductCategoryService::deleteCategory - Deleting category with ID: {}", categoryId);
 
         if (!categoryRepository.existsById(categoryId)) {
-            logger.error("ProductCategoryService::deleteCategory - Deletion failed: category not found with ID: {}", categoryId);
+            logger.error("ProductCategoryService::deleteCategory - Deletion failed: category not found with ID: {}",
+                    categoryId);
             throw new ResourceNotFoundException("Category not found with ID: " + categoryId);
         }
 
         categoryRepository.deleteById(categoryId);
         logger.info("ProductCategoryService::deleteCategory - Category deleted successfully with ID: {}", categoryId);
-    }
-
-    private ProductCategoryResponse toProductCategoryResponse(ProductCategory category) {
-        logger.debug("ProductCategoryService::toProductCategoryResponse - Mapping entity to DTO for category ID: {}", category.getId());
-        ProductCategoryResponse dto = new ProductCategoryResponse();
-        dto.categoryId = category.getId();
-        dto.name = category.getName();
-        dto.description = category.getDescription();
-        return dto;
     }
 }

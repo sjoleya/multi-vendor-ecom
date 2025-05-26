@@ -55,7 +55,6 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (productCatalogRepository.count() == 0) {
             // Seed product categories
-            // Seed product categories
             ProductCategory category1 = new ProductCategory();
             category1.setName("Electronics");
             category1.setDescription("Electronic gadgets and accessories");
@@ -148,7 +147,7 @@ public class DataSeeder implements CommandLineRunner {
             }
 
             VendorProduct vendorProduct1 = new VendorProduct();
-            vendorProduct1.setCatalogProductId(prodCat);
+            vendorProduct1.setProductCatalog(product1);
             vendorProduct1.setVendorId(vendorProfile1);
             vendorProduct1.setSKU("VP001");
             vendorProduct1.setPrice(new BigDecimal("25.00"));
@@ -160,26 +159,27 @@ public class DataSeeder implements CommandLineRunner {
             vendorProduct1.setAverageRating(new BigDecimal("4.5"));
             vendorProductRepository.save(vendorProduct1);
 
-            // VendorProduct vendorProduct2 = new VendorProduct();
-            // vendorProduct2.setCatalogProductId(prodCat);
-            // vendorProduct2.setVendorId(vendorProfile1);
-            // vendorProduct2.setSKU("VP002");
-            // vendorProduct2.setName("Nike Dri-FIT T-Shirt - Alternate Edition");
-            // vendorProduct2.setDescription("Another Exclusive Nike Dri-FIT T-Shirt offered
-            // by Jane's Boutique");
-            // vendorProduct2.setPrice(new BigDecimal("30.00"));
-            // vendorProduct2.setStockQuantity(50);
-            // vendorProduct2.setApprovalStatus(ApprovalStatus.APPROVED);
-            // vendorProduct2.setActive(true);
-            // vendorProduct2.setAverageRating(new BigDecimal("4.8"));
-            // vendorProductRepository.save(vendorProduct2);
+            VendorProduct vendorProduct2 = new VendorProduct();
+            vendorProduct2.setProductCatalog(product2);
+            vendorProduct2.setVendorId(vendorProfile1);
+            vendorProduct2.setSKU("VP002");
+            vendorProduct2.setName("Nike Dri-FIT T-Shirt - Alternate Edition");
+            vendorProduct2.setDescription("Another Exclusive Nike Dri-FIT T-Shirt offered by Jane's Boutique");
+            vendorProduct2.setPrice(new BigDecimal("30.00"));
+            vendorProduct2.setStockQuantity(50);
+            vendorProduct2.setApprovalStatus(ApprovalStatus.APPROVED);
+            vendorProduct2.setActive(true);
+            vendorProduct2.setAverageRating(new BigDecimal("4.8"));
+            vendorProductRepository.save(vendorProduct2);
 
             // Seed orders
             ProductCatalog laptop = productCatalogRepository.findByName("Laptop").orElse(product1);
             ProductCatalog tShirt = productCatalogRepository.findByName("T-Shirt").orElse(product2);
 
-            VendorProduct vendorProductLaptop = vendorProductRepository.findByCatalogProductId(laptop).orElse(null);
-            VendorProduct vendorProductTShirt = vendorProductRepository.findByCatalogProductId(tShirt).orElse(null);
+            VendorProduct vendorProductLaptop = vendorProductRepository.findByProductCatalog_Id(laptop.getId())
+                    .orElse(null);
+            VendorProduct vendorProductTShirt = vendorProductRepository.findByProductCatalog_Id(tShirt.getId())
+                    .orElse(null);
 
             Order order1 = new Order();
             order1.setCustomer(user1);
@@ -188,15 +188,18 @@ public class DataSeeder implements CommandLineRunner {
             orderRepository.save(order1);
 
             // Seed order items for order1
-            OrderItem orderItem1 = new OrderItem();
-            orderItem1.setOrder(order1);
-            orderItem1.setVendorProduct(vendorProductLaptop);
-            orderItem1.setQuantity(1);
-            orderItem1.setPriceAtPurchase(new BigDecimal("999.99"));
-            orderItemRepository.save(orderItem1);
+            if (vendorProductLaptop != null) {
+                OrderItem orderItem1 = new OrderItem();
+                orderItem1.setOrder(order1);
+                orderItem1.setVendorProduct(vendorProductLaptop);
+                orderItem1.setQuantity(1);
+                orderItem1.setPriceAtPurchase(new BigDecimal("999.99"));
+                orderItemRepository.save(orderItem1);
 
-            order1.setTotalAmount(orderItem1.getPriceAtPurchase().multiply(new BigDecimal(orderItem1.getQuantity())));
-            orderRepository.save(order1);
+                order1.setTotalAmount(
+                        orderItem1.getPriceAtPurchase().multiply(new BigDecimal(orderItem1.getQuantity())));
+                orderRepository.save(order1);
+            }
 
             Order order2 = new Order();
             order2.setCustomer(user1);
@@ -205,15 +208,18 @@ public class DataSeeder implements CommandLineRunner {
             orderRepository.save(order2);
 
             // Seed order items for order2
-            OrderItem orderItem2 = new OrderItem();
-            orderItem2.setOrder(order2);
-            orderItem2.setVendorProduct(vendorProductTShirt);
-            orderItem2.setQuantity(2);
-            orderItem2.setPriceAtPurchase(new BigDecimal("25.00"));
-            orderItemRepository.save(orderItem2);
+            if (vendorProductTShirt != null) {
+                OrderItem orderItem2 = new OrderItem();
+                orderItem2.setOrder(order2);
+                orderItem2.setVendorProduct(vendorProductTShirt);
+                orderItem2.setQuantity(2);
+                orderItem2.setPriceAtPurchase(new BigDecimal("25.00"));
+                orderItemRepository.save(orderItem2);
 
-            order2.setTotalAmount(orderItem2.getPriceAtPurchase().multiply(new BigDecimal(orderItem2.getQuantity())));
-            orderRepository.save(order2);
+                order2.setTotalAmount(
+                        orderItem2.getPriceAtPurchase().multiply(new BigDecimal(orderItem2.getQuantity())));
+                orderRepository.save(order2);
+            }
 
             Order order3 = new Order();
             order3.setCustomer(user1);
@@ -222,15 +228,18 @@ public class DataSeeder implements CommandLineRunner {
             orderRepository.save(order3);
 
             // Seed order items for order3
-            OrderItem orderItem3 = new OrderItem();
-            orderItem3.setOrder(order3);
-            orderItem3.setVendorProduct(vendorProductLaptop);
-            orderItem3.setQuantity(1);
-            orderItem3.setPriceAtPurchase(new BigDecimal("999.99"));
-            orderItemRepository.save(orderItem3);
+            if (vendorProductLaptop != null) {
+                OrderItem orderItem3 = new OrderItem();
+                orderItem3.setOrder(order3);
+                orderItem3.setVendorProduct(vendorProductLaptop);
+                orderItem3.setQuantity(1);
+                orderItem3.setPriceAtPurchase(new BigDecimal("999.99"));
+                orderItemRepository.save(orderItem3);
 
-            order3.setTotalAmount(orderItem3.getPriceAtPurchase().multiply(new BigDecimal(orderItem3.getQuantity())));
-            orderRepository.save(order3);
+                order3.setTotalAmount(
+                        orderItem3.getPriceAtPurchase().multiply(new BigDecimal(orderItem3.getQuantity())));
+                orderRepository.save(order3);
+            }
 
             // Seed reviews
             Review review1 = new Review();

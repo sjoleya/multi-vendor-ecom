@@ -2,13 +2,14 @@ package com.vena.ecom.service.impl;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.User;
+import com.vena.ecom.model.enums.AddressType;
 import com.vena.ecom.model.Address;
+import com.vena.ecom.dto.request.AddAddressRequest;
 import com.vena.ecom.repo.AddressRepository;
 import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.service.UserService;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private AddressRepository userAddressRepository;
+    private AddressRepository addressRepository;
 
     @Override
     public UserResponse getCurrentUser() {
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
                     return new ResourceNotFoundException("User not found!");
                 });
 
-        return userResponseDto(user);
+        return new UserResponse(user);
     }
 
     @Override
@@ -57,17 +58,18 @@ public class UserServiceImpl implements UserService {
         user.setRole(userDetails.getRole());
         User updatedUser = userRepository.save(user);
         logger.info("User updated successfully with ID: {}", updatedUser.getId());
-        return userResponseDto(updatedUser);
+        return new UserResponse(updatedUser);
     }
 
     @Override
-    public List<AddressResponse> getUserAddresses(String userId) {
+    public List<AddressResponse> getUserAddresses() {
+        String userId = getCurrentUser().getUserId();
         logger.info("Fetching addresses for user ID: {}", userId);
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
-            List<Address> addresses = userAddressRepository.findByUser_Id(userId);
+            List<Address> addresses = addressRepository.findByUser_Id(userId);
             logger.info("Total addresses found: {}", addresses.size());
-            List<AddressResponse> response = addresses.stream().map(this::addressResponseDto).collect(Collectors.toList());
+            List<AddressResponse> response = addresses.stream().map(AddressResponse::new).toList();
             return response;
         } else {
             logger.warn("User not found with ID: {}", userId);
@@ -76,25 +78,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AddressResponse addUserAddress(String userId, Address address) {
-        logger.info("Adding new address for user ID: {}", userId);
+    public AddressResponse addUserAddress(AddAddressRequest addAdressRequest) {
+        String userId = getCurrentUser().getUserId();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             logger.warn("User not found with ID: {}", userId);
             throw new ResourceNotFoundException("User not found with ID: " + userId);
         }
         User user = optionalUser.get();
-        Address savedAddress = userAddressRepository.save(address);
+        // address.setUser(user);
+        Address address = new Address();
+        address.setStreet(addAdressRequest.getStreet());
+        address.setCity(addAdressRequest.getCity());
+        address.setState(addAdressRequest.getState());
+        address.setZipCode(addAdressRequest.getZip());
+        address.setCountry(addAdressRequest.getCountry());
+        try {
+            address.setAddressType(AddressType.valueOf(addAdressRequest.getType()));
+        } catch (IllegalArgumentException e) {
+            // Handle the case where the provided type is not a valid AddressType
+            throw new IllegalArgumentException("Invalid address type: " + addAdressRequest.getType());
+        }
+        Address savedAddress = addressRepository.save(address);
         user.getAddressList().add(savedAddress);
         userRepository.save(user);
         logger.info("Address added successfully with ID: {}", savedAddress.getId());
-        return addressResponseDto(savedAddress);
+        return new AddressResponse(addressRepository.save(address));
     }
 
     @Override
     public AddressResponse updateUserAddress(String addressId, Address addressDetails) {
         logger.info("Updating address with ID: {}", addressId);
-        Optional<Address> optionalAddress = userAddressRepository.findById(addressId);
+        Optional<Address> optionalAddress = addressRepository.findById(addressId);
         if (optionalAddress.isPresent()) {
             Address address = optionalAddress.get();
             address.setStreet(addressDetails.getStreet());
@@ -102,9 +117,9 @@ public class UserServiceImpl implements UserService {
             address.setState(addressDetails.getState());
             address.setZipCode(addressDetails.getZipCode());
             address.setCountry(addressDetails.getCountry());
-            Address updated = userAddressRepository.save(address);
+            Address updated = addressRepository.save(address);
             logger.info("Address updated successfully with ID: {}", updated.getId());
-            return addressResponseDto(updated);
+            return new AddressResponse(addressRepository.save(address));
         } else {
             logger.warn("Address not found with ID: {}", addressId);
             throw new ResourceNotFoundException("Address not found with ID: " + addressId);
@@ -114,35 +129,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserAddress(String addressId) {
         logger.info("Deleting address with ID: {}", addressId);
-        if (!userAddressRepository.existsById(addressId)) {
+        if (!addressRepository.existsById(addressId)) {
             logger.warn("Address not found for deletion with ID: {}", addressId);
             throw new ResourceNotFoundException("Address not found with ID: " + addressId);
         }
-        userAddressRepository.deleteById(addressId);
+        addressRepository.deleteById(addressId);
         logger.info("Address deleted successfully with ID: {}", addressId);
-    }
-
-    private UserResponse userResponseDto(User user) {
-        UserResponse dto = new UserResponse();
-        dto.id = user.getId();
-        dto.name = user.getFirstName() + " " + user.getLastName();
-        dto.email = user.getEmail();
-        dto.role = user.getRole() != null ? user.getRole().name() : null;
-        dto.addresses = user.getAddressList() != null
-                ? user.getAddressList().stream().map(this::addressResponseDto).collect(Collectors.toList())
-                : null;
-        return dto;
-    }
-
-    private AddressResponse addressResponseDto(Address address) {
-        AddressResponse dto = new AddressResponse();
-        dto.id = address.getId();
-        dto.street = address.getStreet();
-        dto.city = address.getCity();
-        dto.state = address.getState();
-        dto.zip = address.getZipCode();
-        dto.country = address.getCountry();
-        dto.type = address.getAddressType() != null ? address.getAddressType().name() : null;
-        return dto;
     }
 }

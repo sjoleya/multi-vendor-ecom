@@ -32,7 +32,6 @@ public class OrderController {
                 checkoutRequest.getCustomerId(),
                 checkoutRequest.getAddressId());
         OrderResponse order = orderService.checkout(checkoutRequest.getCustomerId(), checkoutRequest.getAddressId());
-        logger.info("Order created with ID: {}", order.orderId);
         return ResponseEntity.ok(order);
     }
 

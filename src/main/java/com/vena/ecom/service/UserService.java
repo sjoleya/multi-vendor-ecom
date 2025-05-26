@@ -6,15 +6,16 @@ import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
+import com.vena.ecom.dto.request.AddAddressRequest;
 
 public interface UserService {
     UserResponse getCurrentUser();
 
     UserResponse updateCurrentUser(User userDetails);
 
-    List<AddressResponse> getUserAddresses(String userId);
+    List<AddressResponse> getUserAddresses();
 
-    AddressResponse addUserAddress(String userId, Address address);
+    AddressResponse addUserAddress(AddAddressRequest addAdressRequest);
 
     AddressResponse updateUserAddress(String addressId, Address addressDetails);
 

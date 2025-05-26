@@ -15,7 +15,7 @@ public class VendorProduct extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "catalog_id", referencedColumnName = "id")
-    private ProductCatalog catalogProductId;
+    private ProductCatalog productCatalog;
 
     @ManyToOne
     @JoinColumn(name = "vendor_id", referencedColumnName = "id")
@@ -38,7 +38,7 @@ public class VendorProduct extends Auditable {
     public VendorProduct(ProductCatalog catalogProductId, String id, VendorProfile vendorId, String sku,
             BigDecimal price, Integer stockQuantity, ApprovalStatus approvalStatus,
             Boolean isActive, BigDecimal averageRating) {
-        this.catalogProductId = catalogProductId;
+        this.productCatalog = catalogProductId;
         this.id = id;
         this.vendorId = vendorId;
         this.SKU = sku;
@@ -57,12 +57,12 @@ public class VendorProduct extends Auditable {
         this.id = id;
     }
 
-    public ProductCatalog getCatalogProductId() {
-        return catalogProductId;
+    public ProductCatalog getProductCatalog() {
+        return productCatalog;
     }
 
-    public void setCatalogProductId(ProductCatalog catalogProductId) {
-        this.catalogProductId = catalogProductId;
+    public void setProductCatalog(ProductCatalog productCatalog) {
+        this.productCatalog = productCatalog;
     }
 
     public VendorProfile getVendorId() {
@@ -141,7 +141,7 @@ public class VendorProduct extends Auditable {
     public String toString() {
         return "VendorProduct{" +
                 "id='" + id + '\'' +
-                ", catalogProductId=" + catalogProductId +
+                ", productCatalogId=" + productCatalog.getId() +
                 ", vendorId=" + vendorId +
                 ", SKU='" + SKU + '\'' +
                 ", price=" + price +

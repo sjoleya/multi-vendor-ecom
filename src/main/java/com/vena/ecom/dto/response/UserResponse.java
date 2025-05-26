@@ -1,31 +1,35 @@
 package com.vena.ecom.dto.response;
 
+import com.vena.ecom.model.User;
+
 import java.util.List;
 
 public class UserResponse {
-    public String userId;
-    public String name;
-    public String email;
-    public String role;
-    public java.util.List<AddressResponse> addresses;
+    private String userId;
+    private String name;
+    private String email;
+    private String role;
+    private List<AddressResponse> addresses;
 
     public UserResponse() {
     }
 
-    public UserResponse(String id, String name, String email, String role, List<AddressResponse> addresses) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-        this.addresses = addresses;
+    public UserResponse(User user) {
+        this.userId = user.getId();
+        this.name = user.getFirstName() + " " + user.getLastName();
+        this.email = user.getEmail();
+        this.role = user.getRole().toString();
+        this.addresses = user.getAddressList().stream()
+                .map(AddressResponse::new)
+                .toList();
     }
 
-    public String getId() {
-        return id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getName() {

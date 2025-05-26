@@ -47,7 +47,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     return shoppingCartRepository.save(newCart);
                 });
         logger.info("Cart fetched/created successfully for customerId: {}", customerId);
-        return toShoppingCartResponse(cart);
+        return new ShoppingCartResponse(cart);
     }
 
     @Override
@@ -62,11 +62,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         VendorProduct product = vendorProductRepository.findById(request.getVendorProductId())
                 .orElseThrow(() -> {
                     logger.error("Vendor product not found with id: {}", request.getVendorProductId());
-                    return new ResourceNotFoundException("Vendor product not found with ID: " + request.getVendorProductId());
+                    return new ResourceNotFoundException(
+                            "Vendor product not found with ID: " + request.getVendorProductId());
                 });
 
         if (request.getQuantity() <= 0) {
-            logger.warn("Invalid quantity {} requested to add for product '{}'", request.getQuantity(), product.getName());
+            logger.warn("Invalid quantity {} requested to add for product '{}'", request.getQuantity(),
+                    product.getName());
             throw new IllegalArgumentException("Quantity must be greater than zero");
         }
 
@@ -74,8 +76,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cart.getCartItems().add(cartItem);
         shoppingCartRepository.save(cart);
         cartItemRepository.save(cartItem);
-        logger.info("Added product '{}' to cart for customerId: {} with quantity: {}", product.getName(), customerId, request.getQuantity());
-        return toCartItemResponse(cartItem);
+        logger.info("Added product '{}' to cart for customerId: {} with quantity: {}", product.getName(), customerId,
+                request.getQuantity());
+        return new CartItemResponse(cartItem);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItem.setQuantity(request.getQuantity());
         cartItemRepository.save(cartItem);
         logger.info("Updated quantity for cartItemId: {} to {}", cartItemId, request.getQuantity());
-        return toCartItemResponse(cartItem);
+        return new CartItemResponse(cartItem);
     }
 
     @Override
@@ -118,27 +121,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     return new ResourceNotFoundException("Cart not found for customerId: " + customerId);
                 });
         cart.getCartItems().clear();
-        shoppingCartRepository.save(cart);
-        logger.info("Cart cleared successfully for customerId: {}", customerId);
-    }
-
-    private ShoppingCartResponse toShoppingCartResponse(ShoppingCart cart) {
-        ShoppingCartResponse dto = new ShoppingCartResponse();
-        dto.customerId = cart.getCustomer().getId();
-        dto.items = cart.getCartItems().stream().map(this::toCartItemResponse).toList();
-        dto.totalAmount = cart.getCartItems().stream()
-                .mapToDouble(item -> item.getVendorProduct().getPrice().doubleValue() * item.getQuantity()).sum();
-        return dto;
-    }
-
-    private CartItemResponse toCartItemResponse(CartItem item) {
-        CartItemResponse dto = new CartItemResponse();
-        dto.cartItemId = item.getId();
-        dto.productId = item.getVendorProduct().getId();
-        dto.productName = item.getVendorProduct().getName();
-        dto.quantity = item.getQuantity();
-        dto.price = item.getVendorProduct().getPrice().doubleValue();
-        dto.totalPrice = dto.price * dto.quantity;
-        return dto;
+        shoppingCartRepository.save(cart); // CascadeType.ALL ensures related items are deleted
     }
 }

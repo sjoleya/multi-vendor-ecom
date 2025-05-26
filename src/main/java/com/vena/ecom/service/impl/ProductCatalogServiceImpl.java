@@ -32,7 +32,7 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         logger.info("Fetching all product catalogs");
         List<ProductCatalogResponse> responses = productCatalogRepository.findAll()
                 .stream()
-                .map(this::toProductCatalogResponse)
+                .map(ProductCatalogResponse::new)
                 .toList();
         logger.debug("Total product catalogs found: {}", responses.size());
         return responses;
@@ -41,13 +41,13 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
     @Override
     public ProductCatalogResponse getproductCatalogById(String id) {
         logger.info("Fetching product catalog by ID: {}", id);
-        Optional<ProductCatalog> productCatalog = productCatalogRepository.findById(id);
-        if (!productCatalog.isPresent()) {
+        ProductCatalog productCatalog = productCatalogRepository.findById(id).orElseThrow(() -> {
             logger.warn("Product catalog not found for ID: {}", id);
-            throw new ResourceNotFoundException("Product does not exist in catalog with this ID: " + id);
-        }
-        logger.debug("Product catalog found: {}", productCatalog.get().getName());
-        return toProductCatalogResponse(productCatalog.get());
+            return new ResourceNotFoundException("Product with id: " + id + "not found in catalog!");
+        });
+
+        logger.debug("Product catalog found: {}", productCatalog.getName());
+        return new ProductCatalogResponse(productCatalog);
     }
 
     @Override
@@ -68,11 +68,12 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
 
         ProductCatalog saved = productCatalogRepository.save(productCatalog);
         logger.debug("Product catalog saved with ID: {}", saved.getId());
-        return toProductCatalogResponse(saved);
+        return new ProductCatalogResponse(saved);
     }
 
     @Override
-    public ProductCatalogResponse updateProductCatalogById(String id, AddProductCatalogRequest addProductCatalogRequest) {
+    public ProductCatalogResponse updateProductCatalogById(String id,
+            AddProductCatalogRequest addProductCatalogRequest) {
         logger.info("Updating product catalog with ID: {}", id);
         Optional<ProductCatalog> optionalProductCatalog = productCatalogRepository.findById(id);
         if (!optionalProductCatalog.isPresent()) {
@@ -95,7 +96,7 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
 
         ProductCatalog saved = productCatalogRepository.save(productCatalog);
         logger.debug("Product catalog updated with ID: {}", saved.getId());
-        return toProductCatalogResponse(saved);
+        return new ProductCatalogResponse(saved);
     }
 
     @Override
@@ -109,14 +110,5 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
             logger.warn("Attempted to delete non-existent product catalog with ID: {}", id);
             throw new ResourceNotFoundException("Product not found with this ID: " + id);
         }
-    }
-
-    private ProductCatalogResponse toProductCatalogResponse(ProductCatalog productCatalog) {
-        ProductCatalogResponse dto = new ProductCatalogResponse();
-        dto.productId = productCatalog.getId();
-        dto.name = productCatalog.getName();
-        dto.description = productCatalog.getDescription();
-        dto.categoryId = productCatalog.getCategory() != null ? productCatalog.getCategory().getId() : null;
-        return dto;
     }
 }

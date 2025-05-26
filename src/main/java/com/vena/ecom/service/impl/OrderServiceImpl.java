@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vena.ecom.dto.response.OrderResponse;
-import com.vena.ecom.dto.response.OrderItemResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
 import com.vena.ecom.dto.request.OrderPaymentRequest;
+import com.vena.ecom.dto.response.OrderItemResponse;
 import com.vena.ecom.dto.response.OrderPaymentResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.CartItem;
@@ -120,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
         shoppingCartService.clearCart(customerId);
         logger.info("checkout - Order created with ID: {}", savedOrder.getId());
         try {
-            OrderResponse orderResponse = toOrderResponse(savedOrder);
+            OrderResponse orderResponse = new OrderResponse(savedOrder);
             logger.debug("checkout - Converted order to response: {}", orderResponse);
             return orderResponse;
         } catch (Exception e) {
@@ -133,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderResponse> getOrderHistory(String customerId) {
         logger.info("getOrderHistory - Fetching order history for customer ID: {}", customerId);
         List<OrderResponse> orderHistory = orderRepository.findByCustomer_Id(customerId)
-                .stream().map(this::toOrderResponse).toList();
+                .stream().map(OrderResponse::new).toList();
         logger.debug("getOrderHistory - Found {} orders for customer ID: {}", orderHistory.size(), customerId);
         return orderHistory;
     }
@@ -149,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
             return new ResourceNotFoundException("Order not found");
         });
         try {
-            OrderResponse orderResponse = toOrderResponse(order);
+            OrderResponse orderResponse = new OrderResponse(order);
             logger.debug("getOrderDetails - Converted order to response: {}", orderResponse);
             return orderResponse;
         } catch (Exception e) {
@@ -188,56 +188,7 @@ public class OrderServiceImpl implements OrderService {
         review.setOrder(order);
         review.setOrderItem(orderItem);
         review.setCustomer(order.getCustomer());
-        Review savedReview = reviewRepository.save(review);
-        logger.debug("submitProductReview - Review saved: {}", savedReview);
-        try {
-            ReviewResponse reviewResponse = toReviewResponse(savedReview);
-            logger.debug("submitProductReview - Converted review to response: {}", reviewResponse);
-            return reviewResponse;
-        } catch (Exception e) {
-            logger.error("submitProductReview - Error while converting review to response for review id: {}",
-                    savedReview.getId(), e);
-            throw e;
-        }
-    }
-
-    private OrderResponse toOrderResponse(Order order) {
-        OrderResponse dto = new OrderResponse();
-        dto.orderId = order.getId();
-        dto.customerId = order.getCustomer().getId();
-        dto.items = order.getOrderItems() != null
-                ? order.getOrderItems().stream().map(this::toOrderItemResponse).toList()
-                : java.util.Collections.emptyList();
-        dto.totalAmount = order.getTotalAmount() != null ? order.getTotalAmount().doubleValue() : 0.0;
-        dto.status = order.getOrderStatus() != null ? order.getOrderStatus().name() : null;
-        dto.createdAt = order.getOrderDate() != null ? order.getOrderDate().toString() : null;
-        dto.addressId = order.getShippingAddress() != null ? order.getShippingAddress().getId() : null;
-        return dto;
-    }
-
-    private OrderItemResponse toOrderItemResponse(OrderItem item) {
-        OrderItemResponse dto = new OrderItemResponse();
-        dto.orderItemId = item.getId();
-        dto.productId = item.getVendorProduct() != null ? item.getVendorProduct().getId() : null;
-        dto.productName = item.getVendorProduct() != null ? item.getVendorProduct().getName() : null;
-        dto.quantity = item.getQuantity() != null ? item.getQuantity() : 0;
-        dto.price = item.getPriceAtPurchase() != null ? item.getPriceAtPurchase().doubleValue() : 0.0;
-        dto.status = item.getItemStatus() != null ? item.getItemStatus().name() : null;
-        dto.vendorId = item.getVendorProduct() != null && item.getVendorProduct().getVendorId() != null
-                ? item.getVendorProduct().getVendorId().getId()
-                : null;
-        return dto;
-    }
-
-    private ReviewResponse toReviewResponse(Review review) {
-        ReviewResponse dto = new ReviewResponse();
-        dto.reviewId = review.getId();
-        dto.orderItemId = review.getOrderItem() != null ? review.getOrderItem().getId() : null;
-        dto.customerId = review.getCustomer() != null ? review.getCustomer().getId() : null;
-        dto.rating = review.getRating();
-        dto.comment = review.getComment();
-        dto.createdAt = review.getCreatedAt() != null ? review.getCreatedAt().toString() : null;
-        return dto;
+        return new ReviewResponse(reviewRepository.save(review));
     }
 
     @Override
@@ -273,11 +224,11 @@ public class OrderServiceImpl implements OrderService {
         try {
             orderRepository.save(order);
             logger.debug("submitOrderPayment - Order status updated to PROCESSING for order ID: {}", order.getId());
-            OrderPaymentResponse response = new OrderPaymentResponse(order.getId(), PaymentStatus.SUCCEEDED,
+            OrderPaymentResponse orderPaymentResponse = new OrderPaymentResponse(order.getId(), PaymentStatus.SUCCEEDED,
                     paymentRequest.getTransactionId(),
                     "Payment Successful", LocalDateTime.now());
-            logger.debug("submitOrderPayment - Order payment response created: {}", response);
-            return response;
+            logger.debug("submitOrderPayment - Order payment response created: {}", orderPaymentResponse);
+            return orderPaymentResponse;
         } catch (Exception e) {
             logger.error("submitOrderPayment - Error while creating order payment response for order id: {}",
                     order.getId(), e);
