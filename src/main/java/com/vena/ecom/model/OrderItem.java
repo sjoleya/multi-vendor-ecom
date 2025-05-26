@@ -106,4 +106,17 @@ public class OrderItem extends Auditable {
     public void setItemStatus(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;
     }
+
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "id='" + id + '\'' +
+                ", order=" + order +
+                ", vendorProduct=" + vendorProduct +
+                ", quantity=" + quantity +
+                ", priceAtPurchase=" + priceAtPurchase +
+                ", subtotal=" + subtotal +
+                ", itemStatus=" + itemStatus +
+                '}';
+    }
 }

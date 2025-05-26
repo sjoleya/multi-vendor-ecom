@@ -85,4 +85,15 @@ public class VendorProfile extends Auditable {
         this.approvalStatus = approvalStatus;
     }
 
+    @Override
+    public String toString() {
+        return "VendorProfile{" +
+                "id='" + id + '\'' +
+                ", user=" + user +
+                ", storeName='" + storeName + '\'' +
+                ", storeDescription='" + storeDescription + '\'' +
+                ", contactNumber='" + contactNumber + '\'' +
+                ", approvalStatus=" + approvalStatus +
+                '}';
+    }
 }
