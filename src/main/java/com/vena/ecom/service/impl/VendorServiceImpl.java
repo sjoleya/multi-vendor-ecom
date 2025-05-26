@@ -71,7 +71,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorProductResponse addVendorProduct(String vendorId, AddVendorProductRequest product) {
         VendorProfile vendor = vendorProfileRepository.findById(vendorId)
-                .orElseThrow(() -> new RuntimeException("VendorProfile not found with id: " + vendorId));
+                .orElseThrow(() -> new ResourceNotFoundException("VendorProfile not found with id: " + vendorId));
         VendorProduct vendorProduct = new VendorProduct();
         vendorProduct.setVendorId(vendor);
         vendorProduct.setCatalogProductId(productCatalogRepository.findById(product.getCatalogProductId())
@@ -96,14 +96,14 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorProductResponse getVendorProductById(String productId) {
         VendorProduct product = vendorProductRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("VendorProduct not found with id: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("VendorProduct not found with id: " + productId));
         return toVendorProductResponse(product);
     }
 
     @Override
     public VendorProductResponse updateVendorProduct(String productId, UpdateVendorProductRequest updatedProduct) {
         VendorProduct existingProduct = vendorProductRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("VendorProduct not found with id: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("VendorProduct not found with id: " + productId));
         if (updatedProduct.getPrice() != null) {
             existingProduct.setPrice(updatedProduct.getPrice());
         }
@@ -152,7 +152,7 @@ public class VendorServiceImpl implements VendorService {
 
     private VendorProfileResponse toVendorProfileResponse(VendorProfile profile) {
         VendorProfileResponse dto = new VendorProfileResponse();
-        dto.id = profile.getId();
+        dto.vendorProfileId = profile.getId();
         dto.userId = profile.getUser() != null ? profile.getUser().getId() : null;
         dto.storeName = profile.getStoreName();
         dto.status = profile.getApprovalStatus() != null ? profile.getApprovalStatus().name() : null;
@@ -161,7 +161,7 @@ public class VendorServiceImpl implements VendorService {
 
     private VendorProductResponse toVendorProductResponse(VendorProduct product) {
         VendorProductResponse dto = new VendorProductResponse();
-        dto.id = product.getId();
+        dto.vendorProductId = product.getId();
         dto.vendorId = product.getVendorId() != null ? product.getVendorId().getId() : null;
         dto.catalogProductId = product.getCatalogProductId() != null ? product.getCatalogProductId().getId() : null;
         dto.price = product.getPrice() != null ? product.getPrice().doubleValue() : 0.0;
@@ -172,7 +172,7 @@ public class VendorServiceImpl implements VendorService {
 
     private OrderItemResponse toOrderItemResponse(OrderItem item) {
         OrderItemResponse dto = new OrderItemResponse();
-        dto.id = item.getId();
+        dto.orderItemId = item.getId();
         dto.productId = item.getVendorProduct() != null ? item.getVendorProduct().getId() : null;
         dto.productName = item.getVendorProduct() != null ? item.getVendorProduct().getName() : null;
         dto.quantity = item.getQuantity() != null ? item.getQuantity() : 0;

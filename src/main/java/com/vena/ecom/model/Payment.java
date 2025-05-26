@@ -3,7 +3,9 @@ package com.vena.ecom.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vena.ecom.model.audit.Auditable;
+import com.vena.ecom.model.enums.PaymentMethod;
 import com.vena.ecom.model.enums.PaymentStatus;
 
 import jakarta.persistence.*;
@@ -17,20 +19,23 @@ public class Payment extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JsonBackReference
     private Order order;
 
     private LocalDateTime paymentDate;
     private BigDecimal amount;
-    private String paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
     private String transactionId; // Simulated
 
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status;
+    private PaymentStatus paymentStatus;
 
     public Payment() {
     }
 
-    public Payment(String id, Order order, LocalDateTime paymentDate, BigDecimal amount, String paymentMethod,
+    public Payment(String id, Order order, LocalDateTime paymentDate, BigDecimal amount, PaymentMethod paymentMethod,
             String transactionId, PaymentStatus status) {
         this.id = id;
         this.order = order;
@@ -38,7 +43,7 @@ public class Payment extends Auditable {
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.transactionId = transactionId;
-        this.status = status;
+        this.paymentStatus = status;
     }
 
     public String getId() {
@@ -73,11 +78,11 @@ public class Payment extends Auditable {
         this.amount = amount;
     }
 
-    public String getPaymentMethod() {
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
@@ -89,11 +94,24 @@ public class Payment extends Auditable {
         this.transactionId = transactionId;
     }
 
-    public PaymentStatus getStatus() {
-        return status;
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
     }
 
-    public void setStatus(PaymentStatus status) {
-        this.status = status;
+    public void setPaymentStatus(PaymentStatus status) {
+        this.paymentStatus = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "id='" + id + '\'' +
+                ", order=" + order +
+                ", paymentDate=" + paymentDate +
+                ", amount=" + amount +
+                ", paymentMethod=" + paymentMethod +
+                ", transactionId='" + transactionId + '\'' +
+                ", paymentStatus=" + paymentStatus +
+                '}';
     }
 }

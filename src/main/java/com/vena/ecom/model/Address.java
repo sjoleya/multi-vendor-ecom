@@ -103,4 +103,18 @@ public class Address {
     public void setAddressType(AddressType addressType) {
         this.addressType = addressType;
     }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "id='" + id + '\'' +
+                ", street='" + street + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", country='" + country + '\'' +
+                ", addressType=" + addressType +
+                ", user=" + user +
+                '}';
+    }
 }

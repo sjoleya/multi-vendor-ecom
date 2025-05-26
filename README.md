@@ -12,9 +12,23 @@ This platform enables multiple vendors to list products based on a centralised c
 The usernames and passwords for accessing Swagger UI are defined in the application's security configuration ([`SecurityConfig.java`](src/main/java/com/example/ecommerce/config/SecurityConfig.java:17)).
 The available credentials are:
 
-*   Username: `customer`, Password: `password`
-*   Username: `vendor`, Password: `password`
-*   Username: `admin`, Password: `password`
+*   Username: `customer@example.com`, Password: `password`
+*   Username: `vendor@example.com`, Password: `password`
+*   Username: `admin@example.com`, Password: `password`
+
+## Instructions to run the application
+1. Clone the repository
+2. Run the following command to build the project
+```
+mvn clean install
+```
+3. Add DB connection details in application-dev.properties.
+4. Create a MySQL database named `ecom`
+5. Run the following command to start the application
+```
+mvn spring-boot:run
+```
+6. Access the Swagger UI at http://localhost:8080/swagger-ui/index.html
 
 ## API Endpoints
 
@@ -34,8 +48,8 @@ POST /auth/password/reset – Reset password
 ### 2. User Profile
 
 ```
-GET /users/me – Get current user profile
-PUT /users/me – Update current user profile
+GET /users/me – Get current user
+PUT /users/me – Update current user 
 GET /users/me/addresses – List user addresses
 POST /users/me/addresses – Add user address
 PUT /users/me/addresses/{id} – Update address
@@ -71,6 +85,7 @@ DELETE /admin/categories/{id} – Delete category
 
 ```
 GET /vendor/profile – Get vendor store profile
+GET /vendor/profile/{userId} - Get Vendor store profile from User id
 PUT /vendor/profile – Update vendor store profile
 ```
 
@@ -112,6 +127,7 @@ DELETE /customer/cart – Clear cart
 POST /customer/orders/checkout – Checkout and create order
 GET /customer/orders – View order history
 GET /customer/orders/{id} – View order details
+PUT /customer/orders/payment - Customer Order Payment
 POST /customer/orders/{id}/items/{id}/review – Submit product review
 ```
 

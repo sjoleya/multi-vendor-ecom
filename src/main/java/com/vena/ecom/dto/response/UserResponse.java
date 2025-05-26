@@ -3,7 +3,7 @@ package com.vena.ecom.dto.response;
 import java.util.List;
 
 public class UserResponse {
-    public String id;
+    public String userId;
     public String name;
     public String email;
     public String role;

@@ -1,7 +1,7 @@
 package com.vena.ecom.dto.response;
 
 public class ProductCatalogResponse {
-    public String id;
+    public String productId;
     public String name;
     public String description;
     public String categoryId;
