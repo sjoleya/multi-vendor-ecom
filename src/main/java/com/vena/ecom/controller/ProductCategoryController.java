@@ -33,16 +33,14 @@ public class ProductCategoryController {
     public ResponseEntity<ProductCategoryResponse> createCategory(@RequestBody ProductCategory category) {
         logger.info("POST /admin/categories - Creating category with name: {}", category.getName());
         ProductCategoryResponse createdCategory = productCategoryService.createCategory(category);
-        logger.info("Category created successfully with ID: {}", createdCategory.getId());
         return ResponseEntity.ok(createdCategory);
     }
 
     @PutMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ProductCategoryResponse> updateCategory(@PathVariable String categoryId,
-                                                                  @RequestBody ProductCategory categoryDetails) {
+            @RequestBody ProductCategory categoryDetails) {
         logger.info("PUT /admin/categories/{} - Updating category", categoryId);
         ProductCategoryResponse updatedCategory = productCategoryService.updateCategory(categoryId, categoryDetails);
-        logger.info("Category updated successfully: {}", updatedCategory.getId());
         return ResponseEntity.ok(updatedCategory);
     }
 

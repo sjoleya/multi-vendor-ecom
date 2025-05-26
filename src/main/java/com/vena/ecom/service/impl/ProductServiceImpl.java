@@ -1,5 +1,7 @@
 package com.vena.ecom.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.vena.ecom.dto.response.VendorProductResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.VendorProduct;
@@ -14,11 +16,14 @@ import java.util.List;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+
     @Autowired
     private VendorProductRepository vendorProductRepository;
 
     @Override
     public List<VendorProductResponse> getAllProducts() {
+        logger.info("Fetching all products");
         List<VendorProduct> vendorProducts = vendorProductRepository.findAll().stream()
                 .filter(product -> product.getActive() && product.getApprovalStatus().equals(ApprovalStatus.APPROVED))
                 .toList();
@@ -29,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<VendorProductResponse> getAllProductsByCategory(String categoryName) {
+        logger.info("Fetching all products by category: {}", categoryName);
         List<VendorProduct> vendorProducts = vendorProductRepository.findAllByProductCatalog_Category_Name(categoryName)
                 .stream()
                 .filter(product -> product.getActive() && product.getApprovalStatus().equals(ApprovalStatus.APPROVED))
@@ -38,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public VendorProduct getProductDetails(String productId) {
+        logger.info("Fetching product details for product id: {}", productId);
         VendorProduct vendorProduct = vendorProductRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product with id: " + productId + "not found!"));
         if (!vendorProduct.getActive() || !vendorProduct.getApprovalStatus().equals(ApprovalStatus.APPROVED)) {

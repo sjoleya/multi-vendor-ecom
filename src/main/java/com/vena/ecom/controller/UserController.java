@@ -4,7 +4,7 @@ import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
-import com.vena.ecom.dto.request.AddAdressRequest;
+import com.vena.ecom.dto.request.AddAddressRequest;
 import com.vena.ecom.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @PostMapping("/addresses")
-    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAdressRequest address) {
+    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAddressRequest address) {
         logger.info("Post /users/me/addresses - Request to add a new address for current user");
         AddressResponse saved = userService.addUserAddress(address);
         return ResponseEntity.ok(saved);

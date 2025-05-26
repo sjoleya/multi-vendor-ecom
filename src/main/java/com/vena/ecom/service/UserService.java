@@ -5,10 +5,8 @@ import java.util.List;
 import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.model.User;
-import com.vena.ecom.dto.response.AddressResponse;
-import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.model.Address;
-import com.vena.ecom.dto.request.AddAdressRequest;
+import com.vena.ecom.dto.request.AddAddressRequest;
 
 public interface UserService {
     UserResponse getCurrentUser();
@@ -17,7 +15,7 @@ public interface UserService {
 
     List<AddressResponse> getUserAddresses();
 
-    AddressResponse addUserAddress(AddAdressRequest addAdressRequest);
+    AddressResponse addUserAddress(AddAddressRequest addAdressRequest);
 
     AddressResponse updateUserAddress(String addressId, Address addressDetails);
 

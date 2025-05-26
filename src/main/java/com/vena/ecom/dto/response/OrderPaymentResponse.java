@@ -23,6 +23,15 @@ public class OrderPaymentResponse {
         this.timestamp = payment.getPaymentDate();
     }
 
+    public OrderPaymentResponse(String orderId, PaymentStatus paymentStatus, String transactionId, String message,
+            LocalDateTime timestamp) {
+        this.orderId = orderId;
+        this.paymentStatus = paymentStatus;
+        this.transactionId = transactionId;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
+
     public String getOrderId() {
         return orderId;
     }

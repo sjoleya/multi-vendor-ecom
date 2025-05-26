@@ -141,7 +141,7 @@ public class VendorProduct extends Auditable {
     public String toString() {
         return "VendorProduct{" +
                 "id='" + id + '\'' +
-                ", catalogProductId=" + catalogProductId +
+                ", productCatalogId=" + productCatalog.getId() +
                 ", vendorId=" + vendorId +
                 ", SKU='" + SKU + '\'' +
                 ", price=" + price +

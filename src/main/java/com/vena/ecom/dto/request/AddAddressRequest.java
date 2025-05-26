@@ -2,7 +2,7 @@ package com.vena.ecom.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class AddAdressRequest {
+public class AddAddressRequest {
 
     @NotBlank(message = "Street is required")
     private String street;

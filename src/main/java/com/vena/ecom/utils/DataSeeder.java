@@ -55,7 +55,6 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (productCatalogRepository.count() == 0) {
             // Seed product categories
-            // Seed product categories
             ProductCategory category1 = new ProductCategory();
             category1.setName("Electronics");
             category1.setDescription("Electronic gadgets and accessories");

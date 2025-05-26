@@ -9,7 +9,7 @@ import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.enums.AddressType;
 import com.vena.ecom.model.Address;
-import com.vena.ecom.dto.request.AddAdressRequest;
+import com.vena.ecom.dto.request.AddAddressRequest;
 import com.vena.ecom.repo.AddressRepository;
 import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.service.UserService;
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AddressResponse addUserAddress(AddAdressRequest addAdressRequest) {
+    public AddressResponse addUserAddress(AddAddressRequest addAdressRequest) {
         String userId = getCurrentUser().getUserId();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
