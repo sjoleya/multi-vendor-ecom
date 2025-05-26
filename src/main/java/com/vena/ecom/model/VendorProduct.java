@@ -136,4 +136,21 @@ public class VendorProduct extends Auditable {
     public void setAverageRating(BigDecimal averageRating) {
         this.averageRating = averageRating;
     }
+
+    @Override
+    public String toString() {
+        return "VendorProduct{" +
+                "id='" + id + '\'' +
+                ", catalogProductId=" + catalogProductId +
+                ", vendorId=" + vendorId +
+                ", SKU='" + SKU + '\'' +
+                ", price=" + price +
+                ", stockQuantity=" + stockQuantity +
+                ", approvalStatus=" + approvalStatus +
+                ", isActive=" + isActive +
+                ", averageRating=" + averageRating +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

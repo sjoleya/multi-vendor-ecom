@@ -98,4 +98,17 @@ public class Review extends Auditable {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id='" + id + '\'' +
+                ", vendorProduct=" + vendorProduct +
+                ", customer=" + customer +
+                ", order=" + order +
+                ", orderItem=" + orderItem +
+                ", rating=" + rating +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
 }
