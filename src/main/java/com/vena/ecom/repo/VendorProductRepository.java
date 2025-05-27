@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VendorProductRepository extends JpaRepository<VendorProduct, String> {
-    List<VendorProduct> findByVendorId_Id(String vendorId);
+    List<VendorProduct> findByVendorProfileId(String vendorId);
 
-    Optional<VendorProduct> findByProductCatalog_Id(String catalogProductId);
+    Optional<VendorProduct> findByProductCatalogId(String catalogProductId);
 
-    List<VendorProduct> findAllByProductCatalog_Category_Name(String categoryName);
+    List<VendorProduct> findAllByProductCatalogCategoryName(String categoryName);
 }

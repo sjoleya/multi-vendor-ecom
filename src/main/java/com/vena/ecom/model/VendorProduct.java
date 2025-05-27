@@ -19,7 +19,7 @@ public class VendorProduct extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "vendor_id", referencedColumnName = "id")
-    private VendorProfile vendorId;
+    private VendorProfile vendorProfile;
     private String SKU;
     private BigDecimal price;
     private Integer stockQuantity;
@@ -35,12 +35,12 @@ public class VendorProduct extends Auditable {
     public VendorProduct() {
     }
 
-    public VendorProduct(ProductCatalog catalogProductId, String id, VendorProfile vendorId, String sku,
-            BigDecimal price, Integer stockQuantity, ApprovalStatus approvalStatus,
-            Boolean isActive, BigDecimal averageRating) {
+    public VendorProduct(ProductCatalog catalogProductId, String id, VendorProfile vendorProfile, String sku,
+                         BigDecimal price, Integer stockQuantity, ApprovalStatus approvalStatus,
+                         Boolean isActive, BigDecimal averageRating) {
         this.productCatalog = catalogProductId;
         this.id = id;
-        this.vendorId = vendorId;
+        this.vendorProfile = vendorProfile;
         this.SKU = sku;
         this.price = price;
         this.stockQuantity = stockQuantity;
@@ -65,12 +65,12 @@ public class VendorProduct extends Auditable {
         this.productCatalog = productCatalog;
     }
 
-    public VendorProfile getVendorId() {
-        return vendorId;
+    public VendorProfile getVendorProfile() {
+        return vendorProfile;
     }
 
-    public void setVendorId(VendorProfile vendorId) {
-        this.vendorId = vendorId;
+    public void setVendorProfile(VendorProfile vendorProfile) {
+        this.vendorProfile = vendorProfile;
     }
 
     public String getSKU() {
@@ -142,7 +142,7 @@ public class VendorProduct extends Auditable {
         return "VendorProduct{" +
                 "id='" + id + '\'' +
                 ", productCatalogId=" + productCatalog.getId() +
-                ", vendorId=" + vendorId +
+                ", vendorId=" + vendorProfile +
                 ", SKU='" + SKU + '\'' +
                 ", price=" + price +
                 ", stockQuantity=" + stockQuantity +

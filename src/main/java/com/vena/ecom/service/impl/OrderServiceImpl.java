@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import com.vena.ecom.dto.response.OrderResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
 import com.vena.ecom.dto.request.OrderPaymentRequest;
-import com.vena.ecom.dto.response.OrderItemResponse;
 import com.vena.ecom.dto.response.OrderPaymentResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.CartItem;
@@ -68,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse checkout(String customerId, String addressId) {
         logger.info("checkout - Checking out for customer ID: {} and address ID: {}", customerId, addressId);
-        ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer_Id(customerId).map(sc -> {
+        ShoppingCart shoppingCart = shoppingCartRepository.findByCustomerId(customerId).map(sc -> {
             logger.debug("checkout - Shopping cart found: {}", sc);
             return sc;
         }).orElseThrow(() -> {
@@ -132,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponse> getOrderHistory(String customerId) {
         logger.info("getOrderHistory - Fetching order history for customer ID: {}", customerId);
-        List<OrderResponse> orderHistory = orderRepository.findByCustomer_Id(customerId)
+        List<OrderResponse> orderHistory = orderRepository.findByCustomerId(customerId)
                 .stream().map(OrderResponse::new).toList();
         logger.debug("getOrderHistory - Found {} orders for customer ID: {}", orderHistory.size(), customerId);
         return orderHistory;
