@@ -39,10 +39,11 @@ public class VendorController {
         return ResponseEntity.ok(profile);
     }
 
-    @PostMapping("/profile/{userId}")
-    public ResponseEntity<VendorProfileResponse> createVendorProfile(@PathVariable Long userId,
+    @PostMapping("/profile")
+    public ResponseEntity<VendorProfileResponse> createVendorProfile(
             @RequestBody AddVendorProfileRequest addVendorProfileRequest) {
-        logger.info("POST/vendor/profile/{} - Creating new Vendor Profile for User with ID: {}", userId);
+        logger.info("POST/vendor/profile/{} - Creating new Vendor Profile for User with ID: {}",
+                addVendorProfileRequest.getUserId());
         VendorProfileResponse vendorProfileResponse = vendorService.createVendorProfile(addVendorProfileRequest);
         return ResponseEntity.created(null).body(vendorProfileResponse);
     }
