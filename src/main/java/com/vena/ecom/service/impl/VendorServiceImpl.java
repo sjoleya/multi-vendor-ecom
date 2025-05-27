@@ -60,7 +60,7 @@ public class VendorServiceImpl implements VendorService {
 
     public VendorProfileResponse getVendorProfileByUserId(String userId) {
         logger.info("Fetching VendorProfile by User ID: {}", userId);
-        VendorProfile profile = vendorProfileRepository.findByUserId(userId)
+        VendorProfile profile = vendorProfileRepository.findByVendorId(userId)
                 .orElseThrow(() -> {
                     logger.error("VendorProfile not found with User ID: {}", userId);
                     return new ResourceNotFoundException("VendorProfile not found with id: " + userId);
@@ -217,11 +217,14 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorProfileResponse createVendorProfile(AddVendorProfileRequest addVendorProfileRequest) {
         String userId = addVendorProfileRequest.getUserId();
-        logger.info("Creating VendorProfile for User ID: {}", userId);
-        VendorProfile vendorProfile = new VendorProfile();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-        vendorProfile.setUser(user);
+        if (vendorProfileRepository.existsByVendor(user)) {
+            throw new IllegalArgumentException("Vendor Profile for this user already exists");
+        }
+        logger.info("Creating VendorProfile for User ID: {}", userId);
+        VendorProfile vendorProfile = new VendorProfile();
+        vendorProfile.setVendor(user);
         vendorProfile.setStoreName(addVendorProfileRequest.getShopName());
         vendorProfile.setStoreDescription(addVendorProfileRequest.getDescription());
         vendorProfile.setContactNumber(addVendorProfileRequest.getContactNumber());

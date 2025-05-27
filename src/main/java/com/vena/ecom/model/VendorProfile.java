@@ -13,8 +13,8 @@ public class VendorProfile extends Auditable {
     private String id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @JoinColumn(name = "vendor_id", referencedColumnName = "id")
+    private User vendor;
     private String storeName;
     private String storeDescription;
 
@@ -26,11 +26,11 @@ public class VendorProfile extends Auditable {
     public VendorProfile() {
     }
 
-    public VendorProfile(String id, User user, String storeName,
+    public VendorProfile(String id, User vendor, String storeName,
             String storeDescription, String contactNumber,
             ApprovalStatus approvalStatus) {
         this.id = id;
-        this.user = user;
+        this.vendor = vendor;
         this.storeName = storeName;
         this.storeDescription = storeDescription;
         this.contactNumber = contactNumber;
@@ -45,12 +45,12 @@ public class VendorProfile extends Auditable {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public User getVendor() {
+        return vendor;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setVendor(User vendor) {
+        this.vendor = vendor;
     }
 
     public String getStoreName() {
@@ -89,7 +89,7 @@ public class VendorProfile extends Auditable {
     public String toString() {
         return "VendorProfile{" +
                 "id='" + id + '\'' +
-                ", user=" + user +
+                ", Vendor=" + vendor +
                 ", storeName='" + storeName + '\'' +
                 ", storeDescription='" + storeDescription + '\'' +
                 ", contactNumber='" + contactNumber + '\'' +

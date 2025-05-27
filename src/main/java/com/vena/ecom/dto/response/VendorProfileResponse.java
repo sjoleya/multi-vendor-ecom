@@ -13,7 +13,7 @@ public class VendorProfileResponse {
 
     public VendorProfileResponse(VendorProfile vendorProfile) {
         this.vendorProfileId = vendorProfile.getId();
-        this.userId = vendorProfile.getUser().getId();
+        this.userId = vendorProfile.getVendor().getId();
         this.storeName = vendorProfile.getStoreName();
         this.status = vendorProfile.getApprovalStatus().toString();
     }

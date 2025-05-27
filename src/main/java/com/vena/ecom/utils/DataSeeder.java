@@ -133,7 +133,7 @@ public class DataSeeder implements CommandLineRunner {
 
             // Seed vendor profiles
             VendorProfile vendorProfile1 = new VendorProfile();
-            vendorProfile1.setUser(user2);
+            vendorProfile1.setVendor(user2);
             vendorProfile1.setStoreName("Jane's Boutique");
             vendorProfile1.setStoreDescription("A trendy clothing store");
             vendorProfile1.setContactNumber("555-123-4567");
