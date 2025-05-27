@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
         logger.info("Fetching addresses for user ID: {}", userId);
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
-            List<Address> addresses = addressRepository.findByUser_Id(userId);
+            List<Address> addresses = addressRepository.findByUserId(userId);
             logger.info("Total addresses found: {}", addresses.size());
             List<AddressResponse> response = addresses.stream().map(AddressResponse::new).toList();
             return response;

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public class UpdateVendorProductRequest {
 
     @NotNull(message = "Product ID is required")
-    private Long id;
+    private String id;
     @NotBlank(message = "Product name is required")
     private String name;
     @NotBlank(message = "Description is required")
@@ -24,11 +24,11 @@ public class UpdateVendorProductRequest {
     @NotNull(message = "Active status is required")
     private Boolean isActive;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

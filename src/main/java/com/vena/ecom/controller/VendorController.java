@@ -1,5 +1,6 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.request.AddVendorProfileRequest;
 import com.vena.ecom.dto.request.UpdateVendorProductRequest;
 import com.vena.ecom.dto.response.VendorProfileResponse;
 import com.vena.ecom.dto.response.VendorProductResponse;
@@ -16,32 +17,39 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/vendor")
 public class VendorController {
-    private static final Logger logger =  LoggerFactory.getLogger(VendorController.class);
+    private static final Logger logger = LoggerFactory.getLogger(VendorController.class);
 
     @Autowired
     private VendorService vendorService;
 
     @GetMapping("/profile")
     public ResponseEntity<VendorProfileResponse> getVendorProfileById(@RequestParam String vendorProfileId) {
-       logger.info("GET/vendor/profile - Fetching vendor profile with ID: {}",vendorProfileId);
+        logger.info("GET/vendor/profile - Fetching vendor profile with ID: {}", vendorProfileId);
         VendorProfileResponse profile = vendorService.getVendorProfile(vendorProfileId);
         return ResponseEntity.ok(profile);
     }
 
     @GetMapping("/profile/{userId}")
     public ResponseEntity<VendorProfileResponse> getVendorProfileByUserId(@PathVariable String userId) {
-        logger.info("GET/vendor/profile/{} - Fetching vendor profile" ,userId);
+        logger.info("GET/vendor/profile/{} - Fetching vendor profile", userId);
         VendorProfileResponse profile = vendorService.getVendorProfileByUserId(userId);
         return ResponseEntity.ok(profile);
     }
 
+    @PostMapping("/profile/{userId}")
+    public ResponseEntity<VendorProfileResponse> createVendorProfile(@PathVariable Long userId,
+            @RequestBody AddVendorProfileRequest addVendorProfileRequest) {
+        logger.info("POST/vendor/profile/{} - Creating new Vendor Profile for User with ID: {}", userId);
+        VendorProfileResponse vendorProfileResponse = vendorService.createVendorProfile(addVendorProfileRequest);
+        return ResponseEntity.created(null).body(vendorProfileResponse);
+    }
+
     @PutMapping("/profile")
     public ResponseEntity<VendorProfileResponse> updateVendorProfile(
-            @RequestParam("vendorProfileId") String vendorProfileId,
+            @RequestParam String vendorProfileId,
             @RequestBody UpdateVendorProfileRequest updatedProfile) {
         logger.info("PUT/vendor/profile - Updating vendor profile with ID: {}", vendorProfileId);
         VendorProfileResponse profile = vendorService.updateVendorProfile(vendorProfileId, updatedProfile);
@@ -50,7 +58,7 @@ public class VendorController {
 
     @PostMapping("/product")
     public ResponseEntity<VendorProductResponse> addVendorProduct(
-            @RequestParam("vendorProfileId") String vendorProfileId,
+            @RequestParam String vendorProfileId,
             @RequestBody AddVendorProductRequest product) {
         logger.info("POST/vendor/product - Adding product for vendor profile ID: {}", vendorProfileId);
         VendorProductResponse savedProduct = vendorService.addVendorProduct(vendorProfileId, product);

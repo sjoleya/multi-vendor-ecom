@@ -148,7 +148,7 @@ public class DataSeeder implements CommandLineRunner {
 
             VendorProduct vendorProduct1 = new VendorProduct();
             vendorProduct1.setProductCatalog(product1);
-            vendorProduct1.setVendorId(vendorProfile1);
+            vendorProduct1.setVendorProfile(vendorProfile1);
             vendorProduct1.setSKU("VP001");
             vendorProduct1.setPrice(new BigDecimal("25.00"));
             vendorProduct1.setStockQuantity(100);
@@ -161,7 +161,7 @@ public class DataSeeder implements CommandLineRunner {
 
             VendorProduct vendorProduct2 = new VendorProduct();
             vendorProduct2.setProductCatalog(product2);
-            vendorProduct2.setVendorId(vendorProfile1);
+            vendorProduct2.setVendorProfile(vendorProfile1);
             vendorProduct2.setSKU("VP002");
             vendorProduct2.setName("Nike Dri-FIT T-Shirt - Alternate Edition");
             vendorProduct2.setDescription("Another Exclusive Nike Dri-FIT T-Shirt offered by Jane's Boutique");
@@ -176,9 +176,9 @@ public class DataSeeder implements CommandLineRunner {
             ProductCatalog laptop = productCatalogRepository.findByName("Laptop").orElse(product1);
             ProductCatalog tShirt = productCatalogRepository.findByName("T-Shirt").orElse(product2);
 
-            VendorProduct vendorProductLaptop = vendorProductRepository.findByProductCatalog_Id(laptop.getId())
+            VendorProduct vendorProductLaptop = vendorProductRepository.findByProductCatalogId(laptop.getId())
                     .orElse(null);
-            VendorProduct vendorProductTShirt = vendorProductRepository.findByProductCatalog_Id(tShirt.getId())
+            VendorProduct vendorProductTShirt = vendorProductRepository.findByProductCatalogId(tShirt.getId())
                     .orElse(null);
 
             Order order1 = new Order();

@@ -5,6 +5,7 @@ import com.vena.ecom.dto.request.AddVendorProductRequest;
 import com.vena.ecom.dto.request.UpdateVendorProfileRequest;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.OrderItem;
+import com.vena.ecom.model.User;
 import com.vena.ecom.model.VendorProduct;
 import com.vena.ecom.model.VendorProfile;
 import com.vena.ecom.model.enums.ApprovalStatus;
@@ -14,6 +15,7 @@ import com.vena.ecom.repo.VendorProductRepository;
 import com.vena.ecom.repo.VendorProfileRepository;
 import com.vena.ecom.service.VendorService;
 import com.vena.ecom.repo.ProductCatalogRepository;
+import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.dto.response.VendorProfileResponse;
 import com.vena.ecom.dto.response.VendorProductResponse;
 import com.vena.ecom.dto.response.OrderItemResponse;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.vena.ecom.dto.request.AddVendorProfileRequest;
 import java.util.List;
 
 @Service
@@ -40,6 +43,9 @@ public class VendorServiceImpl implements VendorService {
     @Autowired
     private OrderItemRepository orderItemRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public VendorProfileResponse getVendorProfile(String vendorProfileId) {
         logger.info("Fetching VendorProfile by ID: {}", vendorProfileId);
@@ -54,7 +60,7 @@ public class VendorServiceImpl implements VendorService {
 
     public VendorProfileResponse getVendorProfileByUserId(String userId) {
         logger.info("Fetching VendorProfile by User ID: {}", userId);
-        VendorProfile profile = vendorProfileRepository.findByUser_Id(userId)
+        VendorProfile profile = vendorProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> {
                     logger.error("VendorProfile not found with User ID: {}", userId);
                     return new ResourceNotFoundException("VendorProfile not found with id: " + userId);
@@ -100,7 +106,7 @@ public class VendorServiceImpl implements VendorService {
                 });
         logger.debug("VendorProfile found: {}", vendor.getId());
         VendorProduct vendorProduct = new VendorProduct();
-        vendorProduct.setVendorId(vendor);
+        vendorProduct.setVendorProfile(vendor);
         vendorProduct.setProductCatalog(productCatalogRepository.findById(product.getCatalogProductId())
                 .orElseThrow(() -> {
                     logger.error("Product Catalog not found for ID: {}", product.getCatalogProductId());
@@ -122,7 +128,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public List<VendorProductResponse> getVendorProducts(String vendorId) {
         logger.info("Fetching products for Vendor ID: {}", vendorId);
-        return vendorProductRepository.findByVendorId_Id(vendorId)
+        return vendorProductRepository.findByVendorProfileId(vendorId)
                 .stream().map(VendorProductResponse::new).toList();
     }
 
@@ -181,7 +187,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public List<OrderItemResponse> getVendorOrderItems(String vendorId) {
         logger.info("Fetching order items for Vendor ID: {}", vendorId);
-        return orderItemRepository.findByVendorProduct_VendorId_Id(vendorId)
+        return orderItemRepository.findByVendorProductVendorProfileId(vendorId)
                 .stream().map(OrderItemResponse::new).toList();
     }
 
@@ -206,5 +212,20 @@ public class VendorServiceImpl implements VendorService {
         OrderItem saved = orderItemRepository.save(orderItem);
         logger.info("OrderItem status updated successfully for ID: {}", saved.getId());
         return new OrderItemResponse(saved);
+    }
+
+    @Override
+    public VendorProfileResponse createVendorProfile(AddVendorProfileRequest addVendorProfileRequest) {
+        String userId = addVendorProfileRequest.getUserId();
+        logger.info("Creating VendorProfile for User ID: {}", userId);
+        VendorProfile vendorProfile = new VendorProfile();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        vendorProfile.setUser(user);
+        vendorProfile.setStoreName(addVendorProfileRequest.getShopName());
+        vendorProfile.setStoreDescription(addVendorProfileRequest.getDescription());
+        vendorProfile.setContactNumber(addVendorProfileRequest.getContactNumber());
+        VendorProfile saved = vendorProfileRepository.save(vendorProfile);
+        return new VendorProfileResponse(saved);
     }
 }

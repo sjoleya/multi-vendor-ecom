@@ -1,5 +1,6 @@
 package com.vena.ecom.service;
 
+import com.vena.ecom.dto.request.AddVendorProfileRequest;
 import com.vena.ecom.dto.response.OrderItemResponse;
 import com.vena.ecom.dto.response.VendorProductResponse;
 import com.vena.ecom.dto.response.VendorProfileResponse;
@@ -35,4 +36,6 @@ public interface VendorService {
      OrderItemResponse getVendorOrderItemDetails(String orderItemId);
 
      OrderItemResponse updateOrderItemStatus(String orderItemId, ItemStatus status);
+
+     VendorProfileResponse createVendorProfile(AddVendorProfileRequest addVendorProfileRequest);
 }

@@ -9,5 +9,5 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, String> {
     // Custom derived query to get all order items for a customer
     List<OrderItem> findByOrder_Customer_Id(String userId);
 
-    List<OrderItem> findByVendorProduct_VendorId_Id(String vendorId);
+    List<OrderItem> findByVendorProductVendorProfileId(String vendorId);
 }

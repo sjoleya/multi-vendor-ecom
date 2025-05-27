@@ -17,7 +17,7 @@ public class VendorProductResponse {
 
     public VendorProductResponse(VendorProduct vendorProduct) {
         this.vendorProductId = vendorProduct.getId();
-        this.vendorId = vendorProduct.getVendorId().getId();
+        this.vendorId = vendorProduct.getVendorProfile().getId();
         this.catalogProductId = vendorProduct.getProductCatalog().getId();
         this.price = vendorProduct.getPrice();
         this.stock = vendorProduct.getStockQuantity();

@@ -26,7 +26,7 @@ public class OrderItemResponse {
         this.quantity = orderItem.getQuantity();
         this.price = vendorProduct.getPrice().doubleValue();
         this.status = orderItem.getItemStatus().toString();
-        this.vendorId = vendorProduct.getVendorId().getId();
+        this.vendorId = vendorProduct.getVendorProfile().getId();
     }
 
     public String getOrderItemId() {

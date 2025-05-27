@@ -34,7 +34,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartResponse getCartByCustomerId(String customerId) {
         logger.info("Fetching cart for customerId: {}", customerId);
-        ShoppingCart cart = shoppingCartRepository.findByCustomer_Id(customerId)
+        ShoppingCart cart = shoppingCartRepository.findByCustomerId(customerId)
                 .orElseGet(() -> {
                     logger.info("Cart not found for customerId: {}, creating new cart", customerId);
                     User customer = userRepository.findById(customerId)
@@ -53,7 +53,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public CartItemResponse addCartItem(String customerId, AddCartItemRequest request) {
         logger.info("Adding product '{}' to cart for customerId: {}", request.getVendorProductId(), customerId);
-        ShoppingCart cart = shoppingCartRepository.findByCustomer_Id(customerId)
+        ShoppingCart cart = shoppingCartRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> {
                     logger.error("Cart not found for customerId: {}", customerId);
                     return new ResourceNotFoundException("Cart not found for customerId: " + customerId);
@@ -115,7 +115,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public void clearCart(String customerId) {
         logger.info("Clearing cart for customerId: {}", customerId);
-        ShoppingCart cart = shoppingCartRepository.findByCustomer_Id(customerId)
+        ShoppingCart cart = shoppingCartRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> {
                     logger.error("Cart not found for customerId: {}", customerId);
                     return new ResourceNotFoundException("Cart not found for customerId: " + customerId);

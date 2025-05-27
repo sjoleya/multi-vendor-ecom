@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<VendorProductResponse> getAllProductsByCategory(String categoryName) {
         logger.info("Fetching all products by category: {}", categoryName);
-        List<VendorProduct> vendorProducts = vendorProductRepository.findAllByProductCatalog_Category_Name(categoryName)
+        List<VendorProduct> vendorProducts = vendorProductRepository.findAllByProductCatalogCategoryName(categoryName)
                 .stream()
                 .filter(product -> product.getActive() && product.getApprovalStatus().equals(ApprovalStatus.APPROVED))
                 .toList();
