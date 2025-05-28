@@ -146,7 +146,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
-
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -154,21 +153,7 @@ public class UserServiceImpl implements UserService {
         user.setPasswordHash(request.getPassword());
         user.setRole(request.getRole());
         user.setPhoneNumber(request.getPhoneNumber());
-
         User savedUser = userRepository.save(user);
-
-        // Create vendor profile if user is a VENDOR
-        if (savedUser.getRole() == UserRole.VENDOR) {
-            VendorProfile vendorProfile = new VendorProfile();
-//            vendorProfile.setUser(savedUser);
-            vendorProfile.setVendor(user);
-
-            vendorProfile.setStoreName("New Vendor Store"); // Or request.getStoreName() if you want
-            vendorProfile.setStoreDescription("Vendor description pending");
-            vendorProfile.setContactNumber(savedUser.getPhoneNumber());
-            vendorProfile.setApprovalStatus(ApprovalStatus.PENDING);
-            vendorProfileRepository.save(vendorProfile);
-        }
         return new NewUserResponse(savedUser);
     }
 

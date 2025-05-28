@@ -35,9 +35,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ResponseEntity<VendorProduct> getProductDetails(@PathVariable String productId) {
-
         logger.info("GET /products/{} - Fetching product details", productId);
-
         return ResponseEntity.ok(productServiceImpl.getProductDetails(productId));
     }
 }
