@@ -95,11 +95,12 @@ public class User extends Auditable {
     }
 
     public User() {
+        this.addressList = new ArrayList<>();
     }
 
     public User(String id, String firstName, String lastName, String email, String passwordHash,
-            UserRole role,
-            String phoneNumber) {
+                UserRole role,
+                String phoneNumber) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

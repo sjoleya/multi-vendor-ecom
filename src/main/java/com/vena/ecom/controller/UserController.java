@@ -1,14 +1,19 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.request.LoginRequest;
+import com.vena.ecom.dto.request.UserRequest;
+import com.vena.ecom.dto.response.NewUserResponse;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.dto.request.AddAddressRequest;
+import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -22,10 +27,42 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser() {
+    @Autowired
+    private UserRepository userRepository;
+
+    @PostMapping("/register")
+    public ResponseEntity<NewUserResponse> registerUser(@RequestBody UserRequest request) {
+        NewUserResponse saved = userService.registerUser(request);
+        return ResponseEntity.ok(saved);
+    }
+
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<String> updateUser(@PathVariable String userId, @RequestBody UserRequest request) {
+        userService.updateUserById(userId, request);
+        return ResponseEntity.ok("User updated successfully");
+    }
+
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable String userId) {
+        userService.deleteUserById(userId);
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
+        String result = userService.login(request);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        return ResponseEntity.ok("Logout successful");
+    }
+
+    @GetMapping("/me/{id}")
+    public ResponseEntity<UserResponse> getUserByID(@PathVariable String id) {
         logger.info("GET /users/me - Get current user");
-        UserResponse userResponse = userService.getCurrentUser();
+        UserResponse userResponse = userService.getCurrentUser(id);
         return ResponseEntity.ok(userResponse);
     }
 
@@ -37,17 +74,18 @@ public class UserController {
         return ResponseEntity.ok(updated);
     }
 
-    @GetMapping("/me/addresses")
-    public ResponseEntity<List<AddressResponse>> getUserAddresses() {
+    @GetMapping("/me/addresses/{id}")
+    public ResponseEntity<List<AddressResponse>> getUserAddresses(@PathVariable String id) {
         logger.info("GET /users/me/addresses - Fetching address list of current user");
-        List<AddressResponse> addresses = userService.getUserAddresses();
+        List<AddressResponse> addresses = userService.getUserAddresses(id);
+        System.out.println(addresses);
         return ResponseEntity.ok(addresses);
     }
 
-    @PostMapping("/addresses")
-    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAddressRequest address) {
+    @PostMapping("/me/addresses/{id}")
+    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAddressRequest address, @PathVariable String id) {
         logger.info("Post /users/me/addresses - Request to add a new address for current user");
-        AddressResponse saved = userService.addUserAddress(address);
+        AddressResponse saved = userService.addUserAddress(address , id);
         return ResponseEntity.ok(saved);
     }
 
@@ -70,4 +108,5 @@ public class UserController {
         logger.info("Successfully deleted address with ID: {}", id);
         return ResponseEntity.ok().build();
     }
+
 }

@@ -3,15 +3,22 @@ package com.vena.ecom.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.vena.ecom.dto.request.LoginRequest;
+import com.vena.ecom.dto.request.UserRequest;
 import com.vena.ecom.dto.response.AddressResponse;
+import com.vena.ecom.dto.response.NewUserResponse;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.User;
+import com.vena.ecom.model.VendorProfile;
 import com.vena.ecom.model.enums.AddressType;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.dto.request.AddAddressRequest;
+import com.vena.ecom.model.enums.ApprovalStatus;
+import com.vena.ecom.model.enums.UserRole;
 import com.vena.ecom.repo.AddressRepository;
 import com.vena.ecom.repo.UserRepository;
+import com.vena.ecom.repo.VendorProfileRepository;
 import com.vena.ecom.service.UserService;
 
 import org.slf4j.Logger;
@@ -30,10 +37,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    VendorProfileRepository vendorProfileRepository;
+
     @Override
-    public UserResponse getCurrentUser() {
+    public UserResponse getCurrentUser(String id) {
         logger.info("Fetching current user by email");
-        User user = userRepository.findByEmail("john.doe@example.com")
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.warn("User not found with email: john.doe@example.com");
                     return new ResourceNotFoundException("User not found!");
@@ -62,28 +72,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<AddressResponse> getUserAddresses() {
-        String userId = getCurrentUser().getUserId();
-        logger.info("Fetching addresses for user ID: {}", userId);
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            List<Address> addresses = addressRepository.findByUserId(userId);
-            logger.info("Total addresses found: {}", addresses.size());
-            List<AddressResponse> response = addresses.stream().map(AddressResponse::new).toList();
-            return response;
-        } else {
-            logger.warn("User not found with ID: {}", userId);
-            throw new ResourceNotFoundException("User not found with ID: " + userId);
-        }
+    public List<AddressResponse> getUserAddresses(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+        List<Address> addresses = addressRepository.findByUser(user);
+        logger.info("Total addresses found: {}", addresses.size());
+        return addresses.stream().map(AddressResponse::new).toList();
     }
 
     @Override
-    public AddressResponse addUserAddress(AddAddressRequest addAdressRequest) {
-        String userId = getCurrentUser().getUserId();
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public AddressResponse addUserAddress(AddAddressRequest addAdressRequest, String id) {
+        // String userId = getCurrentUser().getUserId();
+        Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()) {
-            logger.warn("User not found with ID: {}", userId);
-            throw new ResourceNotFoundException("User not found with ID: " + userId);
+            logger.warn("User not found with ID: {}", id);
+            throw new ResourceNotFoundException("User not found with ID: " + id);
         }
         User user = optionalUser.get();
         // address.setUser(user);
@@ -93,8 +96,9 @@ public class UserServiceImpl implements UserService {
         address.setState(addAdressRequest.getState());
         address.setZipCode(addAdressRequest.getZip());
         address.setCountry(addAdressRequest.getCountry());
+        address.setUser(user);
         try {
-            address.setAddressType(AddressType.valueOf(addAdressRequest.getType()));
+            address.setAddressType(AddressType.valueOf(addAdressRequest.getType().toUpperCase()));
         } catch (IllegalArgumentException e) {
             // Handle the case where the provided type is not a valid AddressType
             throw new IllegalArgumentException("Invalid address type: " + addAdressRequest.getType());
@@ -135,5 +139,72 @@ public class UserServiceImpl implements UserService {
         }
         addressRepository.deleteById(addressId);
         logger.info("Address deleted successfully with ID: {}", addressId);
+    }
+
+    @Override
+    public NewUserResponse registerUser(UserRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        User user = new User();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setPasswordHash(request.getPassword());
+        user.setRole(request.getRole());
+        user.setPhoneNumber(request.getPhoneNumber());
+
+        User savedUser = userRepository.save(user);
+
+        // Create vendor profile if user is a VENDOR
+        if (savedUser.getRole() == UserRole.VENDOR) {
+            VendorProfile vendorProfile = new VendorProfile();
+//            vendorProfile.setUser(savedUser);
+            vendorProfile.setVendor(user);
+
+            vendorProfile.setStoreName("New Vendor Store"); // Or request.getStoreName() if you want
+            vendorProfile.setStoreDescription("Vendor description pending");
+            vendorProfile.setContactNumber(savedUser.getPhoneNumber());
+            vendorProfile.setApprovalStatus(ApprovalStatus.PENDING);
+            vendorProfileRepository.save(vendorProfile);
+        }
+        return new NewUserResponse(savedUser);
+    }
+
+    @Override
+    public void deleteUserById(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        userRepository.delete(user);
+    }
+
+    @Override
+    public String login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(()->new ResourceNotFoundException("User not found with this email"));
+        if(user.getPasswordHash().equals(request.getPassword())) {
+            return "Login successful for " + user.getRole();
+        }
+        else {
+            throw new IllegalArgumentException("Invalid Credentials");
+        }
+    }
+
+    @Override
+    public NewUserResponse updateUserById(String userId, UserRequest request) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setPasswordHash(request.getPassword());
+        user.setRole(request.getRole());
+        user.setPhoneNumber(request.getPhoneNumber());
+
+        User savedUser = userRepository.save(user);
+        return new NewUserResponse(savedUser);
     }
 }
