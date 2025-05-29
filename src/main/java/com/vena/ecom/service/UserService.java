@@ -11,9 +11,6 @@ import com.vena.ecom.dto.request.AddAddressRequest;
 
 public interface UserService {
 
-
-
-
     UserResponse createUser(UserRequest request);
 
     UserResponse getCurrentUser(String id);
