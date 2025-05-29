@@ -25,6 +25,16 @@ public class VendorController {
     @Autowired
     private VendorService vendorService;
 
+    @PostMapping("/profile")
+    public ResponseEntity<VendorProfileResponse> createVendorProfile(
+            @RequestBody AddVendorProfileRequest addVendorProfileRequest) {
+        logger.info("POST/vendor/profile - Creating new Vendor Profile for User with ID: {}",
+                addVendorProfileRequest.getUserId());
+        VendorProfileResponse vendorProfileResponse = vendorService.createVendorProfile(addVendorProfileRequest);
+        return ResponseEntity.created(null).body(vendorProfileResponse);
+    }
+
+
     @GetMapping("/profile")
     public ResponseEntity<VendorProfileResponse> getVendorProfileById(@RequestParam String vendorProfileId) {
         logger.info("GET/vendor/profile - Fetching vendor profile with ID: {}", vendorProfileId);
@@ -39,14 +49,7 @@ public class VendorController {
         return ResponseEntity.ok(profile);
     }
 
-    @PostMapping("/profile")
-    public ResponseEntity<VendorProfileResponse> createVendorProfile(
-            @RequestBody AddVendorProfileRequest addVendorProfileRequest) {
-        logger.info("POST/vendor/profile - Creating new Vendor Profile for User with ID: {}",
-                addVendorProfileRequest.getUserId());
-        VendorProfileResponse vendorProfileResponse = vendorService.createVendorProfile(addVendorProfileRequest);
-        return ResponseEntity.created(null).body(vendorProfileResponse);
-    }
+
 
     @PutMapping("/profile")
     public ResponseEntity<VendorProfileResponse> updateVendorProfile(
