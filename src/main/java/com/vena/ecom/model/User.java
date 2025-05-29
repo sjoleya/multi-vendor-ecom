@@ -10,7 +10,7 @@ import java.util.*;
 @Table(name = "users")
 public class User extends Auditable {
     @Id
-   @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String firstName;
@@ -120,6 +120,4 @@ public class User extends Auditable {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
     }
-
-
 }
