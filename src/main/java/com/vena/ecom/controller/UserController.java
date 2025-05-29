@@ -1,5 +1,6 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.request.UserRequest;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.model.User;
@@ -22,10 +23,18 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser() {
+    @PostMapping("/create")
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest request) {
+        logger.info("POST /users - Creating new user: {}", request.getEmail());
+        UserResponse createdUser = userService.createUser(request);
+        return ResponseEntity.ok(createdUser);
+    }
+
+
+    @GetMapping("/me/{id}")
+    public ResponseEntity<UserResponse> getCurrentUser(@PathVariable String id) {
         logger.info("GET /users/me - Get current user");
-        UserResponse userResponse = userService.getCurrentUser();
+        UserResponse userResponse = userService.getCurrentUser(id);
         return ResponseEntity.ok(userResponse);
     }
 
@@ -33,21 +42,21 @@ public class UserController {
     public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody User userDetails) {
         logger.info("PUT /users/me - Request to update current user profile");
         UserResponse updated = userService.updateCurrentUser(userDetails);
-        logger.info("User updated: {}", updated.getEmail());
+//        logger.info("User updated: {}", );
         return ResponseEntity.ok(updated);
     }
 
-    @GetMapping("/me/addresses")
-    public ResponseEntity<List<AddressResponse>> getUserAddresses() {
+    @GetMapping("/me/addresses/{id}")
+    public ResponseEntity<List<AddressResponse>> getUserAddresses(@PathVariable String id) {
         logger.info("GET /users/me/addresses - Fetching address list of current user");
-        List<AddressResponse> addresses = userService.getUserAddresses();
+        List<AddressResponse> addresses = userService.getUserAddresses(id);
         return ResponseEntity.ok(addresses);
     }
 
     @PostMapping("/addresses")
-    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAddressRequest address) {
+    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAddressRequest address,@PathVariable String id) {
         logger.info("Post /users/me/addresses - Request to add a new address for current user");
-        AddressResponse saved = userService.addUserAddress(address);
+        AddressResponse saved = userService.addUserAddress(address,id);
         return ResponseEntity.ok(saved);
     }
 

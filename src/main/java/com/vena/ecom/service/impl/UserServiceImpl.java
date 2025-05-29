@@ -3,6 +3,7 @@ package com.vena.ecom.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.vena.ecom.dto.request.UserRequest;
 import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import com.vena.ecom.model.User;
 import com.vena.ecom.model.enums.AddressType;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.dto.request.AddAddressRequest;
+import com.vena.ecom.model.enums.UserRole;
 import com.vena.ecom.repo.AddressRepository;
 import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.service.UserService;
@@ -31,7 +33,26 @@ public class UserServiceImpl implements UserService {
     private AddressRepository addressRepository;
 
     @Override
-    public UserResponse getCurrentUser() {
+    public UserResponse createUser(UserRequest request) {
+
+        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new RuntimeException("email is present");
+        }
+
+        User user = new User();
+        user.setFirstName(request.getFirstname());
+        user.setLastName(request.getLastname());
+        user.setEmail(request.getEmail());
+        user.setPasswordHash(null);
+        user.setRole(request.getRole());
+        user.setPhoneNumber(null);
+        User saveduser=userRepository.save(user);
+
+            return new UserResponse(saveduser);
+    }
+
+    @Override
+    public UserResponse getCurrentUser(String id) {
         logger.info("Fetching current user by email");
         User user = userRepository.findByEmail("john.doe@example.com")
                 .orElseThrow(() -> {
@@ -62,8 +83,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<AddressResponse> getUserAddresses() {
-        String userId = getCurrentUser().getUserId();
+    public List<AddressResponse> getUserAddresses(String userId) {
+
         logger.info("Fetching addresses for user ID: {}", userId);
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -78,32 +99,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AddressResponse addUserAddress(AddAddressRequest addAdressRequest) {
-        String userId = getCurrentUser().getUserId();
+    public AddressResponse addUserAddress(AddAddressRequest addAddressRequest,String userId) {
+
         Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             logger.warn("User not found with ID: {}", userId);
             throw new ResourceNotFoundException("User not found with ID: " + userId);
         }
         User user = optionalUser.get();
-        // address.setUser(user);
+
         Address address = new Address();
-        address.setStreet(addAdressRequest.getStreet());
-        address.setCity(addAdressRequest.getCity());
-        address.setState(addAdressRequest.getState());
-        address.setZipCode(addAdressRequest.getZip());
-        address.setCountry(addAdressRequest.getCountry());
+        address.setStreet(addAddressRequest.getStreet());
+        address.setCity(addAddressRequest.getCity());
+        address.setState(addAddressRequest.getState());
+        address.setZipCode(addAddressRequest.getZip());
+        address.setCountry(addAddressRequest.getCountry());
         try {
-            address.setAddressType(AddressType.valueOf(addAdressRequest.getType()));
+            address.setAddressType(AddressType.valueOf(addAddressRequest.getType()));
         } catch (IllegalArgumentException e) {
-            // Handle the case where the provided type is not a valid AddressType
-            throw new IllegalArgumentException("Invalid address type: " + addAdressRequest.getType());
+            throw new IllegalArgumentException("Invalid address type: " + addAddressRequest.getType());
         }
+
         Address savedAddress = addressRepository.save(address);
         user.getAddressList().add(savedAddress);
         userRepository.save(user);
         logger.info("Address added successfully with ID: {}", savedAddress.getId());
-        return new AddressResponse(addressRepository.save(address));
+        return new AddressResponse(savedAddress);
     }
 
     @Override
@@ -119,7 +140,7 @@ public class UserServiceImpl implements UserService {
             address.setCountry(addressDetails.getCountry());
             Address updated = addressRepository.save(address);
             logger.info("Address updated successfully with ID: {}", updated.getId());
-            return new AddressResponse(addressRepository.save(address));
+            return new AddressResponse(updated);
         } else {
             logger.warn("Address not found with ID: {}", addressId);
             throw new ResourceNotFoundException("Address not found with ID: " + addressId);
