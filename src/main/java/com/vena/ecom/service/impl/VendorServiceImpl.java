@@ -104,7 +104,9 @@ public class VendorServiceImpl implements VendorService {
                     logger.error("VendorProfile not found with ID: {}", vendorId);
                     return new ResourceNotFoundException("VendorProfile not found with id: " + vendorId);
                 });
-        logger.debug("VendorProfile found: {}", vendor.getId());
+        if(!vendor.getApprovalStatus().equals(ApprovalStatus.APPROVED)) {
+            throw new IllegalArgumentException("Vendor not approved to add Products");
+        }
         VendorProduct vendorProduct = new VendorProduct();
         vendorProduct.setVendorProfile(vendor);
         vendorProduct.setProductCatalog(productCatalogRepository.findById(product.getCatalogProductId())

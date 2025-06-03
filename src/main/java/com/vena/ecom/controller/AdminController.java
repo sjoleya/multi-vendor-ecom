@@ -14,10 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.vena.ecom.model.Order;
+import com.vena.ecom.dto.response.OrderResponse;
+import com.vena.ecom.dto.response.VendorProductResponse;
+import com.vena.ecom.dto.response.VendorProfileResponse;
 import com.vena.ecom.model.User;
-import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.model.VendorProfile;
 import com.vena.ecom.model.enums.OrderStatus;
 import com.vena.ecom.model.enums.UserRole;
 import com.vena.ecom.service.AdminService;
@@ -53,57 +53,57 @@ public class AdminController {
 
     // Vendor Applications Endpoints
     @GetMapping("/vendor-applications")
-    public ResponseEntity<List<VendorProfile>> getAllVendorApplications() {
+    public ResponseEntity<List<VendorProfileResponse>> getAllVendorApplications() {
         logger.info("GET /admin/vendor-applications - Fetching all vendor applications");
         return ResponseEntity.ok(adminService.getAllVendorApplications());
     }
 
     @PutMapping("/vendor-applications/{applicationId}/approve")
-    public ResponseEntity<VendorProfile> approveVendorApplication(@PathVariable String applicationId) {
+    public ResponseEntity<VendorProfileResponse> approveVendorApplication(@PathVariable String applicationId) {
         logger.info("PUT /admin/vendor-applications/{}/approve - Approving vendor application", applicationId);
         return ResponseEntity.ok(adminService.approveVendorApplication(applicationId));
     }
 
     @PutMapping("/vendor-applications/{applicationId}/reject")
-    public ResponseEntity<VendorProfile> rejectVendorApplication(@PathVariable String applicationId) {
+    public ResponseEntity<VendorProfileResponse> rejectVendorApplication(@PathVariable String applicationId) {
         logger.info("PUT /admin/vendor-applications/{}/reject - Rejecting vendor application", applicationId);
         return ResponseEntity.ok(adminService.rejectVendorApplication(applicationId));
     }
 
     // Vendor Product Approval Endpoints
     @GetMapping("/vendor-products/pending-approval")
-    public ResponseEntity<List<VendorProduct>> getPendingVendorProductApprovals() {
+    public ResponseEntity<List<VendorProductResponse>> getPendingVendorProductApprovals() {
         logger.info("GET /admin/vendor-products/pending-approval - Fetching pending vendor product approvals");
         return ResponseEntity.ok(adminService.getPendingVendorProductApprovals());
     }
 
     @PutMapping("/vendor-products/{vendorProductId}/approve")
-    public ResponseEntity<VendorProduct> approveVendorProduct(@PathVariable String vendorProductId) {
+    public ResponseEntity<VendorProductResponse> approveVendorProduct(@PathVariable String vendorProductId) {
         logger.info("PUT /admin/vendor-products/{}/approve - Approving vendor product", vendorProductId);
         return ResponseEntity.ok(adminService.approveVendorProduct(vendorProductId));
     }
 
     @PutMapping("/vendor-products/{vendorProductId}/reject")
-    public ResponseEntity<VendorProduct> rejectVendorProduct(@PathVariable String vendorProductId) {
+    public ResponseEntity<VendorProductResponse> rejectVendorProduct(@PathVariable String vendorProductId) {
         logger.info("PUT /admin/vendor-products/{}/reject - Rejecting vendor product", vendorProductId);
         return ResponseEntity.ok(adminService.rejectVendorProduct(vendorProductId));
     }
 
     // Orders & Reviews Endpoints
     @GetMapping("/orders")
-    public ResponseEntity<List<Order>> getAllOrders() {
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
         logger.info("GET /admin/orders - Fetching all orders");
         return ResponseEntity.ok(adminService.getAllOrders());
     }
 
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<Order> getOrderDetails(@PathVariable String orderId) {
+    public ResponseEntity<OrderResponse> getOrderDetails(@PathVariable String orderId) {
         logger.info("GET /admin/orders/{} - Fetching order details", orderId);
         return ResponseEntity.ok(adminService.getOrderDetails(orderId));
     }
 
     @PutMapping("/orders/{orderId}/status")
-    public ResponseEntity<Order> updateOrderStatus(@PathVariable String orderId,
+    public ResponseEntity<OrderResponse> updateOrderStatus(@PathVariable String orderId,
             @RequestParam OrderStatus status) {
         logger.info("PUT /admin/orders/{}/status - Updating order status", orderId);
         return ResponseEntity.ok(adminService.updateOrderStatus(orderId, status));

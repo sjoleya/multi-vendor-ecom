@@ -32,6 +32,7 @@ public class Order extends Auditable {
     private Address shippingAddress;
 
     @OneToMany(mappedBy = "order")
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 
     @OneToOne(mappedBy = "order")

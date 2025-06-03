@@ -21,7 +21,7 @@ public class ShoppingCartResponse {
                 .map(CartItemResponse::new)
                 .toList();
         this.totalAmount = shoppingCart.getCartItems().stream()
-                .mapToDouble(item -> item.getVendorProduct().getPrice().doubleValue())
+                .mapToDouble(item -> item.getVendorProduct().getPrice().doubleValue()*item.getQuantity())
                 .sum();
     }
 

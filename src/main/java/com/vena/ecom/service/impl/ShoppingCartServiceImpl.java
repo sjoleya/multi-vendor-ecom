@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
@@ -65,13 +67,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     return new ResourceNotFoundException(
                             "Vendor product not found with ID: " + request.getVendorProductId());
                 });
-
-        if (request.getQuantity() <= 0) {
-            logger.warn("Invalid quantity {} requested to add for product '{}'", request.getQuantity(),
-                    product.getName());
-            throw new IllegalArgumentException("Quantity must be greater than zero");
+        if(product.getStockQuantity() < request.getQuantity()) {
+            throw new IllegalArgumentException("Quantity is greater than stock available");
         }
-
+        // checking if same item exists in cart already, if so just update quantity
+        Optional<CartItem> vp = cart.getCartItems().stream().filter(x -> x.getVendorProduct().getId().equals(product.getId())).findFirst();
+        if(vp.isPresent()) {
+            // try to update quantity
+            int quantity = vp.get().getQuantity() + request.getQuantity();
+            if(quantity > vp.get().getVendorProduct().getStockQuantity()) {
+                throw new IllegalArgumentException("Max quantity available is: " + product.getStockQuantity() + ". Please Order less than that.");
+            }
+        }
         CartItem cartItem = new CartItem(null, product, request.getQuantity());
         cart.getCartItems().add(cartItem);
         shoppingCartRepository.save(cart);
@@ -84,17 +91,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public CartItemResponse updateCartItemQuantity(String cartItemId, UpdateCartItemRequest request) {
         logger.info("Updating quantity for cartItemId: {} to {}", cartItemId, request.getQuantity());
-        if (request.getQuantity() <= 0) {
-            logger.warn("Invalid quantity {} for update on cartItemId: {}", request.getQuantity(), cartItemId);
-            throw new IllegalArgumentException("Quantity must be greater than zero");
-        }
-
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> {
                     logger.error("Cart item not found with id: {}", cartItemId);
                     return new ResourceNotFoundException("Cart item not found with ID: " + cartItemId);
                 });
-
+        VendorProduct vendorProduct = cartItem.getVendorProduct();
+        if(vendorProduct.getStockQuantity() < request.getQuantity()) {
+            throw new IllegalArgumentException("Quantity is greater than stock available");
+        }
         cartItem.setQuantity(request.getQuantity());
         cartItemRepository.save(cartItem);
         logger.info("Updated quantity for cartItemId: {} to {}", cartItemId, request.getQuantity());

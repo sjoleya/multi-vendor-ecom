@@ -4,11 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vena.ecom.dto.response.OrderResponse;
 import com.vena.ecom.dto.response.UserResponse;
+import com.vena.ecom.dto.response.VendorProductResponse;
+import com.vena.ecom.dto.response.VendorProfileResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.Order;
 import com.vena.ecom.model.User;
@@ -88,18 +92,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<VendorProfile> getAllVendorApplications() {
+    public List<VendorProfileResponse> getAllVendorApplications() {
         logger.info("getAllVendorApplications - Fetching all vendor applications");
-        List<VendorProfile> vendorProfiles = vendorProfileRepository.findAll();
-        List<VendorProfile> pendingApplications = vendorProfiles.stream()
+        List<VendorProfileResponse> pendingApplications = vendorProfileRepository.findAll().stream()
                 .filter(profile -> profile.getApprovalStatus().equals(ApprovalStatus.PENDING))
-                .toList();
+                .map(VendorProfileResponse::new)
+                .collect(Collectors.toList());
         logger.debug("getAllVendorApplications - Found {} pending vendor applications", pendingApplications.size());
         return pendingApplications;
     }
 
     @Override
-    public VendorProfile approveVendorApplication(String applicationId) {
+    public VendorProfileResponse approveVendorApplication(String applicationId) {
         logger.info("approveVendorApplication - Approving vendor application with ID: {}", applicationId);
         VendorProfile vendorProfile = vendorProfileRepository.findById(applicationId).map(vp -> {
             logger.debug("approveVendorApplication - Vendor profile found: {}", vp);
@@ -112,7 +116,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             VendorProfile approvedProfile = vendorProfileRepository.save(vendorProfile);
             logger.debug("approveVendorApplication - Vendor application approved: {}", approvedProfile);
-            return approvedProfile;
+            return new VendorProfileResponse(approvedProfile);
         } catch (Exception e) {
             logger.error("approveVendorApplication - Error while saving vendor profile with id: {}", applicationId, e);
             throw e;
@@ -120,7 +124,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public VendorProfile rejectVendorApplication(String applicationId) {
+    public VendorProfileResponse rejectVendorApplication(String applicationId) {
         logger.info("rejectVendorApplication - Rejecting vendor application with ID: {}", applicationId);
         VendorProfile vendorProfile = vendorProfileRepository.findById(applicationId).map(vp -> {
             logger.debug("rejectVendorApplication - Vendor profile found: {}", vp);
@@ -133,7 +137,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             VendorProfile rejectedProfile = vendorProfileRepository.save(vendorProfile);
             logger.debug("rejectVendorApplication - Vendor application rejected: {}", rejectedProfile);
-            return rejectedProfile;
+            return new VendorProfileResponse(rejectedProfile);
         } catch (Exception e) {
             logger.error("rejectVendorApplication - Error while saving vendor profile with id: {}", applicationId, e);
             throw e;
@@ -141,17 +145,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<VendorProduct> getPendingVendorProductApprovals() {
+    public List<VendorProductResponse> getPendingVendorProductApprovals() {
         logger.info("getPendingVendorProductApprovals - Fetching pending vendor product approvals");
-        List<VendorProduct> vendorProducts = vendorProductRepository.findAll();
-        List<VendorProduct> pendingProducts = vendorProducts.stream()
-                .filter(product -> product.getApprovalStatus().equals(ApprovalStatus.PENDING)).toList();
+        List<VendorProductResponse> pendingProducts = vendorProductRepository.findAll().stream()
+                .filter(product -> product.getApprovalStatus().equals(ApprovalStatus.PENDING))
+                .map(VendorProductResponse::new)
+                .collect(Collectors.toList());
         logger.debug("getPendingVendorProductApprovals - Found {} pending vendor products", pendingProducts.size());
         return pendingProducts;
     }
 
     @Override
-    public VendorProduct approveVendorProduct(String vendorProductId) {
+    public VendorProductResponse approveVendorProduct(String vendorProductId) {
         logger.info("approveVendorProduct - Approving vendor product with ID: {}", vendorProductId);
         VendorProduct vendorProduct = vendorProductRepository.findById(vendorProductId).map(vp -> {
             logger.debug("approveVendorProduct - Vendor product found: {}", vp);
@@ -165,7 +170,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             VendorProduct approvedProduct = vendorProductRepository.save(vendorProduct);
             logger.debug("approveVendorProduct - Vendor product approved: {}", approvedProduct);
-            return approvedProduct;
+            return new VendorProductResponse(approvedProduct);
         } catch (Exception e) {
             logger.error("approveVendorProduct - Error while saving vendor product with id: {}", vendorProductId, e);
             throw e;
@@ -173,7 +178,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public VendorProduct rejectVendorProduct(String vendorProductId) {
+    public VendorProductResponse rejectVendorProduct(String vendorProductId) {
         logger.info("rejectVendorProduct - Rejecting vendor product with ID: {}", vendorProductId);
         VendorProduct vendorProduct = vendorProductRepository.findById(vendorProductId).map(vp -> {
             logger.debug("rejectVendorProduct - Vendor product found: {}", vp);
@@ -187,7 +192,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             VendorProduct rejectedProduct = vendorProductRepository.save(vendorProduct);
             logger.debug("rejectVendorProduct - Vendor product rejected: {}", rejectedProduct);
-            return rejectedProduct;
+            return new VendorProductResponse(rejectedProduct);
         } catch (Exception e) {
             logger.error("rejectVendorProduct - Error while saving vendor product with id: {}", vendorProductId, e);
             throw e;
@@ -195,19 +200,21 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Order> getAllOrders() {
+    public List<OrderResponse> getAllOrders() {
         logger.info("getAllOrders - Fetching all orders");
-        List<Order> orders = orderRepository.findAll();
+        List<OrderResponse> orders = orderRepository.findAll().stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList());
         logger.debug("getAllOrders - Found {} orders", orders.size());
         return orders;
     }
 
     @Override
-    public Order getOrderDetails(String orderId) {
+    public OrderResponse getOrderDetails(String orderId) {
         logger.info("getOrderDetails - Fetching order details for order ID: {}", orderId);
         return orderRepository.findById(orderId).map(o -> {
             logger.debug("getOrderDetails - Order found: {}", o);
-            return o;
+            return new OrderResponse(o);
         }).orElseThrow(() -> {
             logger.warn("getOrderDetails - Order not found with id: {}", orderId);
             return new ResourceNotFoundException("Order with Id: " + orderId + "not found.");
@@ -215,14 +222,17 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Order updateOrderStatus(String orderId, OrderStatus status) {
+    public OrderResponse updateOrderStatus(String orderId, OrderStatus status) {
         logger.info("updateOrderStatus - Updating order status for order ID: {} to status: {}", orderId, status);
-        Order order = getOrderDetails(orderId);
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> {
+            logger.warn("updateOrderStatus - Order not found with id: {}", orderId);
+            return new ResourceNotFoundException("Order with Id: " + orderId + "not found.");
+        });
         order.setOrderStatus(status);
         try {
             Order updatedOrder = orderRepository.save(order);
             logger.debug("updateOrderStatus - Order status updated: {}", updatedOrder);
-            return updatedOrder;
+            return new OrderResponse(updatedOrder);
         } catch (Exception e) {
             logger.error("updateOrderStatus - Error while saving order with id: {}", orderId, e);
             throw e;

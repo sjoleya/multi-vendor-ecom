@@ -1,5 +1,8 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.model.enums.ItemStatus;
+import com.vena.ecom.model.enums.OrderStatus;
+import com.vena.ecom.repo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,24 +19,20 @@ import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.repo.OrderItemRepository;
-import com.vena.ecom.repo.OrderRepository;
-import com.vena.ecom.repo.ReviewRepository;
-import com.vena.ecom.repo.ShoppingCartRepository;
 import com.vena.ecom.model.Payment;
 import com.vena.ecom.model.enums.PaymentStatus;
-import com.vena.ecom.repo.AddressRepository;
-import com.vena.ecom.repo.PaymentRepository;
-import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.service.OrderService;
 import com.vena.ecom.service.ShoppingCartService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -62,9 +61,13 @@ public class OrderServiceImpl implements OrderService {
     private AddressRepository userAddressRepository;
 
     @Autowired
+    private VendorProductRepository vendorProductRepository;
+
+    @Autowired
     private PaymentRepository paymentRepository;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderResponse checkout(String customerId, String addressId) {
         logger.info("checkout - Checking out for customer ID: {} and address ID: {}", customerId, addressId);
         ShoppingCart shoppingCart = shoppingCartRepository.findByCustomerId(customerId).map(sc -> {
@@ -91,26 +94,39 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setCustomer(user);
         order.setOrderDate(LocalDateTime.now());
-        order.setOrderStatus(com.vena.ecom.model.enums.OrderStatus.PENDING_PAYMENT);
+        order.setOrderStatus(OrderStatus.PENDING_PAYMENT);
         order.setShippingAddress(address);
         logger.debug("checkout - New order created: {}", order);
 
         List<CartItem> cartItems = shoppingCart.getCartItems();
         BigDecimal totalAmount = BigDecimal.ZERO;
-
+        // saving local copy of all vendor products, for quantity validation,
+        // and reducing redundant db calls.
+        Map<String, VendorProduct> productsToUpdate = new HashMap<>();
         for (CartItem cartItem : cartItems) {
             logger.debug("checkout - Processing cart item: {}", cartItem);
             VendorProduct vendorProduct = cartItem.getVendorProduct();
+            if (productsToUpdate.containsKey(vendorProduct.getId())) {
+                vendorProduct = productsToUpdate.get(vendorProduct.getId());
+            } else {
+                productsToUpdate.put(vendorProduct.getId(), vendorProduct);
+            }
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setVendorProduct(cartItem.getVendorProduct());
             orderItem.setQuantity(cartItem.getQuantity());
+            if (vendorProduct.getStockQuantity() < cartItem.getQuantity()) {
+                throw new IllegalArgumentException("Requested Quantity is greater than available quantity.");
+            }
+            vendorProduct.setStockQuantity(vendorProduct.getStockQuantity() - cartItem.getQuantity());
             orderItem.setPriceAtPurchase(vendorProduct.getPrice());
             orderItem.setSubtotal(orderItem.getPriceAtPurchase().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-            orderItem.setItemStatus(com.vena.ecom.model.enums.ItemStatus.PENDING);
+            orderItem.setItemStatus(ItemStatus.PENDING);
+            productsToUpdate.put(vendorProduct.getId(), vendorProduct);
             logger.debug("checkout - Created order item: {}", orderItem);
             totalAmount = totalAmount.add(orderItem.getSubtotal());
         }
+        vendorProductRepository.saveAll(productsToUpdate.values());
 
         order.setTotalAmount(totalAmount);
         Order savedOrder = orderRepository.save(order);
@@ -158,9 +174,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ReviewResponse submitProductReview(String orderId, String orderItemId, String customerId, Review review) {
-        logger.info("Submitting product review for order ID: {}, order item ID: {}, customer ID: {}", orderId,
-                orderItemId, customerId);
+    public ReviewResponse submitProductReview(String orderId, String orderItemId,
+            com.vena.ecom.dto.request.AddProductReview addProductReview) {
+        logger.info("Submitting product review for order ID: {}, order item ID: {}, rating: {}, comment: {}", orderId,
+                orderItemId, addProductReview.getRating(), addProductReview.getComment());
         Order order = orderRepository.findById(orderId).map(o -> {
             logger.debug("submitProductReview - Order found: {}", o);
             return o;
@@ -175,18 +192,19 @@ public class OrderServiceImpl implements OrderService {
             logger.warn("submitProductReview - Order item not found with id: {}", orderItemId);
             return new ResourceNotFoundException("Order item not found");
         });
-        if (!order.getCustomer().getId().equals(customerId)) {
-            logger.warn("submitProductReview - Customer ID {} does not match order's customer ID {}", customerId,
-                    order.getCustomer().getId());
-            throw new ResourceNotFoundException("Customer mismatch");
+        if (!orderItem.getItemStatus().equals(ItemStatus.DELIVERED)) {
+            throw new IllegalArgumentException("Review for this Order Item is not allowed");
         }
+        if (!orderItem.getOrder().getId().equals(order.getId())) {
+            throw new IllegalArgumentException("Order Item doesn't belong to this Order");
+        }
+        Review review = new Review();
+        review.setRating(addProductReview.getRating());
+        review.setComment(addProductReview.getComment());
+        review.setOrder(order);
+        review.setOrderItem(orderItem);
+        review.setCustomer(order.getCustomer());
 
-        review.setOrder(order);
-        review.setOrderItem(orderItem);
-        review.setCustomer(order.getCustomer());
-        review.setOrder(order);
-        review.setOrderItem(orderItem);
-        review.setCustomer(order.getCustomer());
         return new ReviewResponse(reviewRepository.save(review));
     }
 

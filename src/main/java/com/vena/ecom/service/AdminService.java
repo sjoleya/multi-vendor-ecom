@@ -2,10 +2,10 @@ package com.vena.ecom.service;
 
 import java.util.List;
 
-import com.vena.ecom.model.Order;
 import com.vena.ecom.model.User;
-import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.model.VendorProfile;
+import com.vena.ecom.dto.response.OrderResponse;
+import com.vena.ecom.dto.response.VendorProductResponse;
+import com.vena.ecom.dto.response.VendorProfileResponse;
 import com.vena.ecom.model.enums.UserRole;
 import com.vena.ecom.model.enums.OrderStatus;
 
@@ -16,23 +16,23 @@ public interface AdminService {
 
     User updateUserRole(String userId, UserRole role);
 
-    List<VendorProfile> getAllVendorApplications();
+    List<VendorProfileResponse> getAllVendorApplications();
 
-    VendorProfile approveVendorApplication(String applicationId);
+    VendorProfileResponse approveVendorApplication(String applicationId);
 
-    VendorProfile rejectVendorApplication(String applicationId);
+    VendorProfileResponse rejectVendorApplication(String applicationId);
 
-    List<VendorProduct> getPendingVendorProductApprovals();
+    List<VendorProductResponse> getPendingVendorProductApprovals();
 
-    VendorProduct approveVendorProduct(String vendorProductId);
+    VendorProductResponse approveVendorProduct(String vendorProductId);
 
-    VendorProduct rejectVendorProduct(String vendorProductId);
+    VendorProductResponse rejectVendorProduct(String vendorProductId);
 
-    List<Order> getAllOrders();
+    List<OrderResponse> getAllOrders();
 
-    Order getOrderDetails(String orderId);
+    OrderResponse getOrderDetails(String orderId);
 
-    Order updateOrderStatus(String orderId, OrderStatus status);
+    OrderResponse updateOrderStatus(String orderId, OrderStatus status);
 
     void deleteReview(String reviewId);
 

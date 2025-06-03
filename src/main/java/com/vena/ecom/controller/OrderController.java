@@ -7,8 +7,8 @@ import com.vena.ecom.dto.request.CheckoutRequest;
 import com.vena.ecom.dto.request.OrderPaymentRequest;
 import com.vena.ecom.dto.response.OrderPaymentResponse;
 import com.vena.ecom.dto.response.OrderResponse;
+import com.vena.ecom.dto.request.AddProductReview;
 import com.vena.ecom.dto.response.ReviewResponse;
-import com.vena.ecom.model.Review;
 import com.vena.ecom.service.OrderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +53,12 @@ public class OrderController {
     @PostMapping("/{orderId}/items/{orderItemId}/review")
     public ResponseEntity<ReviewResponse> submitProductReview(@PathVariable String orderId,
             @PathVariable String orderItemId,
-            @PathVariable String customerId, @RequestBody Review review) {
+            @RequestBody AddProductReview addProductReview) {
         logger.info(
-                "POST /customers/orders/{}/items/{}/review - Submitting product review for order ID: {}, order item ID: {}, customer ID: {}",
+                "POST /customers/orders/{}/items/{}/review - Submitting product review for order ID: {}, order item ID: {}, rating: {}, comment: {}",
                 orderId,
-                orderItemId, customerId);
-        ReviewResponse submittedReview = orderService.submitProductReview(orderId, orderItemId, customerId, review);
+                orderItemId, addProductReview.getRating(), addProductReview.getComment());
+        ReviewResponse submittedReview = orderService.submitProductReview(orderId, orderItemId, addProductReview);
         return ResponseEntity.ok(submittedReview);
     }
 
