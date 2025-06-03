@@ -10,12 +10,9 @@ import com.vena.ecom.dto.response.NewUserResponse;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.User;
-import com.vena.ecom.model.VendorProfile;
 import com.vena.ecom.model.enums.AddressType;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.dto.request.AddAddressRequest;
-import com.vena.ecom.model.enums.ApprovalStatus;
-import com.vena.ecom.model.enums.UserRole;
 import com.vena.ecom.repo.AddressRepository;
 import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.repo.VendorProfileRepository;
@@ -168,11 +165,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public String login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(()->new ResourceNotFoundException("User not found with this email"));
-        if(user.getPasswordHash().equals(request.getPassword())) {
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this email"));
+        if (user.getPasswordHash().equals(request.getPassword())) {
             return "Login successful for " + user.getRole();
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Invalid Credentials");
         }
     }

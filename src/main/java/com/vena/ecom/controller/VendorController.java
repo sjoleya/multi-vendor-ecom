@@ -1,13 +1,16 @@
 package com.vena.ecom.controller;
 
 import com.vena.ecom.dto.request.AddVendorProfileRequest;
-import com.vena.ecom.dto.request.UpdateVendorProductRequest;
-import com.vena.ecom.dto.response.VendorProfileResponse;
-import com.vena.ecom.dto.response.VendorProductResponse;
-import com.vena.ecom.dto.response.OrderItemResponse;
 import com.vena.ecom.dto.request.AddVendorProductRequest;
+import com.vena.ecom.dto.request.ProductImageRequest;
+import com.vena.ecom.dto.request.UpdateVendorProductRequest;
 import com.vena.ecom.dto.request.UpdateVendorProfileRequest;
+import com.vena.ecom.dto.response.OrderItemResponse;
+import com.vena.ecom.dto.response.ProductImageResponse;
+import com.vena.ecom.dto.response.VendorProductResponse;
+import com.vena.ecom.dto.response.VendorProfileResponse;
 import com.vena.ecom.model.enums.ItemStatus;
+import com.vena.ecom.service.ProductImageService;
 import com.vena.ecom.service.VendorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +28,10 @@ public class VendorController {
     @Autowired
     private VendorService vendorService;
 
+    @Autowired
+    private ProductImageService productImageService;
+
+    // Vendor Profile Endpoint
     @GetMapping("/profile")
     public ResponseEntity<VendorProfileResponse> getVendorProfileById(@RequestParam String vendorProfileId) {
         logger.info("GET/vendor/profile - Fetching vendor profile with ID: {}", vendorProfileId);
@@ -57,6 +64,7 @@ public class VendorController {
         return ResponseEntity.ok(profile);
     }
 
+    // Vendor Product Endpoint
     @PostMapping("/product")
     public ResponseEntity<VendorProductResponse> addVendorProduct(
             @RequestParam String vendorProfileId,
@@ -96,6 +104,7 @@ public class VendorController {
         return ResponseEntity.ok().build();
     }
 
+    // Vendor Orders Endpoint
     @GetMapping("/orders")
     public ResponseEntity<List<OrderItemResponse>> getVendorOrderItems(@RequestParam String vendorProfileId) {
         logger.info("GET/vendor/orders - Fetching order items for vendor profile ID: {}", vendorProfileId);
@@ -119,4 +128,35 @@ public class VendorController {
         return ResponseEntity.ok(updatedItem);
     }
 
+    // Vendor Product Images Endpoint
+    @PostMapping("/products/{vendorProductId}/images")
+    public ResponseEntity<ProductImageResponse> addProductImage(
+            @PathVariable String vendorProductId,
+            @RequestBody ProductImageRequest request) {
+        logger.info("POST/vendor/products/{}/images - Adding image for vendor product ID: {}", vendorProductId,
+                request.getImageUrl());
+        ProductImageResponse savedImage = productImageService.addProductImage(vendorProductId, request);
+        return ResponseEntity.ok(savedImage);
+    }
+
+    @PutMapping("/products/{vendorProductId}/images/{imageId}")
+    public ResponseEntity<ProductImageResponse> updateProductImage(
+            @PathVariable String vendorProductId,
+            @PathVariable String imageId,
+            @RequestBody ProductImageRequest request) {
+        logger.info("PUT/vendor/products/{}/images/{} - Updating image for vendor product ID: {}", vendorProductId,
+                imageId, request.getImageUrl());
+        ProductImageResponse updatedImage = productImageService.updateProductImage(vendorProductId, imageId, request);
+        return ResponseEntity.ok(updatedImage);
+    }
+
+    @DeleteMapping("/products/{vendorProductId}/images/{imageId}")
+    public ResponseEntity<Void> deleteProductImage(
+            @PathVariable String vendorProductId,
+            @PathVariable String imageId) {
+        logger.info("DELETE/vendor/products/{}/images/{} - Deleting image for vendor product ID: {}", vendorProductId,
+                imageId);
+        productImageService.deleteProductImage(imageId);
+        return ResponseEntity.ok().build();
+    }
 }

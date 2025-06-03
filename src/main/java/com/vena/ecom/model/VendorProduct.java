@@ -3,6 +3,8 @@ package com.vena.ecom.model;
 import com.vena.ecom.model.audit.Auditable;
 import com.vena.ecom.model.enums.ApprovalStatus;
 import jakarta.persistence.*;
+import java.util.Set;
+import java.util.HashSet;
 
 import java.math.BigDecimal;
 
@@ -32,12 +34,15 @@ public class VendorProduct extends Auditable {
     private String name;
     private String description;
 
+    @OneToMany(mappedBy = "vendorProduct", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductImage> images = new HashSet<>();
+
     public VendorProduct() {
     }
 
     public VendorProduct(ProductCatalog catalogProductId, String id, VendorProfile vendorProfile, String sku,
-                         BigDecimal price, Integer stockQuantity, ApprovalStatus approvalStatus,
-                         Boolean isActive, BigDecimal averageRating) {
+            BigDecimal price, Integer stockQuantity, ApprovalStatus approvalStatus,
+            Boolean isActive, BigDecimal averageRating) {
         this.productCatalog = catalogProductId;
         this.id = id;
         this.vendorProfile = vendorProfile;
@@ -135,6 +140,24 @@ public class VendorProduct extends Auditable {
 
     public void setAverageRating(BigDecimal averageRating) {
         this.averageRating = averageRating;
+    }
+
+    public Set<ProductImage> getImages() {
+        return images;
+    }
+
+    public void setImages(Set<ProductImage> images) {
+        this.images = images;
+    }
+
+    public void addImage(ProductImage image) {
+        images.add(image);
+        image.setVendorProduct(this);
+    }
+
+    public void removeImage(ProductImage image) {
+        images.remove(image);
+        image.setVendorProduct(null);
     }
 
     @Override

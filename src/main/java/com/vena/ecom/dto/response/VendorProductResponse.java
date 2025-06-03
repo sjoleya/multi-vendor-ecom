@@ -3,6 +3,7 @@ package com.vena.ecom.dto.response;
 import com.vena.ecom.model.VendorProduct;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class VendorProductResponse {
     private String vendorProductId;
@@ -11,6 +12,7 @@ public class VendorProductResponse {
     private BigDecimal price;
     private int stock;
     private String status;
+    private List<ProductImageResponse> images;
 
     public VendorProductResponse() {
     }
@@ -22,6 +24,9 @@ public class VendorProductResponse {
         this.price = vendorProduct.getPrice();
         this.stock = vendorProduct.getStockQuantity();
         this.status = vendorProduct.getApprovalStatus().toString();
+        this.images = vendorProduct.getImages().stream()
+                .map(ProductImageResponse::new)
+                .toList();
     }
 
     public String getVendorProductId() {
@@ -70,5 +75,13 @@ public class VendorProductResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<ProductImageResponse> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ProductImageResponse> images) {
+        this.images = images;
     }
 }
