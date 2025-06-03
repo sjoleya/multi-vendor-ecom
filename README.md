@@ -225,8 +225,8 @@ DELETE /admin/reviews/{id} – Delete review
 - StockQuantity (Integer)
 - ShippingAddress (FK)
 - ApprovalStatus (Enum: Pending, Approved, Rejected)
-- IsActive (Boolean - for vendor to quickly enable/disable)
-- AverageRating (Decimal, calculated)
+- IsActive (Boolean - for vendor to quickly enable/disable)
+- AverageRating (Decimal, calculated)
 - CreatedAt
 - UpdatedAt
 
@@ -333,3 +333,4 @@ DELETE /admin/reviews/{id} – Delete review
 1. Spring Boot
 2. Swagger Documentation
 3. MySQL
+ 

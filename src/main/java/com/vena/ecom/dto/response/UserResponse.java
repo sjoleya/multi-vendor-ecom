@@ -9,6 +9,16 @@ public class UserResponse {
     private String name;
     private String email;
     private String role;
+    private String phoneNumber;
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     private List<AddressResponse> addresses;
 
     public UserResponse() {
@@ -19,6 +29,7 @@ public class UserResponse {
         this.name = user.getFirstName() + " " + user.getLastName();
         this.email = user.getEmail();
         this.role = user.getRole().toString();
+        this.phoneNumber = user.getPhoneNumber();
         this.addresses = user.getAddressList().stream()
                 .map(AddressResponse::new)
                 .toList();

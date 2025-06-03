@@ -8,12 +8,10 @@ import com.vena.ecom.dto.response.AddressResponse;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.dto.request.AddAddressRequest;
-import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -80,9 +78,10 @@ public class UserController {
     }
 
     @PostMapping("/me/addresses/{id}")
-    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAddressRequest address, @PathVariable String id) {
+    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAddressRequest address,
+            @PathVariable String id) {
         logger.info("Post /users/me/addresses - Request to add a new address for current user");
-        AddressResponse saved = userService.addUserAddress(address , id);
+        AddressResponse saved = userService.addUserAddress(address, id);
         return ResponseEntity.ok(saved);
     }
 
