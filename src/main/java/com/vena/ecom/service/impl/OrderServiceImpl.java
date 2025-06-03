@@ -125,6 +125,7 @@ public class OrderServiceImpl implements OrderService {
             productsToUpdate.put(vendorProduct.getId(), vendorProduct);
             logger.debug("checkout - Created order item: {}", orderItem);
             totalAmount = totalAmount.add(orderItem.getSubtotal());
+            order.getOrderItems().add(orderItem);
         }
         vendorProductRepository.saveAll(productsToUpdate.values());
 

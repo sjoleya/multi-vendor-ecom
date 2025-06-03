@@ -4,6 +4,7 @@ import com.vena.ecom.dto.request.AddCartItemRequest;
 import com.vena.ecom.dto.request.UpdateCartItemRequest;
 import com.vena.ecom.exception.ResourceNotFoundException;
 import com.vena.ecom.model.*;
+import com.vena.ecom.model.enums.ApprovalStatus;
 import com.vena.ecom.repo.*;
 import com.vena.ecom.service.ShoppingCartService;
 import com.vena.ecom.dto.response.ShoppingCartResponse;
@@ -67,24 +68,36 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     return new ResourceNotFoundException(
                             "Vendor product not found with ID: " + request.getVendorProductId());
                 });
-        if(product.getStockQuantity() < request.getQuantity()) {
-            throw new IllegalArgumentException("Quantity is greater than stock available");
+        if (!product.getApprovalStatus().equals(ApprovalStatus.APPROVED)) {
+            throw new IllegalArgumentException("Product is not approved for sale");
         }
-        // checking if same item exists in cart already, if so just update quantity
-        Optional<CartItem> vp = cart.getCartItems().stream().filter(x -> x.getVendorProduct().getId().equals(product.getId())).findFirst();
-        if(vp.isPresent()) {
-            // try to update quantity
-            int quantity = vp.get().getQuantity() + request.getQuantity();
-            if(quantity > vp.get().getVendorProduct().getStockQuantity()) {
-                throw new IllegalArgumentException("Max quantity available is: " + product.getStockQuantity() + ". Please Order less than that.");
-            }
+        if (product.getStockQuantity() < request.getQuantity()) {
+            throw new IllegalArgumentException(
+                    "Max quantity available is: " + product.getStockQuantity() + ". Please Order less than that.");
         }
         CartItem cartItem = new CartItem(null, product, request.getQuantity());
+        // checking if same item exists in cart already, if so just update quantity
+        Optional<CartItem> vp = cart.getCartItems().stream()
+                .filter(x -> x.getVendorProduct().getId().equals(product.getId())).findFirst();
+        if (vp.isPresent()) {
+            CartItem existingCartItem = vp.get();
+            // try to update quantity
+            int quantity = existingCartItem.getQuantity() + request.getQuantity();
+            if (quantity > existingCartItem.getVendorProduct().getStockQuantity()) {
+                throw new IllegalArgumentException(
+                        "Max quantity available is: " + product.getStockQuantity() + ". Please Order less than that.");
+            } else {
+                existingCartItem.setQuantity(quantity);
+                logger.info("Updated cart item for product '{}' (ID: {}) for customerId: {}. New total quantity: {}.",
+                        product.getName(), product.getId(), customerId, existingCartItem.getQuantity());
+                return new CartItemResponse(cartItemRepository.save(existingCartItem));
+            }
+        }
         cart.getCartItems().add(cartItem);
         shoppingCartRepository.save(cart);
         cartItemRepository.save(cartItem);
-        logger.info("Added product '{}' to cart for customerId: {} with quantity: {}", product.getName(), customerId,
-                request.getQuantity());
+        logger.info("Added product '{}' (ID: {}) to cart for customerId: {} with quantity: {}.",
+                product.getName(), product.getId(), customerId, cartItem.getQuantity());
         return new CartItemResponse(cartItem);
     }
 
@@ -97,7 +110,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     return new ResourceNotFoundException("Cart item not found with ID: " + cartItemId);
                 });
         VendorProduct vendorProduct = cartItem.getVendorProduct();
-        if(vendorProduct.getStockQuantity() < request.getQuantity()) {
+        if (vendorProduct.getStockQuantity() < request.getQuantity()) {
             throw new IllegalArgumentException("Quantity is greater than stock available");
         }
         cartItem.setQuantity(request.getQuantity());
