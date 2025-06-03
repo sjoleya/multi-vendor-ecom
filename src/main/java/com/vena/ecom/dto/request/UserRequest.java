@@ -1,14 +1,30 @@
 package com.vena.ecom.dto.request;
 
 import com.vena.ecom.model.enums.UserRole;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class UserRequest
 {
+    @NotBlank(message = "First name is required")
     private String firstName;
+
+    @NotBlank(message = "Last name is required")
     private String lastName;
+
+    @Email(message = "Invalid email formate")
+    @NotBlank(message = "Email is required")
     private String email;
+
+    @Size(min = 4,message = "Password must be at least 4 characters")
     private String password;
+
     private UserRole role;
+
+    @NotBlank(message = "Phone number is required")
+    @Size(min = 10)
+    @Size(max=10)
     private String phoneNumber;
 
     public UserRequest() {}

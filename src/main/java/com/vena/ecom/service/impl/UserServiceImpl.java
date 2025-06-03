@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService {
                     logger.warn("User not found with email: john.doe@example.com");
                     return new ResourceNotFoundException("User not found!");
                 });
-
         return new UserResponse(user);
     }
 
@@ -89,7 +88,6 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("User not found with ID: " + id);
         }
         User user = optionalUser.get();
-        // address.setUser(user);
         Address address = new Address();
         address.setStreet(addAdressRequest.getStreet());
         address.setCity(addAdressRequest.getCity());
