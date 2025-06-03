@@ -1,5 +1,6 @@
 package com.vena.ecom.controller;
 
+import com.vena.ecom.dto.request.CreateProductCategory;
 import com.vena.ecom.dto.response.ProductCategoryResponse;
 import com.vena.ecom.model.ProductCategory;
 import com.vena.ecom.service.ProductCategoryService;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class ProductCategoryController {
@@ -30,15 +33,16 @@ public class ProductCategoryController {
     }
 
     @PostMapping("/admin/categories")
-    public ResponseEntity<ProductCategoryResponse> createCategory(@RequestBody ProductCategory category) {
-        logger.info("POST /admin/categories - Creating category with name: {}", category.getName());
-        ProductCategoryResponse createdCategory = productCategoryService.createCategory(category);
+    public ResponseEntity<ProductCategoryResponse> createCategory(
+            @Valid @RequestBody CreateProductCategory categoryDto) {
+        logger.info("POST /admin/categories - Creating category with name: {}", categoryDto.getName());
+        ProductCategoryResponse createdCategory = productCategoryService.createCategory(categoryDto);
         return ResponseEntity.ok(createdCategory);
     }
 
     @PutMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ProductCategoryResponse> updateCategory(@PathVariable String categoryId,
-            @RequestBody ProductCategory categoryDetails) {
+            @Valid @RequestBody ProductCategory categoryDetails) {
         logger.info("PUT /admin/categories/{} - Updating category", categoryId);
         ProductCategoryResponse updatedCategory = productCategoryService.updateCategory(categoryId, categoryDetails);
         return ResponseEntity.ok(updatedCategory);

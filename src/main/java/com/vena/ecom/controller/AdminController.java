@@ -9,6 +9,9 @@ import com.vena.ecom.dto.request.AddProductCatalogRequest;
 import com.vena.ecom.dto.response.ProductCatalogResponse;
 import com.vena.ecom.dto.response.UserResponse;
 import com.vena.ecom.service.impl.ProductCatalogServiceImpl;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +49,8 @@ public class AdminController {
     }
 
     @PutMapping("/users/{userId}/role")
-    public ResponseEntity<User> updateUserRole(@PathVariable String userId, @RequestParam UserRole role) {
+    public ResponseEntity<User> updateUserRole(@PathVariable String userId,
+            @RequestParam(required = true) UserRole role) {
         logger.info("PUT /admin/users/{}/role - Updating user role", userId);
         return ResponseEntity.ok(adminService.updateUserRole(userId, role));
     }
@@ -104,7 +108,7 @@ public class AdminController {
 
     @PutMapping("/orders/{orderId}/status")
     public ResponseEntity<OrderResponse> updateOrderStatus(@PathVariable String orderId,
-            @RequestParam OrderStatus status) {
+            @RequestParam(required = true) OrderStatus status) {
         logger.info("PUT /admin/orders/{}/status - Updating order status", orderId);
         return ResponseEntity.ok(adminService.updateOrderStatus(orderId, status));
     }
@@ -131,14 +135,14 @@ public class AdminController {
 
     @PostMapping("/catalog")
     public ResponseEntity<ProductCatalogResponse> createProductCatalog(
-            @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+            @Valid @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
         ProductCatalogResponse createdCatalog = productCatalogService.createCatalogProduct(addProductCatalogRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCatalog);
     }
 
     @PutMapping("/catalog/{id}")
     public ResponseEntity<ProductCatalogResponse> updateProductCatalog(@PathVariable String id,
-            @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
+            @Valid @RequestBody AddProductCatalogRequest addProductCatalogRequest) {
         ProductCatalogResponse updatedCatalog = productCatalogService.updateProductCatalogById(id,
                 addProductCatalogRequest);
         return ResponseEntity.ok(updatedCatalog);

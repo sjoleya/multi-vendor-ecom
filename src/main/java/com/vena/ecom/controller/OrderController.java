@@ -11,6 +11,8 @@ import com.vena.ecom.dto.request.AddProductReview;
 import com.vena.ecom.dto.response.ReviewResponse;
 import com.vena.ecom.service.OrderService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> checkout(@RequestBody CheckoutRequest checkoutRequest) {
+    public ResponseEntity<OrderResponse> checkout(@Valid @RequestBody CheckoutRequest checkoutRequest) {
         logger.info("POST /customers/orders - Checkout request received for customer ID: {} and address ID: {}",
                 checkoutRequest.getCustomerId(),
                 checkoutRequest.getAddressId());
@@ -36,7 +38,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getOrderHistory(@RequestParam String customerId) {
+    public ResponseEntity<List<OrderResponse>> getOrderHistory(@RequestParam(required = true) String customerId) {
         logger.info("GET /customers/orders - Fetching order history for customer ID: {}", customerId);
         List<OrderResponse> orders = orderService.getOrderHistory(customerId);
         logger.info("Found {} orders for customer ID: {}", orders.size(), customerId);
@@ -53,7 +55,7 @@ public class OrderController {
     @PostMapping("/{orderId}/items/{orderItemId}/review")
     public ResponseEntity<ReviewResponse> submitProductReview(@PathVariable String orderId,
             @PathVariable String orderItemId,
-            @RequestBody AddProductReview addProductReview) {
+            @Valid @RequestBody AddProductReview addProductReview) {
         logger.info(
                 "POST /customers/orders/{}/items/{}/review - Submitting product review for order ID: {}, order item ID: {}, rating: {}, comment: {}",
                 orderId,
@@ -63,7 +65,8 @@ public class OrderController {
     }
 
     @PutMapping("/payment")
-    public ResponseEntity<OrderPaymentResponse> submitOrderPayment(@RequestBody OrderPaymentRequest paymentRequest) {
+    public ResponseEntity<OrderPaymentResponse> submitOrderPayment(
+            @Valid @RequestBody OrderPaymentRequest paymentRequest) {
         logger.info("PUT /customers/orders/payment - Submitting order payment for order ID: {}",
                 paymentRequest.getOrderId());
         return new ResponseEntity<>(orderService.submitOrderPayment(paymentRequest), HttpStatus.CREATED);

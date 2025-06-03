@@ -12,6 +12,9 @@ import com.vena.ecom.dto.response.VendorProfileResponse;
 import com.vena.ecom.model.enums.ItemStatus;
 import com.vena.ecom.service.ProductImageService;
 import com.vena.ecom.service.VendorService;
+
+import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +51,7 @@ public class VendorController {
 
     @PostMapping("/profile")
     public ResponseEntity<VendorProfileResponse> createVendorProfile(
-            @RequestBody AddVendorProfileRequest addVendorProfileRequest) {
+            @Valid @RequestBody AddVendorProfileRequest addVendorProfileRequest) {
         logger.info("POST/vendor/profile - Creating new Vendor Profile for User with ID: {}",
                 addVendorProfileRequest.getUserId());
         VendorProfileResponse vendorProfileResponse = vendorService.createVendorProfile(addVendorProfileRequest);
@@ -58,7 +61,7 @@ public class VendorController {
     @PutMapping("/profile")
     public ResponseEntity<VendorProfileResponse> updateVendorProfile(
             @RequestParam String vendorProfileId,
-            @RequestBody UpdateVendorProfileRequest updatedProfile) {
+            @Valid @RequestBody UpdateVendorProfileRequest updatedProfile) {
         logger.info("PUT/vendor/profile - Updating vendor profile with ID: {}", vendorProfileId);
         VendorProfileResponse profile = vendorService.updateVendorProfile(vendorProfileId, updatedProfile);
         return ResponseEntity.ok(profile);
@@ -68,7 +71,7 @@ public class VendorController {
     @PostMapping("/product")
     public ResponseEntity<VendorProductResponse> addVendorProduct(
             @RequestParam String vendorProfileId,
-            @RequestBody AddVendorProductRequest product) {
+            @Valid @RequestBody AddVendorProductRequest product) {
         logger.info("POST/vendor/product - Adding product for vendor profile ID: {}", vendorProfileId);
         VendorProductResponse savedProduct = vendorService.addVendorProduct(vendorProfileId, product);
         return ResponseEntity.ok(savedProduct);
@@ -91,7 +94,7 @@ public class VendorController {
     @PutMapping("/products/{productId}")
     public ResponseEntity<VendorProductResponse> updateVendorProduct(
             @PathVariable String productId,
-            @RequestBody UpdateVendorProductRequest vendorProductRequest) {
+            @Valid @RequestBody UpdateVendorProductRequest vendorProductRequest) {
         logger.info("PUT/vendor/products/{} - Updating vendor product", productId);
         VendorProductResponse product = vendorService.updateVendorProduct(productId, vendorProductRequest);
         return ResponseEntity.ok(product);
@@ -132,7 +135,7 @@ public class VendorController {
     @PostMapping("/products/{vendorProductId}/images")
     public ResponseEntity<ProductImageResponse> addProductImage(
             @PathVariable String vendorProductId,
-            @RequestBody ProductImageRequest request) {
+            @Valid @RequestBody ProductImageRequest request) {
         logger.info("POST/vendor/products/{}/images - Adding image for vendor product ID: {}", vendorProductId,
                 request.getImageUrl());
         ProductImageResponse savedImage = productImageService.addProductImage(vendorProductId, request);
@@ -143,7 +146,7 @@ public class VendorController {
     public ResponseEntity<ProductImageResponse> updateProductImage(
             @PathVariable String vendorProductId,
             @PathVariable String imageId,
-            @RequestBody ProductImageRequest request) {
+            @Valid @RequestBody ProductImageRequest request) {
         logger.info("PUT/vendor/products/{}/images/{} - Updating image for vendor product ID: {}", vendorProductId,
                 imageId, request.getImageUrl());
         ProductImageResponse updatedImage = productImageService.updateProductImage(vendorProductId, imageId, request);
