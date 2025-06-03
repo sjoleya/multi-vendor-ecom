@@ -2,13 +2,12 @@ package com.vena.ecom.service.impl;
 
 import com.vena.ecom.dto.response.ProductCategoryResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
-import com.vena.ecom.repo.ProductCategoryRepository;
 import com.vena.ecom.model.ProductCategory;
+import com.vena.ecom.repo.ProductCategoryRepository;
 import com.vena.ecom.service.ProductCategoryService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,63 +24,70 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     public List<ProductCategoryResponse> getAllCategories() {
-        logger.info("ProductCategoryService::getAllCategories - Retrieving all categories");
-        List<ProductCategoryResponse> categories = categoryRepository.findAll()
+        logger.info("Retrieving all product categories");
+        return categoryRepository.findAll()
                 .stream()
                 .map(ProductCategoryResponse::new)
                 .toList();
-        logger.info("ProductCategoryService::getAllCategories - Retrieved {} categories", categories.size());
-        return categories;
     }
 
     @Override
     public ProductCategoryResponse createCategory(ProductCategory category) {
-        logger.info("ProductCategoryService::createCategory - Creating category with name: {}", category.getName());
+        logger.info("Creating category: {}", category.getName());
+        validateCategory(category);
 
-        Optional<ProductCategory> existing = categoryRepository.findByName(category.getName());
-        if (existing.isPresent()) {
-            logger.warn("ProductCategoryService::createCategory - Category creation failed: name '{}' already exists",
-                    category.getName());
-            throw new IllegalArgumentException("Category with this name already exists.");
-        }
+        categoryRepository.findByName(category.getName())
+                .ifPresent(existing -> {
+                    throw new IllegalArgumentException("Category with this name already exists.");
+                });
 
         ProductCategory saved = categoryRepository.save(category);
-        logger.info("ProductCategoryService::createCategory - Category created successfully with ID: {}",
-                saved.getId());
-
+        logger.info("Category created with ID: {}", saved.getId());
         return new ProductCategoryResponse(saved);
     }
 
     @Override
     public ProductCategoryResponse updateCategory(String categoryId, ProductCategory categoryDetails) {
-        logger.info("ProductCategoryService::updateCategory - Updating category with ID: {}", categoryId);
+        logger.info("Updating category with ID: {}", categoryId);
+        validateCategory(categoryDetails);
 
-        ProductCategory existing = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> {
-                    logger.error("ProductCategoryService::updateCategory - Category not found with ID: {}", categoryId);
-                    return new ResourceNotFoundException("Category not found with ID: " + categoryId);
-                });
-
+        ProductCategory existing = findById(categoryId);
         existing.setName(categoryDetails.getName());
         existing.setDescription(categoryDetails.getDescription());
-        ProductCategory updated = categoryRepository.save(existing);
-        logger.info("ProductCategoryService::updateCategory - Category updated successfully with ID: {}",
-                updated.getId());
 
+        ProductCategory updated = categoryRepository.save(existing);
+        logger.info("Category updated with ID: {}", updated.getId());
         return new ProductCategoryResponse(updated);
     }
 
     @Override
     public void deleteCategory(String categoryId) {
-        logger.info("ProductCategoryService::deleteCategory - Deleting category with ID: {}", categoryId);
-
+        logger.info("Deleting category with ID: {}", categoryId);
         if (!categoryRepository.existsById(categoryId)) {
-            logger.error("ProductCategoryService::deleteCategory - Deletion failed: category not found with ID: {}",
-                    categoryId);
             throw new ResourceNotFoundException("Category not found with ID: " + categoryId);
         }
-
         categoryRepository.deleteById(categoryId);
-        logger.info("ProductCategoryService::deleteCategory - Category deleted successfully with ID: {}", categoryId);
+        logger.info("Category deleted with ID: {}", categoryId);
+    }
+
+    public ProductCategory findById(String categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
+    }
+
+    //  Validation Logic
+    private void validateCategory(ProductCategory category) {
+        if (category.getName() == null || category.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be blank.");
+        }
+
+        int nameLength = category.getName().trim().length();
+        if (nameLength < 2 || nameLength > 50) {
+            throw new IllegalArgumentException("Category name must be between 2 and 50 characters.");
+        }
+
+        if (category.getDescription() != null && category.getDescription().length() > 255) {
+            throw new IllegalArgumentException("Description can be up to 255 characters only.");
+        }
     }
 }
