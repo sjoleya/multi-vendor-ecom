@@ -52,8 +52,8 @@ GET /users/me – Get current user
 PUT /users/me – Update current user 
 GET /users/me/addresses – List user addresses
 POST /users/me/addresses – Add user address
-PUT /users/me/addresses/{imageId} – Update address
-DELETE /users/me/addresses/{imageId} – Delete address
+PUT /users/me/addresses/{id} – Update address
+DELETE /users/me/addresses/{id} – Delete address
 ```
 
 ---
@@ -62,10 +62,10 @@ DELETE /users/me/addresses/{imageId} – Delete address
 
 ```
 GET /catalog-products – List all approved catalog products
-GET /catalog-products/{imageId} – Get product details
+GET /catalog-products/{id} – Get product details
 POST /admin/catalog-products – Create catalog product
-PUT /admin/catalog-products/{imageId} – Edit catalog product
-DELETE /admin/catalog-products/{imageId} – Delete catalog product
+PUT /admin/catalog-products/{id} – Edit catalog product
+DELETE /admin/catalog-products/{id} – Delete catalog product
 ```
 
 ### 4. Product Categories
@@ -73,8 +73,8 @@ DELETE /admin/catalog-products/{imageId} – Delete catalog product
 ```
 GET /categories – List all product categories
 POST /admin/categories – Create category
-PUT /admin/categories/{imageId} – Edit category
-DELETE /admin/categories/{imageId} – Delete category
+PUT /admin/categories/{id} – Edit category
+DELETE /admin/categories/{id} – Delete category
 ```
 
 ---
@@ -85,7 +85,7 @@ DELETE /admin/categories/{imageId} – Delete category
 
 ```
 GET /vendor/profile – Get vendor store profile
-GET /vendor/profile/{userId} - Get Vendor store profile from User imageId
+GET /vendor/profile/{userId} - Get Vendor store profile from User id
 PUT /vendor/profile – Update vendor store profile
 ```
 
@@ -103,8 +103,8 @@ DELETE /vendor/products/{productId} – Delete vendor product
 
 ```
 GET /vendor/orders – List vendor order items
-GET /vendor/orders/items/{imageId} – Get order item details
-PUT /vendor/orders/items/{imageId}/status – Update order item status
+GET /vendor/orders/items/{id} – Get order item details
+PUT /vendor/orders/items/{id}/status – Update order item status
 ```
 
 ---
@@ -116,8 +116,8 @@ PUT /vendor/orders/items/{imageId}/status – Update order item status
 ```
 GET /customer/cart – View cart
 POST /customer/cart/items – Add item to cart
-PUT /customer/cart/items/{imageId} – Update cart item quantity
-DELETE /customer/cart/items/{imageId} – Remove cart item
+PUT /customer/cart/items/{id} – Update cart item quantity
+DELETE /customer/cart/items/{id} – Remove cart item
 DELETE /customer/cart – Clear cart
 ```
 
@@ -126,9 +126,9 @@ DELETE /customer/cart – Clear cart
 ```
 POST /customer/orders/checkout – Checkout and create order
 GET /customer/orders – View order history
-GET /customer/orders/{imageId} – View order details
+GET /customer/orders/{id} – View order details
 PUT /customer/orders/payment - Customer Order Payment
-POST /customer/orders/{imageId}/items/{imageId}/review – Submit product review
+POST /customer/orders/{id}/items/{id}/review – Submit product review
 ```
 
 ---
@@ -139,8 +139,8 @@ POST /customer/orders/{imageId}/items/{imageId}/review – Submit product review
 
 ```
 GET /admin/users – List all users
-GET /admin/users/{imageId} – Get user details
-PUT /admin/users/{imageId}/role – Update user role
+GET /admin/users/{id} – Get user details
+PUT /admin/users/{id}/role – Update user role
 ```
 
 - **Vendor Applications**
@@ -155,17 +155,17 @@ PUT /admin/vendor-applications/{applicationId}/reject – Reject application
 
 ```
 GET /admin/vendor-products/pending-approval – List vendor product offers pending approval
-PUT /admin/vendor-products/{imageId}/approve –Approve vendor product
-PUT /admin/vendor-products/{imageId}/reject – Reject vendor product
+PUT /admin/vendor-products/{id}/approve –Approve vendor product
+PUT /admin/vendor-products/{id}/reject – Reject vendor product
 ```
 
 - **Orders & Reviews**
 
 ```
 GET /admin/orders – List all orders
-GET /admin/orders/{imageId} – Get order details
-PUT /admin/orders/{imageId}/status – Update order status
-DELETE /admin/reviews/{imageId} – Delete review
+GET /admin/orders/{id} – Get order details
+PUT /admin/orders/{id}/status – Update order status
+DELETE /admin/reviews/{id} – Delete review
 ```
 
 ---
@@ -225,8 +225,8 @@ DELETE /admin/reviews/{imageId} – Delete review
 - StockQuantity (Integer)
 - ShippingAddress (FK)
 - ApprovalStatus (Enum: Pending, Approved, Rejected)
-- IsActive (Boolean - for vendor to quickly enable/disable)
-- AverageRating (Decimal, calculated)
+- IsActive (Boolean - for vendor to quickly enable/disable)
+- AverageRating (Decimal, calculated)
 - CreatedAt
 - UpdatedAt
 
@@ -333,3 +333,4 @@ DELETE /admin/reviews/{imageId} – Delete review
 1. Spring Boot
 2. Swagger Documentation
 3. MySQL
+ 

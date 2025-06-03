@@ -31,7 +31,7 @@
 	</properties>
 	<profiles>
 		<profile>
-			<imageId>dev</imageId>
+			<id>dev</id>
 			<properties>
 			<spring-boot.run.profiles>dev</spring-boot.run.profiles>
 			</properties>
