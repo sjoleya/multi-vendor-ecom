@@ -1,5 +1,7 @@
 package com.vena.ecom.dto.request;
 
+import com.vena.ecom.model.enums.UserRole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,6 +21,16 @@ public class UserRequest {
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
+
+    private UserRole role;
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole userRole) {
+        this.role = userRole;
+    }
 
     private String phoneNumber;
 
