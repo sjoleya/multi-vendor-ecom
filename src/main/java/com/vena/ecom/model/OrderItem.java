@@ -2,6 +2,7 @@ package com.vena.ecom.model;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vena.ecom.model.audit.Auditable;
 import com.vena.ecom.model.enums.ItemStatus;
 
@@ -24,6 +25,7 @@ public class OrderItem extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JsonBackReference
     private Order order;
 
     @ManyToOne
@@ -35,7 +37,7 @@ public class OrderItem extends Auditable {
     private BigDecimal subtotal;
 
     @Enumerated(EnumType.STRING)
-    private ItemStatus itemStatus;
+    private ItemStatus itemStatus = ItemStatus.PENDING;
 
     public OrderItem() {
     }

@@ -7,8 +7,6 @@ public class ProductCatalogResponse {
     private String name;
     private String description;
     private String categoryId;
-    private double price;
-    private String status;
 
     public ProductCatalogResponse() {
     }
@@ -50,21 +48,5 @@ public class ProductCatalogResponse {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

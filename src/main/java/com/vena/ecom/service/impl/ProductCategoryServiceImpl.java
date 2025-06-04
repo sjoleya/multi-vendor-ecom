@@ -35,15 +35,19 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
-    public ProductCategoryResponse createCategory(ProductCategory category) {
-        logger.info("ProductCategoryService::createCategory - Creating category with name: {}", category.getName());
+    public ProductCategoryResponse createCategory(com.vena.ecom.dto.request.CreateProductCategory categoryDto) {
+        logger.info("ProductCategoryService::createCategory - Creating category with name: {}", categoryDto.getName());
 
-        Optional<ProductCategory> existing = categoryRepository.findByName(category.getName());
+        Optional<ProductCategory> existing = categoryRepository.findByName(categoryDto.getName());
         if (existing.isPresent()) {
             logger.warn("ProductCategoryService::createCategory - Category creation failed: name '{}' already exists",
-                    category.getName());
+                    categoryDto.getName());
             throw new IllegalArgumentException("Category with this name already exists.");
         }
+
+        ProductCategory category = new ProductCategory();
+        category.setName(categoryDto.getName());
+        category.setDescription(categoryDto.getDescription());
 
         ProductCategory saved = categoryRepository.save(category);
         logger.info("ProductCategoryService::createCategory - Category created successfully with ID: {}",

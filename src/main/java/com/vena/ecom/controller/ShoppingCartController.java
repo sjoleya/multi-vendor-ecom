@@ -4,7 +4,10 @@ import com.vena.ecom.dto.request.AddCartItemRequest;
 import com.vena.ecom.dto.request.UpdateCartItemRequest;
 import com.vena.ecom.dto.response.ShoppingCartResponse;
 import com.vena.ecom.dto.response.CartItemResponse;
+import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.service.ShoppingCartService;
+
+import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +28,14 @@ public class ShoppingCartController {
     @GetMapping
     public ResponseEntity<ShoppingCartResponse> viewCart(@RequestParam String customerId) {
         logger.info("GET /customer/cart - Viewing cart for customerId: {}", customerId);
-        ShoppingCartResponse response = shoppingCartService.getCartByCustomerId(customerId);
+        ShoppingCart shoppingCart = shoppingCartService.getCartByCustomerId(customerId);
         logger.info("Cart retrieved successfully for customerId: {}", customerId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ShoppingCartResponse(shoppingCart));
     }
 
     @PostMapping("/items")
     public ResponseEntity<CartItemResponse> addCartItem(@RequestParam String customerId,
-                                                        @RequestBody AddCartItemRequest request) {
+            @Valid @RequestBody AddCartItemRequest request) {
         logger.info("POST /customer/cart/items - Adding productId: {} to cart for customerId: {}",
                 request.getVendorProductId(), customerId);
         CartItemResponse response = shoppingCartService.addCartItem(customerId, request);
@@ -42,7 +45,7 @@ public class ShoppingCartController {
 
     @PutMapping("/items/{cartItemId}")
     public ResponseEntity<CartItemResponse> updateCartItemQuantity(@PathVariable String cartItemId,
-                                                                   @RequestBody UpdateCartItemRequest request) {
+            @Valid @RequestBody UpdateCartItemRequest request) {
         logger.info("PUT /customer/cart/items/{} - Updating quantity to {}", cartItemId, request.getQuantity());
         CartItemResponse response = shoppingCartService.updateCartItemQuantity(cartItemId, request);
         logger.info("Cart item updated successfully for cartItemId: {}", cartItemId);

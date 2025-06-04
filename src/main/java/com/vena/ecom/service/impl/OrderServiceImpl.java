@@ -1,10 +1,14 @@
 package com.vena.ecom.service.impl;
 
+import com.vena.ecom.model.enums.ItemStatus;
+import com.vena.ecom.model.enums.OrderStatus;
+import com.vena.ecom.repo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vena.ecom.dto.response.OrderResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
+import com.vena.ecom.dto.request.AddProductReview;
 import com.vena.ecom.dto.request.OrderPaymentRequest;
 import com.vena.ecom.dto.response.OrderPaymentResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
@@ -16,24 +20,21 @@ import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.model.VendorProduct;
-import com.vena.ecom.repo.OrderItemRepository;
-import com.vena.ecom.repo.OrderRepository;
-import com.vena.ecom.repo.ReviewRepository;
-import com.vena.ecom.repo.ShoppingCartRepository;
 import com.vena.ecom.model.Payment;
 import com.vena.ecom.model.enums.PaymentStatus;
-import com.vena.ecom.repo.AddressRepository;
-import com.vena.ecom.repo.PaymentRepository;
-import com.vena.ecom.repo.UserRepository;
 import com.vena.ecom.service.OrderService;
 import com.vena.ecom.service.ShoppingCartService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -62,9 +63,13 @@ public class OrderServiceImpl implements OrderService {
     private AddressRepository userAddressRepository;
 
     @Autowired
+    private VendorProductRepository vendorProductRepository;
+
+    @Autowired
     private PaymentRepository paymentRepository;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderResponse checkout(String customerId, String addressId) {
         logger.info("checkout - Checking out for customer ID: {} and address ID: {}", customerId, addressId);
         ShoppingCart shoppingCart = shoppingCartRepository.findByCustomerId(customerId).map(sc -> {
@@ -88,29 +93,46 @@ public class OrderServiceImpl implements OrderService {
             logger.warn("checkout - Address not found with id: {}", addressId);
             return new ResourceNotFoundException("Address with id: " + addressId + "not found!");
         });
+        if (!user.getAddressList().contains(address)) {
+            throw new IllegalArgumentException("Address should belong only to user placing order.");
+        }
         Order order = new Order();
         order.setCustomer(user);
         order.setOrderDate(LocalDateTime.now());
-        order.setOrderStatus(com.vena.ecom.model.enums.OrderStatus.PENDING_PAYMENT);
+        order.setOrderStatus(OrderStatus.PENDING_PAYMENT);
         order.setShippingAddress(address);
         logger.debug("checkout - New order created: {}", order);
 
         List<CartItem> cartItems = shoppingCart.getCartItems();
         BigDecimal totalAmount = BigDecimal.ZERO;
-
+        // saving local copy of all vendor products, for quantity validation,
+        // and reducing redundant db calls.
+        Map<String, VendorProduct> productsToUpdate = new HashMap<>();
         for (CartItem cartItem : cartItems) {
             logger.debug("checkout - Processing cart item: {}", cartItem);
             VendorProduct vendorProduct = cartItem.getVendorProduct();
+            if (productsToUpdate.containsKey(vendorProduct.getId())) {
+                vendorProduct = productsToUpdate.get(vendorProduct.getId());
+            } else {
+                productsToUpdate.put(vendorProduct.getId(), vendorProduct);
+            }
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setVendorProduct(cartItem.getVendorProduct());
             orderItem.setQuantity(cartItem.getQuantity());
+            if (vendorProduct.getStockQuantity() < cartItem.getQuantity()) {
+                throw new IllegalArgumentException("Product Out of Stock.");
+            }
+            vendorProduct.setStockQuantity(vendorProduct.getStockQuantity() - cartItem.getQuantity());
             orderItem.setPriceAtPurchase(vendorProduct.getPrice());
             orderItem.setSubtotal(orderItem.getPriceAtPurchase().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-            orderItem.setItemStatus(com.vena.ecom.model.enums.ItemStatus.PENDING);
+            orderItem.setItemStatus(ItemStatus.PENDING);
+            productsToUpdate.put(vendorProduct.getId(), vendorProduct);
             logger.debug("checkout - Created order item: {}", orderItem);
             totalAmount = totalAmount.add(orderItem.getSubtotal());
+            order.getOrderItems().add(orderItem);
         }
+        vendorProductRepository.saveAll(productsToUpdate.values());
 
         order.setTotalAmount(totalAmount);
         Order savedOrder = orderRepository.save(order);
@@ -158,9 +180,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ReviewResponse submitProductReview(String orderId, String orderItemId, String customerId, Review review) {
-        logger.info("Submitting product review for order ID: {}, order item ID: {}, customer ID: {}", orderId,
-                orderItemId, customerId);
+    public ReviewResponse submitProductReview(String orderId, String orderItemId,
+            AddProductReview addProductReview) {
+        logger.info("Submitting product review for order ID: {}, order item ID: {}, rating: {}, comment: {}", orderId,
+                orderItemId, addProductReview.getRating(), addProductReview.getComment());
         Order order = orderRepository.findById(orderId).map(o -> {
             logger.debug("submitProductReview - Order found: {}", o);
             return o;
@@ -175,18 +198,33 @@ public class OrderServiceImpl implements OrderService {
             logger.warn("submitProductReview - Order item not found with id: {}", orderItemId);
             return new ResourceNotFoundException("Order item not found");
         });
-        if (!order.getCustomer().getId().equals(customerId)) {
-            logger.warn("submitProductReview - Customer ID {} does not match order's customer ID {}", customerId,
-                    order.getCustomer().getId());
-            throw new ResourceNotFoundException("Customer mismatch");
+        if (!orderItem.getItemStatus().equals(ItemStatus.DELIVERED)) {
+            throw new IllegalArgumentException("Review for this Order Item is not allowed");
         }
+        if (!orderItem.getOrder().getId().equals(order.getId())) {
+            throw new IllegalArgumentException("Order Item doesn't belong to this Order");
+        }
+        // Calculating Average Rating from new review
+        VendorProduct vendorProduct = orderItem.getVendorProduct();
+        long currentCount = reviewRepository.countByOrderItem_VendorProduct(vendorProduct);
+        BigDecimal currentAverage = vendorProduct.getAverageRating();
+        BigDecimal newTotal = currentAverage.multiply(BigDecimal.valueOf(currentCount))
+                .add(BigDecimal.valueOf(addProductReview.getRating()));
 
+        long newCount = currentCount + 1L;
+
+        BigDecimal newAverage = newTotal.divide(BigDecimal.valueOf(newCount), 2,
+                RoundingMode.HALF_UP);
+        vendorProduct.setAverageRating(newAverage);
+        logger.info("Saving Updated Vendor Product: {} into DB", vendorProduct.getId());
+        vendorProductRepository.save(vendorProduct);
+        Review review = new Review();
+        review.setRating(addProductReview.getRating());
+        review.setComment(addProductReview.getComment());
         review.setOrder(order);
         review.setOrderItem(orderItem);
         review.setCustomer(order.getCustomer());
-        review.setOrder(order);
-        review.setOrderItem(orderItem);
-        review.setCustomer(order.getCustomer());
+
         return new ReviewResponse(reviewRepository.save(review));
     }
 
@@ -201,7 +239,13 @@ public class OrderServiceImpl implements OrderService {
                     logger.warn("submitOrderPayment - Order not found with id: {}", paymentRequest.getOrderId());
                     return new ResourceNotFoundException("Order not found with id: " + paymentRequest.getOrderId());
                 });
-
+        // validating payment details
+        BigDecimal orderAmount = order.getTotalAmount(); // Already a BigDecimal
+        Double paymentAmount = paymentRequest.getAmount(); // This is a Double
+        BigDecimal paymentAmountBD = BigDecimal.valueOf(paymentAmount);
+        if (orderAmount.compareTo(paymentAmountBD) != 0) {
+            throw new IllegalArgumentException("Payment Amount should match order amount.");
+        }
         if (order.getOrderStatus() != com.vena.ecom.model.enums.OrderStatus.PENDING_PAYMENT) {
             logger.warn("Order {} is not in PENDING_PAYMENT status", paymentRequest.getOrderId());
             throw new IllegalStateException("Order is not in PENDING_PAYMENT status.");

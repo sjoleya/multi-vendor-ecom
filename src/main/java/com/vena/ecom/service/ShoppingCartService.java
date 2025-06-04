@@ -2,12 +2,12 @@ package com.vena.ecom.service;
 
 import com.vena.ecom.dto.request.AddCartItemRequest;
 import com.vena.ecom.dto.response.CartItemResponse;
-import com.vena.ecom.dto.response.ShoppingCartResponse;
 import com.vena.ecom.dto.request.UpdateCartItemRequest;
+import com.vena.ecom.model.ShoppingCart;
 
 public interface ShoppingCartService {
 
-    ShoppingCartResponse getCartByCustomerId(String customerId);
+    ShoppingCart getCartByCustomerId(String customerId);
 
     CartItemResponse addCartItem(String customerId, AddCartItemRequest request);
 

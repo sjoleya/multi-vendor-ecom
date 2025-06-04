@@ -12,6 +12,8 @@ public class VendorProductResponse {
     private BigDecimal price;
     private int stock;
     private String status;
+    private Boolean isActive;
+    private BigDecimal averageRating;
     private List<ProductImageResponse> images;
 
     public VendorProductResponse() {
@@ -24,6 +26,8 @@ public class VendorProductResponse {
         this.price = vendorProduct.getPrice();
         this.stock = vendorProduct.getStockQuantity();
         this.status = vendorProduct.getApprovalStatus().toString();
+        this.isActive = vendorProduct.getActive();
+        this.averageRating = vendorProduct.getAverageRating();
         this.images = vendorProduct.getImages().stream()
                 .map(ProductImageResponse::new)
                 .toList();
@@ -75,6 +79,22 @@ public class VendorProductResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public BigDecimal getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(BigDecimal averageRating) {
+        this.averageRating = averageRating;
     }
 
     public List<ProductImageResponse> getImages() {

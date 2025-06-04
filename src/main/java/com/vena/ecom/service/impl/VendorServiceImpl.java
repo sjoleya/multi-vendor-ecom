@@ -10,6 +10,7 @@ import com.vena.ecom.model.VendorProduct;
 import com.vena.ecom.model.VendorProfile;
 import com.vena.ecom.model.enums.ApprovalStatus;
 import com.vena.ecom.model.enums.ItemStatus;
+import com.vena.ecom.model.enums.UserRole;
 import com.vena.ecom.repo.OrderItemRepository;
 import com.vena.ecom.repo.VendorProductRepository;
 import com.vena.ecom.repo.VendorProfileRepository;
@@ -104,7 +105,9 @@ public class VendorServiceImpl implements VendorService {
                     logger.error("VendorProfile not found with ID: {}", vendorId);
                     return new ResourceNotFoundException("VendorProfile not found with id: " + vendorId);
                 });
-        logger.debug("VendorProfile found: {}", vendor.getId());
+        if(!vendor.getApprovalStatus().equals(ApprovalStatus.APPROVED)) {
+            throw new IllegalArgumentException("Vendor not approved to add Products");
+        }
         VendorProduct vendorProduct = new VendorProduct();
         vendorProduct.setVendorProfile(vendor);
         vendorProduct.setProductCatalog(productCatalogRepository.findById(product.getCatalogProductId())
@@ -219,6 +222,9 @@ public class VendorServiceImpl implements VendorService {
         String userId = addVendorProfileRequest.getUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        if(!user.getRole().equals(UserRole.VENDOR)) {
+            throw new IllegalArgumentException("Only Vendor is allowed to create Vendor Profile.");
+        }
         if (vendorProfileRepository.existsByVendor(user)) {
             throw new IllegalArgumentException("Vendor Profile for this user already exists");
         }

@@ -9,6 +9,9 @@ import com.vena.ecom.model.User;
 import com.vena.ecom.model.Address;
 import com.vena.ecom.dto.request.AddAddressRequest;
 import com.vena.ecom.service.UserService;
+
+import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +29,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<NewUserResponse> registerUser(@RequestBody UserRequest request) {
+    public ResponseEntity<NewUserResponse> registerUser(@Valid @RequestBody UserRequest request) {
         NewUserResponse saved = userService.registerUser(request);
         return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable String userId, @RequestBody UserRequest request) {
+    public ResponseEntity<String> updateUser(@PathVariable String userId, @Valid @RequestBody UserRequest request) {
         userService.updateUserById(userId, request);
         return ResponseEntity.ok("User updated successfully");
     }
@@ -44,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request) {
         String result = userService.login(request);
         return ResponseEntity.ok(result);
     }
@@ -62,7 +65,7 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody User userDetails) {
+    public ResponseEntity<UserResponse> updateCurrentUser(@Valid @RequestBody User userDetails) {
         logger.info("PUT /users/me - Request to update current user profile");
         UserResponse updated = userService.updateCurrentUser(userDetails);
         logger.info("User updated: {}", updated.getEmail());
@@ -78,7 +81,7 @@ public class UserController {
     }
 
     @PostMapping("/me/addresses/{id}")
-    public ResponseEntity<AddressResponse> addUserAddress(@RequestBody AddAddressRequest address,
+    public ResponseEntity<AddressResponse> addUserAddress(@Valid @RequestBody AddAddressRequest address,
             @PathVariable String id) {
         logger.info("Post /users/me/addresses - Request to add a new address for current user");
         AddressResponse saved = userService.addUserAddress(address, id);
@@ -87,7 +90,7 @@ public class UserController {
 
     @PutMapping("/me/addresses/{id}")
     public ResponseEntity<AddressResponse> updateUserAddress(@PathVariable String id,
-            @RequestBody Address addressDetails) {
+            @Valid @RequestBody Address addressDetails) {
         logger.info("Put /users/me/addresses/id - Updating address with ID: {}", id);
         AddressResponse updated = userService.updateUserAddress(id, addressDetails);
         logger.info("Address updated for ID: {}", id);

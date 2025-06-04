@@ -9,7 +9,7 @@ public interface ProductCategoryService {
 
     List<ProductCategoryResponse> getAllCategories();
 
-    ProductCategoryResponse createCategory(ProductCategory category);
+    ProductCategoryResponse createCategory(com.vena.ecom.dto.request.CreateProductCategory categoryDto);
 
     ProductCategoryResponse updateCategory(String categoryId, ProductCategory categoryDetails);
 
