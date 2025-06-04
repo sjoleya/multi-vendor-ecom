@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vena.ecom.dto.response.OrderResponse;
 import com.vena.ecom.dto.response.ReviewResponse;
+import com.vena.ecom.dto.request.AddProductReview;
 import com.vena.ecom.dto.request.OrderPaymentRequest;
 import com.vena.ecom.dto.response.OrderPaymentResponse;
 import com.vena.ecom.exception.ResourceNotFoundException;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +93,9 @@ public class OrderServiceImpl implements OrderService {
             logger.warn("checkout - Address not found with id: {}", addressId);
             return new ResourceNotFoundException("Address with id: " + addressId + "not found!");
         });
+        if (!user.getAddressList().contains(address)) {
+            throw new IllegalArgumentException("Address should belong only to user placing order.");
+        }
         Order order = new Order();
         order.setCustomer(user);
         order.setOrderDate(LocalDateTime.now());
@@ -116,7 +121,7 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setVendorProduct(cartItem.getVendorProduct());
             orderItem.setQuantity(cartItem.getQuantity());
             if (vendorProduct.getStockQuantity() < cartItem.getQuantity()) {
-                throw new IllegalArgumentException("Requested Quantity is greater than available quantity.");
+                throw new IllegalArgumentException("Product Out of Stock.");
             }
             vendorProduct.setStockQuantity(vendorProduct.getStockQuantity() - cartItem.getQuantity());
             orderItem.setPriceAtPurchase(vendorProduct.getPrice());
@@ -176,7 +181,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ReviewResponse submitProductReview(String orderId, String orderItemId,
-            com.vena.ecom.dto.request.AddProductReview addProductReview) {
+            AddProductReview addProductReview) {
         logger.info("Submitting product review for order ID: {}, order item ID: {}, rating: {}, comment: {}", orderId,
                 orderItemId, addProductReview.getRating(), addProductReview.getComment());
         Order order = orderRepository.findById(orderId).map(o -> {
@@ -199,6 +204,20 @@ public class OrderServiceImpl implements OrderService {
         if (!orderItem.getOrder().getId().equals(order.getId())) {
             throw new IllegalArgumentException("Order Item doesn't belong to this Order");
         }
+        // Calculating Average Rating from new review
+        VendorProduct vendorProduct = orderItem.getVendorProduct();
+        long currentCount = reviewRepository.countByOrderItem_VendorProduct(vendorProduct);
+        BigDecimal currentAverage = vendorProduct.getAverageRating();
+        BigDecimal newTotal = currentAverage.multiply(BigDecimal.valueOf(currentCount))
+                .add(BigDecimal.valueOf(addProductReview.getRating()));
+
+        long newCount = currentCount + 1L;
+
+        BigDecimal newAverage = newTotal.divide(BigDecimal.valueOf(newCount), 2,
+                RoundingMode.HALF_UP);
+        vendorProduct.setAverageRating(newAverage);
+        logger.info("Saving Updated Vendor Product: {} into DB", vendorProduct.getId());
+        vendorProductRepository.save(vendorProduct);
         Review review = new Review();
         review.setRating(addProductReview.getRating());
         review.setComment(addProductReview.getComment());
@@ -220,7 +239,13 @@ public class OrderServiceImpl implements OrderService {
                     logger.warn("submitOrderPayment - Order not found with id: {}", paymentRequest.getOrderId());
                     return new ResourceNotFoundException("Order not found with id: " + paymentRequest.getOrderId());
                 });
-
+        // validating payment details
+        BigDecimal orderAmount = order.getTotalAmount(); // Already a BigDecimal
+        Double paymentAmount = paymentRequest.getAmount(); // This is a Double
+        BigDecimal paymentAmountBD = BigDecimal.valueOf(paymentAmount);
+        if (orderAmount.compareTo(paymentAmountBD) != 0) {
+            throw new IllegalArgumentException("Payment Amount should match order amount.");
+        }
         if (order.getOrderStatus() != com.vena.ecom.model.enums.OrderStatus.PENDING_PAYMENT) {
             logger.warn("Order {} is not in PENDING_PAYMENT status", paymentRequest.getOrderId());
             throw new IllegalStateException("Order is not in PENDING_PAYMENT status.");

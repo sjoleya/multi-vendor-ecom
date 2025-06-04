@@ -148,7 +148,6 @@ public class UserServiceImpl implements UserService {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPasswordHash(request.getPassword());
-        user.setRole(request.getRole());
         user.setPhoneNumber(request.getPhoneNumber());
         User savedUser = userRepository.save(user);
         return new NewUserResponse(savedUser);
@@ -182,7 +181,6 @@ public class UserServiceImpl implements UserService {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPasswordHash(request.getPassword());
-        user.setRole(request.getRole());
         user.setPhoneNumber(request.getPhoneNumber());
 
         User savedUser = userRepository.save(user);

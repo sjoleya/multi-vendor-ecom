@@ -4,6 +4,7 @@ import com.vena.ecom.dto.request.AddCartItemRequest;
 import com.vena.ecom.dto.request.UpdateCartItemRequest;
 import com.vena.ecom.dto.response.ShoppingCartResponse;
 import com.vena.ecom.dto.response.CartItemResponse;
+import com.vena.ecom.model.ShoppingCart;
 import com.vena.ecom.service.ShoppingCartService;
 
 import jakarta.validation.Valid;
@@ -27,9 +28,9 @@ public class ShoppingCartController {
     @GetMapping
     public ResponseEntity<ShoppingCartResponse> viewCart(@RequestParam String customerId) {
         logger.info("GET /customer/cart - Viewing cart for customerId: {}", customerId);
-        ShoppingCartResponse response = shoppingCartService.getCartByCustomerId(customerId);
+        ShoppingCart shoppingCart = shoppingCartService.getCartByCustomerId(customerId);
         logger.info("Cart retrieved successfully for customerId: {}", customerId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ShoppingCartResponse(shoppingCart));
     }
 
     @PostMapping("/items")

@@ -7,7 +7,6 @@ import com.vena.ecom.model.*;
 import com.vena.ecom.model.enums.ApprovalStatus;
 import com.vena.ecom.repo.*;
 import com.vena.ecom.service.ShoppingCartService;
-import com.vena.ecom.dto.response.ShoppingCartResponse;
 import com.vena.ecom.dto.response.CartItemResponse;
 
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private UserRepository userRepository;
 
     @Override
-    public ShoppingCartResponse getCartByCustomerId(String customerId) {
+    public ShoppingCart getCartByCustomerId(String customerId) {
         logger.info("Fetching cart for customerId: {}", customerId);
         ShoppingCart cart = shoppingCartRepository.findByCustomerId(customerId)
                 .orElseGet(() -> {
@@ -50,17 +49,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     return shoppingCartRepository.save(newCart);
                 });
         logger.info("Cart fetched/created successfully for customerId: {}", customerId);
-        return new ShoppingCartResponse(cart);
+        return cart;
     }
 
     @Override
     public CartItemResponse addCartItem(String customerId, AddCartItemRequest request) {
         logger.info("Adding product '{}' to cart for customerId: {}", request.getVendorProductId(), customerId);
-        ShoppingCart cart = shoppingCartRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> {
-                    logger.error("Cart not found for customerId: {}", customerId);
-                    return new ResourceNotFoundException("Cart not found for customerId: " + customerId);
-                });
+        ShoppingCart cart = getCartByCustomerId(customerId);
 
         VendorProduct product = vendorProductRepository.findById(request.getVendorProductId())
                 .orElseThrow(() -> {
