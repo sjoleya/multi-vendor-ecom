@@ -15,7 +15,6 @@ import com.vena.ecom.model.Address;
 import com.vena.ecom.dto.request.AddAddressRequest;
 import com.vena.ecom.repo.AddressRepository;
 import com.vena.ecom.repo.UserRepository;
-import com.vena.ecom.repo.VendorProfileRepository;
 import com.vena.ecom.service.UserService;
 
 import org.slf4j.Logger;
@@ -34,15 +33,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AddressRepository addressRepository;
 
-    @Autowired
-    VendorProfileRepository vendorProfileRepository;
-
     @Override
     public UserResponse getCurrentUser(String id) {
-        logger.info("Fetching current user by email");
+        logger.info("Fetching current user by user id ");
         User user = userRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.warn("User not found with email: john.doe@example.com");
+                    logger.warn("User not found with these id: {}" + id);
                     return new ResourceNotFoundException("User not found!");
                 });
 
@@ -78,27 +74,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AddressResponse addUserAddress(AddAddressRequest addAdressRequest, String id) {
-        // String userId = getCurrentUser().getUserId();
+    public AddressResponse addUserAddress(AddAddressRequest addAddressRequest, String id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()) {
             logger.warn("User not found with ID: {}", id);
             throw new ResourceNotFoundException("User not found with ID: " + id);
         }
         User user = optionalUser.get();
-        // address.setUser(user);
         Address address = new Address();
-        address.setStreet(addAdressRequest.getStreet());
-        address.setCity(addAdressRequest.getCity());
-        address.setState(addAdressRequest.getState());
-        address.setZipCode(addAdressRequest.getZip());
-        address.setCountry(addAdressRequest.getCountry());
+        address.setStreet(addAddressRequest.getStreet());
+        address.setCity(addAddressRequest.getCity());
+        address.setState(addAddressRequest.getState());
+        address.setZipCode(addAddressRequest.getZip());
+        address.setCountry(addAddressRequest.getCountry());
         address.setUser(user);
         try {
-            address.setAddressType(AddressType.valueOf(addAdressRequest.getType().toUpperCase()));
+            address.setAddressType(AddressType.valueOf(addAddressRequest.getType().toUpperCase()));
         } catch (IllegalArgumentException e) {
             // Handle the case where the provided type is not a valid AddressType
-            throw new IllegalArgumentException("Invalid address type: " + addAdressRequest.getType());
+            throw new IllegalArgumentException("Invalid address type: " + addAddressRequest.getType());
         }
         Address savedAddress = addressRepository.save(address);
         user.getAddressList().add(savedAddress);
@@ -149,6 +143,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(request.getEmail());
         user.setPasswordHash(request.getPassword());
         user.setPhoneNumber(request.getPhoneNumber());
+        user.setRole(request.getRole());
         User savedUser = userRepository.save(user);
         return new NewUserResponse(savedUser);
     }
@@ -174,7 +169,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public NewUserResponse updateUserById(String userId, UserRequest request) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
         user.setFirstName(request.getFirstName());
@@ -182,7 +176,6 @@ public class UserServiceImpl implements UserService {
         user.setEmail(request.getEmail());
         user.setPasswordHash(request.getPassword());
         user.setPhoneNumber(request.getPhoneNumber());
-
         User savedUser = userRepository.save(user);
         return new NewUserResponse(savedUser);
     }
